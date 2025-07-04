@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>题库复习系统</title>
     <style>
         * {
@@ -10,12 +10,43 @@
             padding: 0;
             box-sizing: border-box;
         }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, .option, .status-item, .file-item, .tab-btn {
+                min-height: 44px;
+            }
+            
+            .option {
+                padding: 14px;
+            }
+            
+            .status-item {
+                min-width: 44px;
+                min-height: 44px;
+            }
+        }
 
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            -webkit-overflow-scrolling: touch;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* 允许文本选择的元素 */
+        .question-text, .option-text, .essay-input, input[type="text"], textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
 
         .container {
@@ -695,6 +726,22 @@
             .tab-navigation {
                 flex-direction: column;
             }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+                line-height: 1.6;
+            }
         }
 
         .hidden {
@@ -721,18 +768,214 @@
 
         @media (max-width: 600px) {
             .container {
-                margin: 10px;
+                margin: 5px;
             }
             
             .content {
-                padding: 20px;
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header p {
+                font-size: 14px;
             }
             
             .navigation {
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 16px;
+                min-height: 48px;
+                width: 100%;
+            }
+            
+            .btn-secondary {
+                padding: 10px 16px;
+                font-size: 14px;
+                min-height: 44px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-number {
+                font-size: 1.8em;
+            }
+            
+            .question-container {
+                padding: 15px;
+            }
+            
+            .question-text {
+                font-size: 15px;
+                line-height: 1.5;
+                margin: 15px 0;
+            }
+            
+            .option {
+                padding: 12px;
+                margin: 8px 0;
+                font-size: 15px;
+            }
+            
+            .option input[type="radio"],
+            .option input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .question-status {
+                padding: 10px;
+            }
+            
+            .status-item {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+                margin: 2px;
+            }
+            
+            .tab-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+            
+            .wrong-question {
+                padding: 12px;
+                margin: 8px 0;
+            }
+            
+            .answer-comparison {
+                gap: 10px;
+            }
+            
+            .user-answer, .correct-answer {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .progress {
+                height: 8px;
+                margin: 15px 0;
+            }
+            
+            #questionProgress {
+                font-size: 14px;
+                padding: 8px 12px;
+                background: #f5f5f5;
+                border-radius: 20px;
+                margin: 0 10px;
+            }
         }
+        
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .navigation {
+                 gap: 8px;
+                 padding: 0 5px;
+             }
+             
+             .btn {
+                 padding: 14px 20px;
+                 font-size: 16px;
+                 border-radius: 8px;
+                 flex: 1;
+                 max-width: none;
+             }
+             
+             .btn-secondary {
+                 flex: 0 0 auto;
+                 min-width: 80px;
+             }
+             
+             #questionProgress {
+                 flex: 0 0 auto;
+                 white-space: nowrap;
+                 font-weight: bold;
+             }
+            
+            .question-text {
+                font-size: 14px;
+            }
+            
+            .option {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .status-item {
+                 width: 26px;
+                 height: 26px;
+                 font-size: 10px;
+             }
+             
+             .essay-input {
+                 font-size: 16px;
+                 padding: 12px;
+                 min-height: 120px;
+                 border-radius: 8px;
+             }
+             
+             .file-upload input[type="file"] {
+                 font-size: 16px;
+                 padding: 12px;
+             }
+             
+             .file-upload label {
+                 font-size: 16px;
+                 padding: 12px 20px;
+                 min-height: 48px;
+                 display: flex;
+                 align-items: center;
+                 justify-content: center;
+             }
+             
+             .detected-files h3 {
+                 font-size: 16px;
+             }
+             
+             .file-item {
+                 padding: 12px;
+                 font-size: 14px;
+             }
+             
+             .divider {
+                 margin: 20px 0;
+             }
+             
+             .divider span {
+                 font-size: 14px;
+                 padding: 0 15px;
+             }
+         }
     </style>
 </head>
 <body>
