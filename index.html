@@ -311,6 +311,36 @@
             padding: 15px;
             background: #f9f9f9;
             border-radius: 10px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .question-status.collapsed {
+            max-height: 0;
+            padding: 0 15px;
+            margin: 0;
+            opacity: 0;
+        }
+
+        .total-count-toggle {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+
+        .total-count-toggle:hover {
+            color: #4CAF50;
+        }
+
+        #toggleIcon {
+            font-size: 12px;
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .question-status:not(.collapsed) ~ * #toggleIcon,
+        .question-status.expanded #toggleIcon {
+            transform: rotate(180deg);
         }
 
         .status-item {
@@ -660,9 +690,10 @@
                 </div>
                 
                 <div style="text-align: center; margin: 15px 0; color: #666;">
-                    <span id="answeredCount">已答题: 0</span> / <span id="totalCount">总题数: 0</span>
+                    <span id="answeredCount">已答题: 0</span> / 
+                    <span id="totalCount" class="total-count-toggle" onclick="toggleQuestionStatus()">总题数: 0 <span id="toggleIcon">▼</span></span>
                 </div>
-                <div class="question-status" id="questionStatus"></div>
+                <div class="question-status collapsed" id="questionStatus"></div>
                 
                 <div class="question-container">
                     <div class="question-header">
@@ -1301,7 +1332,13 @@
 
             updateQuestionStatus() {
                 const statusContainer = document.getElementById('questionStatus');
+                // 保存当前折叠状态
+                const isCollapsed = statusContainer.classList.contains('collapsed');
                 statusContainer.innerHTML = '';
+                // 恢复折叠状态
+                if (isCollapsed) {
+                    statusContainer.classList.add('collapsed');
+                }
                 let answeredCount = 0;
                 
                 this.questions.forEach((_, index) => {
@@ -1569,6 +1606,21 @@
 
         // 初始化应用
         const app = new QuestionBank();
+
+        // 题目状态区域折叠/展开功能
+        function toggleQuestionStatus() {
+            const statusContainer = document.getElementById('questionStatus');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            statusContainer.classList.toggle('collapsed');
+            
+            // 更新图标旋转状态
+            if (statusContainer.classList.contains('collapsed')) {
+                toggleIcon.style.transform = 'rotate(0deg)';
+            } else {
+                toggleIcon.style.transform = 'rotate(180deg)';
+            }
+        }
     </script>
 </body>
 </html>
