@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>题库复习系统</title>
+    <!-- SheetJS库用于Excel文件解析 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -1331,9 +1333,9 @@
                 
                 <!-- 手动上传文件 -->
                 <div class="file-upload">
-                    <input type="file" id="csvFile" accept=".csv" />
-                    <label for="csvFile">手动上传CSV文件</label>
-                    <p style="margin-top: 15px; color: #666;">支持格式：编号,题目类型,题目,题目选项,题目答案,答案说明</p>
+                    <input type="file" id="csvFile" accept=".csv,.xlsx" />
+                    <label for="csvFile">手动上传题库文件</label>
+                    <p style="margin-top: 15px; color: #666;">支持格式：CSV、Excel (.xlsx)<br>格式要求：编号,题目类型,题目,题目选项,题目答案,答案说明</p>
                 </div>
                 
                 <div id="file-info" class="info hidden">
@@ -1574,7 +1576,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.2.0"; // 可手动修改版本号
+                this.version = "v3.3.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1627,11 +1629,16 @@
             async detectCSVFiles() {
                 try {
                     const fileList = document.getElementById('fileList');
-                    fileList.innerHTML = '<p class="loading-message">正在检测CSV文件...</p>';
+                    fileList.innerHTML = '<p class="loading-message">正在检测题库文件...</p>';
                     
-                    // 检测同目录下的CSV文件
+                    // 检测同目录下的题库文件（CSV和Excel）
                     // 由于浏览器CORS限制，只能检测通过HTTP服务器访问的文件
-                    const knownFiles = ['AI导师考题_数据表_表格.csv'];
+                    const knownFiles = [
+                        'AI导师考题_数据表_表格.csv',
+                        'AI导师考题_数据表_表格.xlsx',
+                        '题库.csv',
+                        '题库.xlsx'
+                    ];
                     const availableFiles = [];
                     
                     for (const fileName of knownFiles) {
@@ -1651,7 +1658,7 @@
                     if (availableFiles.length === 0) {
                         fileList.innerHTML = `
                             <div class="no-files-message">
-                                <p>⚠️ 未检测到可访问的CSV文件</p>
+                                <p>⚠️ 未检测到可访问的题库文件</p>
                                 <p style="font-size: 12px; color: #666; margin-top: 8px;">
                                     提示：请确保通过HTTP服务器访问此页面，或使用下方的手动上传功能
                                 </p>
@@ -1663,8 +1670,9 @@
                     availableFiles.forEach(fileName => {
                         const fileItem = document.createElement('div');
                         fileItem.className = 'file-item';
+                        const fileIcon = fileName.toLowerCase().endsWith('.xlsx') ? '📊' : '📄';
                         fileItem.innerHTML = `
-                            <span class="file-name">📄 ${fileName}</span>
+                            <span class="file-name">${fileIcon} ${fileName}</span>
                             <span class="file-size">✅ 可用</span>
                         `;
                         
@@ -1676,7 +1684,7 @@
                     });
                     
                 } catch (error) {
-                    console.error('检测CSV文件失败:', error);
+                    console.error('检测题库文件失败:', error);
                     document.getElementById('fileList').innerHTML = `
                         <div class="no-files-message">
                             <p>❌ 检测文件时出错</p>
@@ -1737,14 +1745,39 @@
                 
                 if (uploadedFile) {
                     // 处理手动上传的文件
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const csv = e.target.result;
-                        this.processCSVData(csv);
-                    };
-                    reader.readAsText(uploadedFile, 'UTF-8');
+                    const fileName = uploadedFile.name.toLowerCase();
+                    
+                    if (fileName.endsWith('.xlsx')) {
+                        // 处理Excel文件
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const data = new Uint8Array(e.target.result);
+                                const workbook = XLSX.read(data, { type: 'array' });
+                                const firstSheetName = workbook.SheetNames[0];
+                                const worksheet = workbook.Sheets[firstSheetName];
+                                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                                this.processExcelData(jsonData);
+                            } catch (error) {
+                                console.error('解析Excel文件失败:', error);
+                                alert(`解析Excel文件失败: ${error.message}`);
+                            }
+                        };
+                        reader.readAsArrayBuffer(uploadedFile);
+                    } else if (fileName.endsWith('.csv')) {
+                        // 处理CSV文件
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const csv = e.target.result;
+                            this.processCSVData(csv);
+                        };
+                        reader.readAsText(uploadedFile, 'UTF-8');
+                    } else {
+                        alert('不支持的文件格式，请选择CSV或Excel文件');
+                        return;
+                    }
                 } else if (this.selectedFile) {
-                    // 处理检测到的文件
+                    // 处理检测到的文件（通常是CSV）
                     try {
                         const response = await fetch(this.selectedFile);
                         if (!response.ok) {
@@ -1753,11 +1786,11 @@
                         const csv = await response.text();
                         this.processCSVData(csv);
                     } catch (error) {
-                        console.error('加载CSV文件失败:', error);
+                        console.error('加载文件失败:', error);
                         alert(`加载文件失败: ${error.message}`);
                     }
                 } else {
-                    alert('请先选择CSV文件');
+                    alert('请先选择题库文件');
                 }
             }
 
@@ -1782,6 +1815,63 @@
                         this.allQuestions.push(question); // 同时保存到完整列表
                     }
                 }
+
+                this.displayLibraryInfo();
+            }
+
+            processExcelData(jsonData) {
+                this.questions = [];
+                this.allQuestions = []; // 重置完整题目列表
+
+                console.log('Excel数据解析开始，总行数:', jsonData.length);
+                console.log('标题行:', jsonData[0]);
+                console.log('前5行原始数据:', jsonData.slice(0, 5));
+
+                // 跳过标题行（第一行）
+                for (let i = 1; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    console.log(`第${i}行原始数据:`, row);
+                    
+                    if (row && row.length >= 5) {
+                        // 如果只有5列，补充第6列为空字符串
+                        if (row.length === 5) {
+                            row.push('');
+                            console.log(`第${i}行补充第6列为空字符串`);
+                        }
+                        
+                        const question = {
+                            id: String(row[0] || '').trim(),
+                            type: String(row[1] || '').trim(),
+                            question: String(row[2] || '').trim(),
+                            options: String(row[3] || '').trim(),
+                            answer: String(row[4] || '').trim(),
+                            explanation: String(row[5] || '').trim()
+                        };
+                        
+                        // 调试输出：显示题目类型
+                        console.log(`第${i}行 - 原始类型: "${row[1]}", 处理后类型: "${question.type}"`);
+                        console.log(`第${i}行完整题目对象:`, question);
+                        
+                        // 确保必要字段不为空
+                        if (question.id && question.type && question.question) {
+                            this.questions.push(question);
+                            this.allQuestions.push(question); // 同时保存到完整列表
+                            console.log(`第${i}行题目已添加，当前总数: ${this.allQuestions.length}`);
+                        } else {
+                            console.log(`第${i}行数据不完整，跳过:`, question);
+                        }
+                    } else {
+                        console.log(`第${i}行数据格式不正确，列数:`, row ? row.length : 0);
+                    }
+                }
+
+                // 统计各题型数量
+                const typeStats = {};
+                this.allQuestions.forEach(q => {
+                    typeStats[q.type] = (typeStats[q.type] || 0) + 1;
+                });
+                console.log('题型统计:', typeStats);
+                console.log('问答题列表:', this.allQuestions.filter(q => q.type === '问答题'));
 
                 this.displayLibraryInfo();
             }
