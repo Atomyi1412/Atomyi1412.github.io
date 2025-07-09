@@ -70,6 +70,16 @@
             margin-bottom: 10px;
         }
 
+        .version-tag {
+            font-size: 0.4em;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+            font-weight: normal;
+            vertical-align: middle;
+        }
+
         .content {
             padding: 30px;
         }
@@ -1297,7 +1307,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📚 题库复习系统</h1>
+            <h1>📚 题库复习系统 <span id="version-display" class="version-tag"></span></h1>
             <p>导入题库，开始你的复习之旅</p>
         </div>
         
@@ -1563,6 +1573,9 @@
     <script>
         class QuestionBank {
             constructor() {
+                // 版本信息
+                this.version = "v3.1.1"; // 可手动修改版本号
+                
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
                 this.currentQuestionIndex = 0;
@@ -1582,6 +1595,7 @@
                 
                 this.initEventListeners();
                 this.detectCSVFiles(); // 自动检测CSV文件
+                this.displayVersion(); // 显示版本号
             }
 
             initEventListeners() {
@@ -1706,6 +1720,14 @@
                     document.getElementById('file-info').classList.remove('hidden');
                     document.getElementById('file-info').querySelector('p').textContent = '文件已选择，点击下方按钮解析题库';
                     document.getElementById('parseBtn').disabled = false;
+                }
+            }
+
+            displayVersion() {
+                // 在页面上显示版本号
+                const versionElement = document.getElementById('version-display');
+                if (versionElement) {
+                    versionElement.textContent = this.version;
                 }
             }
 
