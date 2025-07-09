@@ -1318,11 +1318,11 @@
             <div id="import-section" class="section">
                 <h2>📁 导入题库</h2>
                 
-                <!-- 自动检测的CSV文件列表 -->
+                <!-- 自动检测的题库文件列表 -->
                 <div id="detected-files" class="detected-files">
-                    <h3>📋 检测到的CSV文件</h3>
+                    <h3>📋 检测到的题库文件</h3>
                     <div id="fileList" class="file-list">
-                        <p class="loading-text">正在检测同目录下的CSV文件...</p>
+                        <p class="loading-text">正在检测同目录下的题库文件...</p>
                     </div>
                 </div>
                 
@@ -1576,7 +1576,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.3.0"; // 可手动修改版本号
+                this.version = "v3.3.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1777,14 +1777,28 @@
                         return;
                     }
                 } else if (this.selectedFile) {
-                    // 处理检测到的文件（通常是CSV）
+                    // 处理检测到的文件（CSV或Excel）
                     try {
+                        const fileName = this.selectedFile.toLowerCase();
                         const response = await fetch(this.selectedFile);
                         if (!response.ok) {
                             throw new Error(`无法加载文件: ${response.status}`);
                         }
-                        const csv = await response.text();
-                        this.processCSVData(csv);
+                        
+                        if (fileName.endsWith('.xlsx')) {
+                            // 处理Excel文件
+                            const arrayBuffer = await response.arrayBuffer();
+                            const data = new Uint8Array(arrayBuffer);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const firstSheetName = workbook.SheetNames[0];
+                            const worksheet = workbook.Sheets[firstSheetName];
+                            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                            this.processExcelData(jsonData);
+                        } else {
+                            // 处理CSV文件
+                            const csv = await response.text();
+                            this.processCSVData(csv);
+                        }
                     } catch (error) {
                         console.error('加载文件失败:', error);
                         alert(`加载文件失败: ${error.message}`);
