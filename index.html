@@ -2331,11 +2331,9 @@
             }
 
             submitExam(autoSubmit = false) {
-                // 停止计时器
-                this.stopTimer();
-                
-                if (autoSubmit) {
-                    // 自动交卷，直接计算结果
+                if (autoSubmit === true) {
+                    // 自动交卷，停止计时器并直接计算结果
+                    this.stopTimer();
                     alert('考试时间到！系统将自动交卷。');
                     this.calculateResults();
                     return;
@@ -2357,8 +2355,11 @@
                 }
                 
                 if (confirm(confirmMessage)) {
+                    // 用户确认交卷，停止计时器并计算结果
+                    this.stopTimer();
                     this.calculateResults();
                 }
+                // 如果用户取消交卷，计时器继续运行，不做任何操作
             }
 
             calculateResults() {
@@ -2807,7 +2808,11 @@
                     resultDiv.style.backgroundColor = '#d4edda';
                     resultDiv.style.color = '#155724';
                     resultDiv.style.border = '1px solid #c3e6cb';
-                    resultDiv.innerHTML = '✅ <strong>正确！</strong>';
+                    let correctContent = '✅ <strong>正确！</strong>';
+                    if (question.explanation && question.explanation.trim()) {
+                        correctContent += `<br><span style="margin-top: 8px; display: block; font-weight: normal;">答案说明：${question.explanation}</span>`;
+                    }
+                    resultDiv.innerHTML = correctContent;
                 } else {
                     resultDiv.style.backgroundColor = '#f8d7da';
                     resultDiv.style.color = '#721c24';
