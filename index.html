@@ -838,13 +838,14 @@
         
         .correct-questions-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         
         .correct-questions-header h3 {
             margin: 0;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         
         .export-buttons {
@@ -967,10 +968,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: nowrap;
+            gap: 15px;
         }
 
         .wrong-questions-header h3 {
             margin: 0;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         #exportWrongBtn {
@@ -1304,6 +1309,115 @@
                  padding: 0 15px;
              }
          }
+         
+         /* 导出控件样式 */
+         .export-controls {
+             display: flex;
+             align-items: center;
+             gap: 8px;
+             margin-left: 15px;
+             flex-wrap: nowrap;
+             white-space: nowrap;
+         }
+         
+         .format-selector {
+             padding: 8px 10px;
+             border: 2px solid #e1e5e9;
+             border-radius: 6px;
+             background-color: white;
+             font-size: 13px;
+             color: #333;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             min-width: 110px;
+             max-width: 130px;
+             flex-shrink: 0;
+         }
+         
+         .format-selector:focus {
+             outline: none;
+             border-color: #667eea;
+             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+         }
+         
+         .format-selector:hover {
+             border-color: #667eea;
+         }
+         
+         .export-btn {
+             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+             color: white;
+             border: none;
+             padding: 8px 16px;
+             border-radius: 6px;
+             cursor: pointer;
+             font-size: 13px;
+             font-weight: 500;
+             transition: all 0.3s ease;
+             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+             white-space: nowrap;
+             flex-shrink: 0;
+         }
+         
+         .export-btn:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+         }
+         
+         .export-buttons {
+             display: flex;
+             gap: 12px;
+             align-items: center;
+             flex-wrap: nowrap;
+             margin-top: 15px;
+             margin-bottom: 20px;
+         }
+         
+         /* 响应式设计 */
+         @media (max-width: 768px) {
+             .export-controls {
+                 gap: 6px;
+                 margin-left: 8px;
+                 margin-top: 8px;
+             }
+             
+             .format-selector {
+                 min-width: 90px;
+                 max-width: 110px;
+                 font-size: 12px;
+                 padding: 6px 8px;
+             }
+             
+             .export-btn {
+                 padding: 6px 12px;
+                 font-size: 12px;
+             }
+             
+             .export-buttons {
+                 gap: 8px;
+             }
+         }
+         
+         @media (max-width: 480px) {
+             .export-controls {
+                 flex-direction: column;
+                 gap: 6px;
+                 margin-left: 0;
+                 margin-top: 8px;
+                 align-items: flex-start;
+             }
+             
+             .format-selector {
+                 min-width: 100px;
+                 max-width: 120px;
+             }
+             
+             .export-buttons {
+                 flex-direction: column;
+                 gap: 8px;
+                 width: 100%;
+             }
+         }
     </style>
 </head>
 <body>
@@ -1537,7 +1651,13 @@
                     <div class="wrong-questions" id="wrongQuestions">
                         <div class="wrong-questions-header">
                             <h3>❌ 错误题目复习</h3>
-                            <button id="exportWrongBtn" class="btn btn-secondary" style="display: none;">📥 导出错题</button>
+                            <div class="export-controls" style="display: none;" id="exportWrongControls">
+                                <select id="wrongExportFormat" class="format-selector">
+                                    <option value="csv">📄 CSV格式</option>
+                                    <option value="xlsx">📊 Excel格式</option>
+                                </select>
+                                <button id="exportWrongBtn" class="export-btn btn btn-secondary">📥 导出错题</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1547,9 +1667,21 @@
                     <div class="correct-questions" id="correctQuestions">
                         <div class="correct-questions-header">
                             <h3>✅ 正确题目展示</h3>
-                            <div class="export-buttons">
-                                <button id="exportCorrectBtn" class="btn btn-secondary" style="display: none;">📥 导出正确题目</button>
-                                <button id="exportAllBtn" class="btn btn-secondary" style="display: none;">📥 导出全部题目</button>
+                        </div>
+                        <div class="export-buttons">
+                            <div class="export-controls" style="display: none;" id="exportCorrectControls">
+                                <select id="correctExportFormat" class="format-selector">
+                                    <option value="csv">📄 CSV格式</option>
+                                    <option value="xlsx">📊 Excel格式</option>
+                                </select>
+                                <button id="exportCorrectBtn" class="export-btn btn btn-secondary">📥 导出正确题目</button>
+                            </div>
+                            <div class="export-controls" style="display: none;" id="exportAllControls">
+                                <select id="allExportFormat" class="format-selector">
+                                    <option value="csv">📄 CSV格式</option>
+                                    <option value="xlsx">📊 Excel格式</option>
+                                </select>
+                                <button id="exportAllBtn" class="export-btn btn btn-secondary">📥 导出全部题目</button>
                             </div>
                         </div>
                     </div>
@@ -1576,7 +1708,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.3.1"; // 可手动修改版本号
+                this.version = "v3.4.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1610,9 +1742,8 @@
                 document.getElementById('nextBtn').addEventListener('click', this.nextQuestion.bind(this));
                 document.getElementById('submitBtn').addEventListener('click', this.submitExam.bind(this));
                 document.getElementById('restartBtn').addEventListener('click', this.restart.bind(this));
-                document.getElementById('exportWrongBtn').addEventListener('click', this.exportWrongQuestions.bind(this));
-                document.getElementById('exportCorrectBtn').addEventListener('click', this.exportCorrectQuestions.bind(this));
-                document.getElementById('exportAllBtn').addEventListener('click', this.exportAllQuestions.bind(this));
+                // 导出下拉菜单事件监听器
+                this.initExportEventListeners();
                 
                 // 题型选择功能已移除，现在通过数量设置来控制
                 
@@ -1624,6 +1755,38 @@
                 // 时间设置事件监听器
                 document.getElementById('noTimeLimit').addEventListener('change', this.toggleTimeInput.bind(this));
                 document.getElementById('hasTimeLimit').addEventListener('change', this.toggleTimeInput.bind(this));
+            }
+            
+            initExportEventListeners() {
+                // 错题导出事件监听器
+                const exportWrongBtn = document.getElementById('exportWrongBtn');
+                if (exportWrongBtn) {
+                    exportWrongBtn.addEventListener('click', () => {
+                        const formatSelector = document.getElementById('wrongExportFormat');
+                        const format = formatSelector ? formatSelector.value : 'csv';
+                        this.exportWrongQuestions(format);
+                    });
+                }
+                
+                // 正确题目导出事件监听器
+                const exportCorrectBtn = document.getElementById('exportCorrectBtn');
+                if (exportCorrectBtn) {
+                    exportCorrectBtn.addEventListener('click', () => {
+                        const formatSelector = document.getElementById('correctExportFormat');
+                        const format = formatSelector ? formatSelector.value : 'csv';
+                        this.exportCorrectQuestions(format);
+                    });
+                }
+                
+                // 全部题目导出事件监听器
+                const exportAllBtn = document.getElementById('exportAllBtn');
+                if (exportAllBtn) {
+                    exportAllBtn.addEventListener('click', () => {
+                        const formatSelector = document.getElementById('allExportFormat');
+                        const format = formatSelector ? formatSelector.value : 'csv';
+                        this.exportAllQuestions(format);
+                    });
+                }
             }
 
             async detectCSVFiles() {
@@ -2671,15 +2834,35 @@
 
                 // 显示错误题目
                 const wrongQuestionsContainer = document.getElementById('wrongQuestions');
-                wrongQuestionsContainer.innerHTML = `
-                    <div class="wrong-questions-header">
-                        <h3>❌ 错误题目复习</h3>
-                        <button id="exportWrongBtn" class="btn btn-secondary" style="display: ${wrongQuestions.length > 0 ? 'block' : 'none'};">📥 导出错题</button>
-                    </div>
-                `;
+                // 清除之前的题目内容，但保留标题和导出按钮
+                const existingHeader = wrongQuestionsContainer.querySelector('.wrong-questions-header');
+                if (existingHeader) {
+                    // 只清除题目内容，保留header
+                    const questionsContent = wrongQuestionsContainer.querySelectorAll('.wrong-question');
+                    questionsContent.forEach(q => q.remove());
+                    // 清除可能存在的恭喜信息
+                    const congratsMsg = wrongQuestionsContainer.querySelector('p');
+                    if (congratsMsg) congratsMsg.remove();
+                } else {
+                    wrongQuestionsContainer.innerHTML = '<h3>❌ 错误题目复习</h3>';
+                }
+                
+                // 显示导出错题下拉菜单
+                const exportWrongControls = document.getElementById('exportWrongControls');
+                if (exportWrongControls) {
+                    if (wrongQuestions.length > 0) {
+                        exportWrongControls.style.display = 'flex';
+                    } else {
+                        exportWrongControls.style.display = 'none';
+                    }
+                }
 
                 if (wrongQuestions.length === 0) {
-                    wrongQuestionsContainer.innerHTML += '<p style="color: #4CAF50; font-weight: bold;">🎉 恭喜！全部答对了！</p>';
+                    const congratsMsg = document.createElement('p');
+                    congratsMsg.style.color = '#4CAF50';
+                    congratsMsg.style.fontWeight = 'bold';
+                    congratsMsg.textContent = '🎉 恭喜！全部答对了！';
+                    wrongQuestionsContainer.appendChild(congratsMsg);
                 } else {
                     // 存储错题数据供导出使用
                     this.wrongQuestionsData = wrongQuestions;
@@ -2708,24 +2891,50 @@
                         wrongQuestionsContainer.appendChild(wrongDiv);
                     });
                     
-                    // 重新绑定导出按钮事件
-                    document.getElementById('exportWrongBtn').addEventListener('click', this.exportWrongQuestions.bind(this));
+                    // 导出下拉菜单事件已在错题部分绑定
                 }
                 
                 // 显示正确题目
                 const correctQuestionsContainer = document.getElementById('correctQuestions');
-                correctQuestionsContainer.innerHTML = `
-                    <div class="correct-questions-header">
-                        <h3>✅ 正确题目展示</h3>
-                        <div class="export-buttons">
-                            <button id="exportCorrectBtn" class="btn btn-secondary" style="display: ${correctQuestions.length > 0 ? 'block' : 'none'};">📥 导出正确题目</button>
-                            <button id="exportAllBtn" class="btn btn-secondary" style="display: ${this.questions.length > 0 ? 'block' : 'none'};">📥 导出全部题目</button>
-                        </div>
-                    </div>
-                `;
+                // 清除之前的题目内容，但保留标题和导出按钮
+                const existingCorrectHeader = correctQuestionsContainer.querySelector('.correct-questions-header');
+                if (existingCorrectHeader) {
+                    // 只清除题目内容，保留header
+                    const questionsContent = correctQuestionsContainer.querySelectorAll('.correct-question');
+                    questionsContent.forEach(q => q.remove());
+                    // 清除可能存在的提示信息
+                    const noCorrectMsg = correctQuestionsContainer.querySelector('p');
+                    if (noCorrectMsg) noCorrectMsg.remove();
+                } else {
+                    correctQuestionsContainer.innerHTML = '<h3>✅ 正确题目展示</h3>';
+                }
+                
+                // 显示导出正确题目和全部题目下拉菜单
+                const exportCorrectControls = document.getElementById('exportCorrectControls');
+                const exportAllControls = document.getElementById('exportAllControls');
+                
+                if (exportCorrectControls) {
+                    if (correctQuestions.length > 0) {
+                        exportCorrectControls.style.display = 'flex';
+                    } else {
+                        exportCorrectControls.style.display = 'none';
+                    }
+                }
+                
+                if (exportAllControls) {
+                    if (this.questions.length > 0) {
+                        exportAllControls.style.display = 'flex';
+                    } else {
+                        exportAllControls.style.display = 'none';
+                    }
+                }
                 
                 if (correctQuestions.length === 0) {
-                    correctQuestionsContainer.innerHTML += '<p style="color: #ff9800; font-weight: bold;">😔 本次考试没有答对的题目，继续努力！</p>';
+                    const noCorrectMsg = document.createElement('p');
+                    noCorrectMsg.style.color = '#ff9800';
+                    noCorrectMsg.style.fontWeight = 'bold';
+                    noCorrectMsg.textContent = '😔 本次考试没有答对的题目，继续努力！';
+                    correctQuestionsContainer.appendChild(noCorrectMsg);
                 } else {
                     // 存储正确题目数据供导出使用
                     this.correctQuestionsData = correctQuestions;
@@ -2750,10 +2959,6 @@
                         
                         correctQuestionsContainer.appendChild(correctDiv);
                     });
-                    
-                    // 重新绑定导出按钮事件
-                    document.getElementById('exportCorrectBtn').addEventListener('click', this.exportCorrectQuestions.bind(this));
-                    document.getElementById('exportAllBtn').addEventListener('click', this.exportAllQuestions.bind(this));
                 }
 
                 // 显示问答题答案对比
@@ -2978,14 +3183,14 @@
                 container.appendChild(resultDiv);
             }
 
-            exportWrongQuestions() {
+            exportWrongQuestions(format = 'csv') {
                 if (!this.wrongQuestionsData || this.wrongQuestionsData.length === 0) {
                     alert('没有错题可以导出');
                     return;
                 }
 
-                // 构建CSV内容
-                let csvContent = '题目编号,题目类型,题目内容,选项,正确答案,答案说明,错误答案\n';
+                const headers = ['题目编号', '题目类型', '题目内容', '选项', '正确答案', '答案说明', '错误答案'];
+                const data = [];
                 
                 this.wrongQuestionsData.forEach(({ question, userAnswer }) => {
                     let userAnswerText = userAnswer;
@@ -2996,48 +3201,29 @@
                         userAnswerText = '未作答';
                     }
                     
-                    // 转义CSV字段中的特殊字符
-                    const escapeCSV = (field) => {
-                        if (typeof field !== 'string') field = String(field);
-                        if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-                            return '"' + field.replace(/"/g, '""') + '"';
-                        }
-                        return field;
-                    };
-                    
-                    csvContent += [
-                        escapeCSV(question.id),
-                        escapeCSV(question.type),
-                        escapeCSV(question.question),
-                        escapeCSV(question.options),
-                        escapeCSV(question.answer),
-                        escapeCSV(question.explanation),
-                        escapeCSV(userAnswerText)
-                    ].join(',') + '\n';
+                    data.push([
+                        question.id,
+                        question.type,
+                        question.question,
+                        question.options,
+                        question.answer,
+                        question.explanation,
+                        userAnswerText
+                    ]);
                 });
 
-                // 创建下载链接
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', `错题集_${new Date().toISOString().slice(0, 10)}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
+                this.downloadFile(headers, data, `错题集_${new Date().toISOString().slice(0, 10)}`, format);
                 alert(`已导出 ${this.wrongQuestionsData.length} 道错题`);
             }
             
-            exportCorrectQuestions() {
+            exportCorrectQuestions(format = 'csv') {
                 if (!this.correctQuestionsData || this.correctQuestionsData.length === 0) {
                     alert('没有正确题目可以导出');
                     return;
                 }
 
-                // 构建CSV内容
-                let csvContent = '题目编号,题目类型,题目内容,选项,正确答案,答案说明,您的答案\n';
+                const headers = ['题目编号', '题目类型', '题目内容', '选项', '正确答案', '答案说明', '您的答案'];
+                const data = [];
                 
                 this.correctQuestionsData.forEach(({ question, userAnswer }) => {
                     let userAnswerText = userAnswer;
@@ -3045,48 +3231,29 @@
                         userAnswerText = userAnswer.join('');
                     }
                     
-                    // 转义CSV字段中的特殊字符
-                    const escapeCSV = (field) => {
-                        if (typeof field !== 'string') field = String(field);
-                        if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-                            return '"' + field.replace(/"/g, '""') + '"';
-                        }
-                        return field;
-                    };
-                    
-                    csvContent += [
-                        escapeCSV(question.id),
-                        escapeCSV(question.type),
-                        escapeCSV(question.question),
-                        escapeCSV(question.options),
-                        escapeCSV(question.answer),
-                        escapeCSV(question.explanation),
-                        escapeCSV(userAnswerText)
-                    ].join(',') + '\n';
+                    data.push([
+                        question.id,
+                        question.type,
+                        question.question,
+                        question.options,
+                        question.answer,
+                        question.explanation,
+                        userAnswerText
+                    ]);
                 });
 
-                // 创建下载链接
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', `正确题目_${new Date().toISOString().slice(0, 10)}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
+                this.downloadFile(headers, data, `正确题目_${new Date().toISOString().slice(0, 10)}`, format);
                 alert(`已导出 ${this.correctQuestionsData.length} 道正确题目`);
             }
             
-            exportAllQuestions() {
+            exportAllQuestions(format = 'csv') {
                 if (!this.questions || this.questions.length === 0) {
                     alert('没有题目可以导出');
                     return;
                 }
 
-                // 构建CSV内容
-                let csvContent = '题目编号,题目类型,题目内容,选项,正确答案,答案说明,您的答案,答题状态\n';
+                const headers = ['题目编号', '题目类型', '题目内容', '选项', '正确答案', '答案说明', '您的答案', '答题状态'];
+                const data = [];
                 
                 this.questions.forEach((question, index) => {
                     let userAnswer = this.userAnswers[index];
@@ -3111,7 +3278,31 @@
                         }
                     }
                     
-                    // 转义CSV字段中的特殊字符
+                    data.push([
+                        question.id,
+                        question.type,
+                        question.question,
+                        question.options,
+                        question.answer,
+                        question.explanation,
+                        userAnswerText,
+                        answerStatus
+                    ]);
+                });
+
+                this.downloadFile(headers, data, `全部题目_${new Date().toISOString().slice(0, 10)}`, format);
+                alert(`已导出 ${this.questions.length} 道题目`);
+            }
+            
+            downloadFile(headers, data, filename, format) {
+                if (format === 'xlsx') {
+                    // 创建Excel文件
+                    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+                    XLSX.writeFile(wb, `${filename}.xlsx`);
+                } else {
+                    // 创建CSV文件
                     const escapeCSV = (field) => {
                         if (typeof field !== 'string') field = String(field);
                         if (field.includes(',') || field.includes('"') || field.includes('\n')) {
@@ -3120,30 +3311,21 @@
                         return field;
                     };
                     
-                    csvContent += [
-                        escapeCSV(question.id),
-                        escapeCSV(question.type),
-                        escapeCSV(question.question),
-                        escapeCSV(question.options),
-                        escapeCSV(question.answer),
-                        escapeCSV(question.explanation),
-                        escapeCSV(userAnswerText),
-                        escapeCSV(answerStatus)
-                    ].join(',') + '\n';
-                });
-
-                // 创建下载链接
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', `全部题目_${new Date().toISOString().slice(0, 10)}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                alert(`已导出 ${this.questions.length} 道题目`);
+                    let csvContent = headers.map(escapeCSV).join(',') + '\n';
+                    data.forEach(row => {
+                        csvContent += row.map(escapeCSV).join(',') + '\n';
+                    });
+                    
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `${filename}.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
             }
 
             // 时间管理方法
