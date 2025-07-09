@@ -1443,7 +1443,7 @@
                     </div>
                     
                     <div class="setting-actions">
-                        <button id="confirmSettings" class="btn btn-primary">✅ 确认设置</button>
+                        <button id="confirmSettings" class="btn btn-primary">✅ 开始答题</button>
                         <button id="cancelSettings" class="btn btn-secondary">❌ 取消</button>
                     </div>
                 </div>
@@ -1574,7 +1574,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.1.1"; // 可手动修改版本号
+                this.version = "v3.2.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1827,47 +1827,40 @@
                 document.getElementById('trueOrFalse').textContent = stats.trueOrFalse;
                 document.getElementById('essay').textContent = stats.essay;
                 
-                // 显示答题进度信息
-                const progressInfo = document.createElement('div');
-                progressInfo.className = 'progress-info';
-                progressInfo.style.marginTop = '20px';
-                progressInfo.style.padding = '15px';
-                progressInfo.style.backgroundColor = '#f8f9fa';
-                progressInfo.style.borderRadius = '8px';
-                progressInfo.style.border = '1px solid #dee2e6';
-                
-                if (answeredCount > 0) {
-                    progressInfo.innerHTML = `
-                        <h4 style="margin: 0 0 10px 0; color: #495057;">📊 答题进度</h4>
-                        <p style="margin: 5px 0; color: #28a745;">✅ 已答题目：${answeredCount} 题</p>
-                        <p style="margin: 5px 0; color: #007bff;">📝 剩余题目：${remainingCount} 题</p>
-                        <p style="margin: 5px 0; color: #6c757d;">📈 完成进度：${Math.round((answeredCount / stats.total) * 100)}%</p>
-                    `;
-                } else {
-                    progressInfo.innerHTML = `
-                        <h4 style="margin: 0 0 10px 0; color: #495057;">🚀 开始答题</h4>
-                        <p style="margin: 5px 0; color: #007bff;">共有 ${stats.total} 道题目等待您来挑战！</p>
-                    `;
-                }
-                
                 // 移除之前的进度信息（如果存在）
                 const existingProgress = document.querySelector('.progress-info');
                 if (existingProgress) {
                     existingProgress.remove();
                 }
                 
-                // 在开始考试按钮前插入进度信息
-                const startBtn = document.getElementById('startExam');
-                startBtn.parentNode.insertBefore(progressInfo, startBtn);
-                
                 // 更新考试设置区域的可用题目数量
                 this.updateAvailableQuestions();
                 
-                // 修改开始考试按钮文本
-                startBtn.textContent = '⚙️ 考试设置';
+                // 隐藏开始考试按钮，因为直接进入考试设置
+                const startBtn = document.getElementById('startExam');
+                if (startBtn) {
+                    startBtn.style.display = 'none';
+                }
 
                 document.getElementById('import-section').classList.add('hidden');
                 document.getElementById('library-section').classList.remove('hidden');
+                
+                // 直接显示考试设置界面，跳过点击考试设置按钮的环节
+                this.showExamSettingsDirectly();
+            }
+            
+            showExamSettingsDirectly() {
+                // 直接显示考试设置区域，不需要检查题库是否存在（已在displayLibraryInfo中确保）
+                document.getElementById('exam-settings').style.display = 'block';
+                
+                // 显示取消按钮，允许用户返回导入界面
+                const cancelBtn = document.getElementById('cancelSettings');
+                if (cancelBtn) {
+                    cancelBtn.style.display = 'inline-block';
+                }
+                
+                // 更新可用题目数量
+                this.updateAvailableQuestions();
             }
             
             showExamSettings() {
@@ -1879,12 +1872,44 @@
                 // 显示考试设置区域
                 document.getElementById('exam-settings').style.display = 'block';
                 
+                // 隐藏开始答题提示区域，使界面更简洁
+                const progressInfo = document.querySelector('.progress-info');
+                if (progressInfo) {
+                    progressInfo.style.display = 'none';
+                }
+                
+                // 隐藏考试设置按钮
+                const startExamBtn = document.getElementById('startExam');
+                if (startExamBtn) {
+                    startExamBtn.style.display = 'none';
+                }
+                
                 // 更新可用题目数量
                 this.updateAvailableQuestions();
             }
             
             hideExamSettings() {
                 document.getElementById('exam-settings').style.display = 'none';
+                
+                // 返回到导入题库界面
+                document.getElementById('library-section').classList.add('hidden');
+                document.getElementById('import-section').classList.remove('hidden');
+                
+                // 清空当前题库数据，允许重新导入
+                this.allQuestions = [];
+                this.questions = [];
+                this.answeredQuestions = new Set();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.examStartTime = null;
+                this.examTimeLimit = null;
+                this.examTimer = null;
+                
+                // 重置文件输入
+                const fileInput = document.getElementById('csvFile');
+                if (fileInput) {
+                    fileInput.value = '';
+                }
             }
             
             updateAvailableQuestions() {
@@ -2059,7 +2084,7 @@
                 }
                 
                 // 隐藏设置区域，显示考试区域
-                this.hideExamSettings();
+                document.getElementById('exam-settings').style.display = 'none';
                 document.getElementById('library-section').classList.add('hidden');
                 document.getElementById('exam-section').classList.remove('hidden');
                 
