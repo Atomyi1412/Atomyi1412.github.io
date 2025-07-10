@@ -717,6 +717,39 @@
              0%, 100% { opacity: 1; }
              50% { opacity: 0.7; }
          }
+         
+         .pause-resume-btn {
+             background: rgba(255, 255, 255, 0.2);
+             border: 1px solid rgba(255, 255, 255, 0.3);
+             color: white;
+             padding: 6px 12px;
+             border-radius: 6px;
+             cursor: pointer;
+             font-size: 14px;
+             font-weight: 500;
+             transition: all 0.3s ease;
+             backdrop-filter: blur(10px);
+             margin-left: 10px;
+         }
+         
+         .pause-resume-btn:hover {
+             background: rgba(255, 255, 255, 0.3);
+             transform: translateY(-1px);
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+         }
+         
+         .pause-resume-btn:active {
+             transform: translateY(0);
+         }
+         
+         .pause-resume-btn.paused {
+             background: rgba(255, 193, 7, 0.8);
+             border-color: rgba(255, 193, 7, 0.9);
+         }
+         
+         .pause-resume-btn.paused:hover {
+             background: rgba(255, 193, 7, 0.9);
+         }
 
         .no-files-message {
             text-align: center;
@@ -1373,6 +1406,42 @@
              margin-bottom: 20px;
          }
          
+         .wrong-actions {
+                display: flex;
+                gap: 15px;
+                align-items: center;
+                flex-wrap: nowrap;
+                margin-top: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .retake-btn {
+                background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+                flex-shrink: 0;
+                min-width: 80px;
+                box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
+            }
+            
+            .retake-btn:hover {
+                background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+            }
+            
+            .retake-btn:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
+            }
+         
          /* 响应式设计 */
          @media (max-width: 768px) {
              .export-controls {
@@ -1416,6 +1485,17 @@
                  flex-direction: column;
                  gap: 8px;
                  width: 100%;
+             }
+             
+             .wrong-actions {
+                 flex-direction: column;
+                 align-items: stretch;
+                 gap: 10px;
+             }
+             
+             .retake-btn {
+                 width: 100%;
+                 min-width: auto;
              }
          }
     </style>
@@ -1578,6 +1658,7 @@
                     <div class="timer-display">
                         <span class="timer-label">剩余时间：</span>
                         <span class="timer-value" id="timerValue">60:00</span>
+                        <button id="pauseResumeBtn" class="pause-resume-btn" onclick="app.togglePauseResume()">⏸️ 暂停</button>
                     </div>
                 </div>
                 
@@ -1585,6 +1666,7 @@
                     <div class="duration-display">
                         <span class="duration-label">考试用时：</span>
                         <span class="duration-value" id="durationValue">00:00</span>
+                        <button id="pauseResumeBtn2" class="pause-resume-btn" onclick="app.togglePauseResume()">⏸️ 暂停</button>
                     </div>
                 </div>
                 
@@ -1651,13 +1733,16 @@
                     <div class="wrong-questions" id="wrongQuestions">
                         <div class="wrong-questions-header">
                             <h3>❌ 错误题目复习</h3>
-                            <div class="export-controls" style="display: none;" id="exportWrongControls">
+                        </div>
+                        <div class="wrong-actions" style="display: none;" id="wrongActions">
+                            <div class="export-controls" id="exportWrongControls">
                                 <select id="wrongExportFormat" class="format-selector">
                                     <option value="csv">📄 CSV格式</option>
                                     <option value="xlsx">📊 Excel格式</option>
                                 </select>
                                 <button id="exportWrongBtn" class="export-btn btn btn-secondary">📥 导出错题</button>
                             </div>
+                            <button id="retakeWrongBtn" class="export-btn btn btn-primary" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);">🔄 错题重考</button>
                         </div>
                     </div>
                 </div>
@@ -1708,7 +1793,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.4.0"; // 可手动修改版本号
+                this.version = "v3.5.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1726,6 +1811,15 @@
                 this.examTimeLimit = null; // 考试时间限制（分钟）
                 this.timerInterval = null; // 计时器间隔
                 this.isTimeLimited = false; // 是否有时间限制
+                
+                // 暂停功能相关变量
+                this.isPaused = false; // 是否暂停
+                this.pausedTime = 0; // 累计暂停时间（毫秒）
+                this.pauseStartTime = null; // 暂停开始时间
+                
+                // 错题重考相关变量
+                this.isRetakeMode = false; // 是否为错题重考模式
+                this.retakeQuestions = null; // 错题重考的题目列表
                 
                 this.initEventListeners();
                 this.detectCSVFiles(); // 自动检测CSV文件
@@ -1765,6 +1859,14 @@
                         const formatSelector = document.getElementById('wrongExportFormat');
                         const format = formatSelector ? formatSelector.value : 'csv';
                         this.exportWrongQuestions(format);
+                    });
+                }
+                
+                // 错题重考事件监听器
+                const retakeWrongBtn = document.getElementById('retakeWrongBtn');
+                if (retakeWrongBtn) {
+                    retakeWrongBtn.addEventListener('click', () => {
+                        this.retakeWrongQuestions();
                     });
                 }
                 
@@ -2275,13 +2377,28 @@
                     return;
                 }
                 
+                // 根据是否为错题重考模式选择题目源
+                const sourceQuestions = this.isRetakeMode ? this.retakeQuestions : this.allQuestions;
+                
                 // 按题型分别获取可用题目
-                const availableByType = {
-                    '单选题': this.allQuestions.filter(q => q.type === '单选题' && !this.answeredQuestions.has(q.id)),
-                    '多选题': this.allQuestions.filter(q => q.type === '多选题' && !this.answeredQuestions.has(q.id)),
-                    '判断题': this.allQuestions.filter(q => q.type === '判断题' && !this.answeredQuestions.has(q.id)),
-                    '问答题': this.allQuestions.filter(q => q.type === '问答题' && !this.answeredQuestions.has(q.id))
-                };
+                let availableByType;
+                if (this.isRetakeMode) {
+                    // 错题重考模式：直接使用错题数据，不过滤已答题目
+                    availableByType = {
+                        '单选题': sourceQuestions.filter(q => q.type === '单选题'),
+                        '多选题': sourceQuestions.filter(q => q.type === '多选题'),
+                        '判断题': sourceQuestions.filter(q => q.type === '判断题'),
+                        '问答题': sourceQuestions.filter(q => q.type === '问答题')
+                    };
+                } else {
+                    // 正常模式：过滤已答题目
+                    availableByType = {
+                        '单选题': sourceQuestions.filter(q => q.type === '单选题' && !this.answeredQuestions.has(q.id)),
+                        '多选题': sourceQuestions.filter(q => q.type === '多选题' && !this.answeredQuestions.has(q.id)),
+                        '判断题': sourceQuestions.filter(q => q.type === '判断题' && !this.answeredQuestions.has(q.id)),
+                        '问答题': sourceQuestions.filter(q => q.type === '问答题' && !this.answeredQuestions.has(q.id))
+                    };
+                }
                 
                 // 验证各题型的可用数量
                 if (singleCount > availableByType['单选题'].length) {
@@ -2350,10 +2467,46 @@
                     this.examTimeLimit = parseInt(document.getElementById('examTimeLimit').value) || 60;
                 }
                 
+                // 重置考试状态
+                this.wrongQuestionsData = null;
+                this.correctQuestionsData = null;
+                this.answeredQuestions.clear(); // 清除已回答题目记录，避免显示之前的答案结果
+                
+                // 重置暂停相关变量
+                this.isPaused = false;
+                this.pausedTime = 0;
+                this.pauseStartTime = null;
+                
                 // 隐藏设置区域，显示考试区域
                 document.getElementById('exam-settings').style.display = 'none';
                 document.getElementById('library-section').classList.add('hidden');
                 document.getElementById('exam-section').classList.remove('hidden');
+                
+                // 重置错题重考模式相关状态
+                if (this.isRetakeMode) {
+                    this.isRetakeMode = false;
+                    this.retakeQuestions = null;
+                    
+                    // 恢复开始考试按钮和设置页面标题
+                    const startExamBtn = document.getElementById('startExam');
+                    if (startExamBtn) {
+                        startExamBtn.style.display = 'block';
+                    }
+                    
+                    const settingsTitle = document.querySelector('#exam-settings h3');
+                    if (settingsTitle) {
+                        settingsTitle.textContent = '📝 考试设置';
+                    }
+                    
+                    const confirmBtn = document.getElementById('confirmSettings');
+                    if (confirmBtn) {
+                        confirmBtn.textContent = '✅ 开始考试';
+                    }
+                    
+                    alert('错题重考已开始！');
+                } else {
+                    alert('考试已开始！');
+                }
                 
                 // 开始计时
                 this.startTimer();
@@ -2383,6 +2536,23 @@
                 
                 // 打乱题目顺序
                 this.shuffleArray(this.questions);
+                
+                // 计算分数分配（问答题不计分）
+                const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
+                const scorePerQuestion = scoredQuestions.length > 0 ? Math.round(100 / scoredQuestions.length) : 0;
+                
+                // 为每道题分配分数
+                this.questions.forEach(q => {
+                    q.score = q.type === '问答题' ? 0 : scorePerQuestion;
+                });
+                
+                // 调整最后一题的分数，确保总分为100
+                if (scoredQuestions.length > 0) {
+                    const totalAssigned = scorePerQuestion * scoredQuestions.length;
+                    const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
+                    lastScoredQuestion.score += (100 - totalAssigned);
+                }
+                
                 this.currentQuestionIndex = 0;
                 this.userAnswers = new Array(this.questions.length).fill(null);
                 this.examStarted = true;
@@ -2439,7 +2609,14 @@
 
                 if (question.type === '单选题' || question.type === '多选题') {
                     // 显示选项供参考
-                    const options = question.options.split('|').filter(opt => opt.trim());
+                    // 先尝试用分号分割，如果没有分号则用管道符分割
+                    let options;
+                    if (question.options.includes(';')) {
+                        options = question.options.split(';').filter(opt => opt.trim());
+                    } else {
+                        options = question.options.split('|').filter(opt => opt.trim());
+                    }
+
                     const optionsDisplay = document.createElement('div');
                     optionsDisplay.className = 'options-display';
                     optionsDisplay.innerHTML = '<h4>选项：</h4>';
@@ -2459,70 +2636,148 @@
                     
                     container.appendChild(optionsDisplay);
                     
-                    // 创建答案输入框
+                    // 创建答案选择按钮区域
                     const answerDiv = document.createElement('div');
-                    answerDiv.className = 'answer-input-container';
+                    answerDiv.className = 'answer-buttons-container';
                     
                     const label = document.createElement('label');
-                    label.textContent = question.type === '单选题' ? '请输入答案（如：A）：' : '请输入答案（如：ABC）：';
+                    label.textContent = question.type === '单选题' ? '请选择答案：' : '请选择答案（可多选）：';
                     label.className = 'answer-label';
+                    answerDiv.appendChild(label);
                     
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'answer-input';
-                    input.placeholder = question.type === '单选题' ? '请输入A、B、C、D中的一个' : '请输入A、B、C、D的组合，如：ABC';
-                    input.value = this.userAnswers[this.currentQuestionIndex] || '';
-                    input.maxLength = question.type === '单选题' ? 1 : 4;
+                    // 创建A、B、C、D四个按钮
+                    const buttonsContainer = document.createElement('div');
+                    buttonsContainer.className = 'option-buttons';
+                    buttonsContainer.style.cssText = 'display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;';
                     
-                    // 添加输入事件
-                    input.addEventListener('input', () => {
-                        let value = input.value.toUpperCase().replace(/[^ABCD]/g, '');
-                        
-                        if (question.type === '单选题') {
-                            // 单选题只允许一个字母，且必须是ABCD中的一个
-                            value = value.slice(0, 1);
-                            if (value && !'ABCD'.includes(value)) {
-                                value = '';
+                    const savedAnswer = this.userAnswers[this.currentQuestionIndex] || '';
+                    const selectedOptions = savedAnswer.split('');
+                    
+                    ['A', 'B', 'C', 'D'].forEach((letter, index) => {
+                        // 只显示有对应选项的按钮
+                        if (index < options.length) {
+                            const button = document.createElement('button');
+                            button.className = 'option-button';
+                            button.textContent = letter;
+                            button.dataset.value = letter;
+                            
+                            // 设置按钮样式
+                            button.style.cssText = `
+                                padding: 12px 20px;
+                                border: 2px solid #ddd;
+                                background: white;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 16px;
+                                font-weight: bold;
+                                min-width: 50px;
+                                transition: all 0.3s ease;
+                            `;
+                            
+                            // 如果已选中，添加选中样式
+                            if (selectedOptions.includes(letter)) {
+                                button.classList.add('selected');
+                                button.style.backgroundColor = '#007bff';
+                                button.style.color = 'white';
+                                button.style.borderColor = '#007bff';
                             }
-                        } else {
-                            // 多选题去重并排序，只允许ABCD
-                            value = [...new Set(value.split(''))].filter(char => 'ABCD'.includes(char)).sort().join('');
-                        }
-                        
-                        input.value = value;
-                        this.userAnswers[this.currentQuestionIndex] = value;
-                        
-                        // 显示或隐藏确定按钮
-                        const confirmBtn = container.querySelector('.confirm-answer-btn');
-                        if (value.trim() && !this.answeredQuestions.has(this.currentQuestionIndex)) {
-                            confirmBtn.style.display = 'inline-block';
-                        } else {
-                            confirmBtn.style.display = 'none';
+                            
+                            // 添加点击事件
+                            button.addEventListener('click', () => {
+                                // 如果已经回答过，不允许再次选择
+                                if (this.answeredQuestions.has(this.currentQuestionIndex)) {
+                                    return;
+                                }
+                                
+                                if (question.type === '单选题') {
+                                    // 单选题：清除其他选择，只选中当前按钮
+                                    buttonsContainer.querySelectorAll('.option-button').forEach(btn => {
+                                        btn.classList.remove('selected');
+                                        btn.style.backgroundColor = 'white';
+                                        btn.style.color = 'black';
+                                        btn.style.borderColor = '#ddd';
+                                    });
+                                    
+                                    button.classList.add('selected');
+                                    button.style.backgroundColor = '#007bff';
+                                    button.style.color = 'white';
+                                    button.style.borderColor = '#007bff';
+                                    
+                                    this.userAnswers[this.currentQuestionIndex] = letter;
+                                } else {
+                                    // 多选题：切换选中状态
+                                    if (button.classList.contains('selected')) {
+                                        button.classList.remove('selected');
+                                        button.style.backgroundColor = 'white';
+                                        button.style.color = 'black';
+                                        button.style.borderColor = '#ddd';
+                                    } else {
+                                        button.classList.add('selected');
+                                        button.style.backgroundColor = '#007bff';
+                                        button.style.color = 'white';
+                                        button.style.borderColor = '#007bff';
+                                    }
+                                    
+                                    // 更新答案
+                                    const selectedButtons = buttonsContainer.querySelectorAll('.option-button.selected');
+                                    const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value).sort().join('');
+                                    this.userAnswers[this.currentQuestionIndex] = selectedValues;
+                                }
+                                
+                                // 显示或隐藏确定按钮
+                                const confirmBtn = container.querySelector('.confirm-answer-btn');
+                                const currentAnswer = this.userAnswers[this.currentQuestionIndex];
+                                if (currentAnswer && currentAnswer.trim() && !this.answeredQuestions.has(this.currentQuestionIndex)) {
+                                    confirmBtn.style.display = 'inline-block';
+                                } else {
+                                    confirmBtn.style.display = 'none';
+                                }
+                            });
+                            
+                            // 添加悬停效果
+                            button.addEventListener('mouseenter', () => {
+                                if (!button.classList.contains('selected') && !this.answeredQuestions.has(this.currentQuestionIndex)) {
+                                    button.style.backgroundColor = '#f8f9fa';
+                                    button.style.borderColor = '#007bff';
+                                }
+                            });
+                            
+                            button.addEventListener('mouseleave', () => {
+                                if (!button.classList.contains('selected')) {
+                                    button.style.backgroundColor = 'white';
+                                    button.style.borderColor = '#ddd';
+                                }
+                            });
+                            
+                            buttonsContainer.appendChild(button);
                         }
                     });
                     
-                    answerDiv.appendChild(label);
-                    answerDiv.appendChild(input);
+                    answerDiv.appendChild(buttonsContainer);
                     
                     // 添加确定按钮
                     const confirmBtn = document.createElement('button');
                     confirmBtn.className = 'btn btn-primary confirm-answer-btn';
                     confirmBtn.textContent = '✓ 确定';
                     confirmBtn.style.display = 'none';
-                    confirmBtn.style.marginLeft = '10px';
+                    confirmBtn.style.marginTop = '10px';
                     
                     confirmBtn.addEventListener('click', () => {
-                        this.confirmAnswer(this.currentQuestionIndex, input.value);
+                        const currentAnswer = this.userAnswers[this.currentQuestionIndex];
+                        this.confirmAnswer(this.currentQuestionIndex, currentAnswer);
                     });
                     
                     answerDiv.appendChild(confirmBtn);
                     
-                    // 如果已经回答过，显示结果
+                    // 如果已经回答过，显示结果并禁用按钮
                     if (this.answeredQuestions.has(this.currentQuestionIndex)) {
                         this.showAnswerResult(this.currentQuestionIndex, container);
-                        input.disabled = true;
+                        buttonsContainer.querySelectorAll('.option-button').forEach(btn => {
+                            btn.style.pointerEvents = 'none';
+                            btn.style.opacity = '0.6';
+                        });
                         confirmBtn.style.display = 'none';
-                    } else if (input.value.trim()) {
+                    } else if (savedAnswer && savedAnswer.trim()) {
                         confirmBtn.style.display = 'inline-block';
                     }
                     
@@ -2847,12 +3102,15 @@
                     wrongQuestionsContainer.innerHTML = '<h3>❌ 错误题目复习</h3>';
                 }
                 
-                // 显示导出错题下拉菜单
+                // 显示错题操作区域（包含导出和重考按钮）
+                const wrongActions = document.getElementById('wrongActions');
                 const exportWrongControls = document.getElementById('exportWrongControls');
-                if (exportWrongControls) {
+                if (wrongActions && exportWrongControls) {
                     if (wrongQuestions.length > 0) {
+                        wrongActions.style.display = 'flex';
                         exportWrongControls.style.display = 'flex';
                     } else {
+                        wrongActions.style.display = 'none';
                         exportWrongControls.style.display = 'none';
                     }
                 }
@@ -3294,6 +3552,114 @@
                 alert(`已导出 ${this.questions.length} 道题目`);
             }
             
+            retakeWrongQuestions() {
+                if (!this.wrongQuestionsData || this.wrongQuestionsData.length === 0) {
+                    alert('没有错题可以重考');
+                    return;
+                }
+                
+                // 确认是否要开始错题重考设置
+                if (!confirm(`确定要开始错题重考吗？\n将进入考试设置页面，您可以重新配置 ${this.wrongQuestionsData.length} 道错题的考试参数。`)) {
+                    return;
+                }
+                
+                // 标记当前为错题重考模式
+                this.isRetakeMode = true;
+                this.retakeQuestions = this.wrongQuestionsData.map(item => item.question);
+                
+                // 显示错题重考设置页面
+                this.showRetakeSettings();
+            }
+            
+            showRetakeSettings() {
+                // 隐藏结果区域
+                document.getElementById('result-section').classList.add('hidden');
+                
+                // 显示题库信息区域
+                document.getElementById('library-section').classList.remove('hidden');
+                
+                // 更新题库统计信息（基于错题数据）
+                this.updateRetakeStats();
+                
+                // 显示考试设置区域
+                document.getElementById('exam-settings').style.display = 'block';
+                
+                // 隐藏开始考试按钮
+                const startExamBtn = document.getElementById('startExam');
+                if (startExamBtn) {
+                    startExamBtn.style.display = 'none';
+                }
+                
+                // 更新设置页面标题
+                const settingsTitle = document.querySelector('#exam-settings h3');
+                if (settingsTitle) {
+                    settingsTitle.textContent = '📝 错题重考设置';
+                }
+                
+                // 更新可用题目数量（基于错题）
+                this.updateRetakeAvailableQuestions();
+                
+                // 修改确认按钮文本
+                const confirmBtn = document.getElementById('confirmSettings');
+                if (confirmBtn) {
+                    confirmBtn.textContent = '✅ 开始错题重考';
+                }
+            }
+            
+            updateRetakeStats() {
+                // 统计错题中各题型的数量
+                const stats = {
+                    single: this.retakeQuestions.filter(q => q.type === '单选题').length,
+                    multi: this.retakeQuestions.filter(q => q.type === '多选题').length,
+                    trueOrFalse: this.retakeQuestions.filter(q => q.type === '判断题').length,
+                    essay: this.retakeQuestions.filter(q => q.type === '问答题').length
+                };
+                
+                const total = stats.single + stats.multi + stats.trueOrFalse + stats.essay;
+                
+                // 更新统计显示
+                document.getElementById('totalQuestions').textContent = total;
+                document.getElementById('singleChoice').textContent = stats.single;
+                document.getElementById('multiChoice').textContent = stats.multi;
+                document.getElementById('trueOrFalse').textContent = stats.trueOrFalse;
+                document.getElementById('essay').textContent = stats.essay;
+            }
+            
+            updateRetakeAvailableQuestions() {
+                // 计算错题中各题型的可用题目数量
+                const availableStats = {
+                    single: this.retakeQuestions.filter(q => q.type === '单选题').length,
+                    multi: this.retakeQuestions.filter(q => q.type === '多选题').length,
+                    trueOrFalse: this.retakeQuestions.filter(q => q.type === '判断题').length,
+                    essay: this.retakeQuestions.filter(q => q.type === '问答题').length
+                };
+                
+                // 更新可用题目数量显示
+                document.getElementById('singleAvailable').textContent = `(${availableStats.single}题)`;
+                document.getElementById('multiAvailable').textContent = `(${availableStats.multi}题)`;
+                document.getElementById('trueOrFalseAvailable').textContent = `(${availableStats.trueOrFalse}题)`;
+                document.getElementById('essayAvailable').textContent = `(${availableStats.essay}题)`;
+                
+                // 更新各题型的最大数量提示
+                document.getElementById('singleMaxHint').textContent = `最多 ${availableStats.single} 题`;
+                document.getElementById('multiMaxHint').textContent = `最多 ${availableStats.multi} 题`;
+                document.getElementById('trueOrFalseMaxHint').textContent = `最多 ${availableStats.trueOrFalse} 题`;
+                document.getElementById('essayMaxHint').textContent = `最多 ${availableStats.essay} 题`;
+                
+                // 设置各题型输入框的最大值和默认值
+                document.getElementById('singleCount').max = availableStats.single;
+                document.getElementById('singleCount').value = availableStats.single;
+                document.getElementById('multiCount').max = availableStats.multi;
+                document.getElementById('multiCount').value = availableStats.multi;
+                document.getElementById('trueOrFalseCount').max = availableStats.trueOrFalse;
+                document.getElementById('trueOrFalseCount').value = availableStats.trueOrFalse;
+                document.getElementById('essayCount').max = availableStats.essay;
+                document.getElementById('essayCount').value = availableStats.essay;
+                
+                // 更新总题目数
+                this.updateTotalCount();
+            }
+            
             downloadFile(headers, data, filename, format) {
                 if (format === 'xlsx') {
                     // 创建Excel文件
@@ -3352,8 +3718,12 @@
             }
             
             updateCountdownTimer() {
+                if (this.isPaused) {
+                    return; // 暂停时不更新计时器
+                }
+                
                 const now = new Date();
-                const elapsed = Math.floor((now - this.examStartTime) / 1000); // 已用秒数
+                const elapsed = Math.floor((now - this.examStartTime - this.pausedTime) / 1000); // 已用秒数（扣除暂停时间）
                 const totalSeconds = this.examTimeLimit * 60; // 总秒数
                 const remaining = totalSeconds - elapsed; // 剩余秒数
                 
@@ -3381,8 +3751,12 @@
             }
             
             updateDurationTimer() {
+                if (this.isPaused) {
+                    return; // 暂停时不更新计时器
+                }
+                
                 const now = new Date();
-                const elapsed = Math.floor((now - this.examStartTime) / 1000);
+                const elapsed = Math.floor((now - this.examStartTime - this.pausedTime) / 1000); // 已用秒数（扣除暂停时间）
                 
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = elapsed % 60;
@@ -3403,11 +3777,70 @@
                 if (!this.examStartTime) return '00:00';
                 
                 const endTime = this.examEndTime || new Date();
-                const elapsed = Math.floor((endTime - this.examStartTime) / 1000);
+                const elapsed = Math.floor((endTime - this.examStartTime - this.pausedTime) / 1000); // 扣除暂停时间
                 
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = elapsed % 60;
                 return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            // 暂停/恢复功能
+            togglePauseResume() {
+                if (this.isPaused) {
+                    // 恢复计时
+                    this.resumeTimer();
+                } else {
+                    // 暂停计时
+                    this.pauseTimer();
+                }
+            }
+            
+            pauseTimer() {
+                if (!this.isPaused && this.timerInterval) {
+                    this.isPaused = true;
+                    this.pauseStartTime = new Date();
+                    
+                    // 更新按钮状态
+                    const pauseBtn1 = document.getElementById('pauseResumeBtn');
+                    const pauseBtn2 = document.getElementById('pauseResumeBtn2');
+                    
+                    if (pauseBtn1) {
+                        pauseBtn1.textContent = '▶️ 恢复';
+                        pauseBtn1.classList.add('paused');
+                    }
+                    if (pauseBtn2) {
+                        pauseBtn2.textContent = '▶️ 恢复';
+                        pauseBtn2.classList.add('paused');
+                    }
+                    
+                    // 禁用答题相关的交互功能
+                    this.disableExamInteraction();
+                }
+            }
+            
+            resumeTimer() {
+                if (this.isPaused && this.pauseStartTime) {
+                    // 累计暂停时间
+                    this.pausedTime += new Date() - this.pauseStartTime;
+                    this.isPaused = false;
+                    this.pauseStartTime = null;
+                    
+                    // 更新按钮状态
+                    const pauseBtn1 = document.getElementById('pauseResumeBtn');
+                    const pauseBtn2 = document.getElementById('pauseResumeBtn2');
+                    
+                    if (pauseBtn1) {
+                        pauseBtn1.textContent = '⏸️ 暂停';
+                        pauseBtn1.classList.remove('paused');
+                    }
+                    if (pauseBtn2) {
+                        pauseBtn2.textContent = '⏸️ 暂停';
+                        pauseBtn2.classList.remove('paused');
+                    }
+                    
+                    // 重新启用答题相关的交互功能
+                    this.enableExamInteraction();
+                }
             }
 
             restart() {
@@ -3426,6 +3859,11 @@
                 this.examEndTime = null;
                 this.examTimeLimit = null;
                 this.isTimeLimited = false;
+                
+                // 重置暂停相关变量
+                this.isPaused = false;
+                this.pausedTime = 0;
+                this.pauseStartTime = null;
 
                 document.getElementById('result-section').classList.add('hidden');
                 document.getElementById('import-section').classList.remove('hidden');
@@ -3444,6 +3882,187 @@
                 
                 // 重新检测CSV文件
                 this.detectCSVFiles();
+            }
+            
+            // 禁用答题相关的交互功能
+            disableExamInteraction() {
+                // 禁用导航按钮
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const submitBtn = document.getElementById('submitBtn');
+                
+                if (prevBtn) {
+                    prevBtn.disabled = true;
+                    prevBtn.style.opacity = '0.5';
+                }
+                if (nextBtn) {
+                    nextBtn.disabled = true;
+                    nextBtn.style.opacity = '0.5';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.5';
+                }
+                
+                // 禁用题目状态点击跳转
+                const statusItems = document.querySelectorAll('.status-item');
+                statusItems.forEach(item => {
+                    item.style.pointerEvents = 'none';
+                    item.style.opacity = '0.5';
+                });
+                
+                // 禁用答题选项和输入框
+                const optionsContainer = document.getElementById('optionsContainer');
+                if (optionsContainer) {
+                    // 禁用所有输入元素
+                    const inputs = optionsContainer.querySelectorAll('input, textarea, button');
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.style.opacity = '0.5';
+                    });
+                    
+                    // 禁用选项点击
+                    const options = optionsContainer.querySelectorAll('.option');
+                    options.forEach(option => {
+                        option.style.pointerEvents = 'none';
+                        option.style.opacity = '0.5';
+                    });
+                }
+                
+                // 显示暂停提示
+                this.showPauseOverlay();
+            }
+            
+            // 启用答题相关的交互功能
+            enableExamInteraction() {
+                // 启用导航按钮（根据当前状态）
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const submitBtn = document.getElementById('submitBtn');
+                
+                if (prevBtn) {
+                    prevBtn.disabled = this.currentQuestionIndex === 0;
+                    prevBtn.style.opacity = '';
+                }
+                if (nextBtn) {
+                    nextBtn.disabled = false;
+                    nextBtn.style.opacity = '';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '';
+                }
+                
+                // 启用题目状态点击跳转
+                const statusItems = document.querySelectorAll('.status-item');
+                statusItems.forEach(item => {
+                    item.style.pointerEvents = '';
+                    item.style.opacity = '';
+                });
+                
+                // 启用答题选项和输入框
+                const optionsContainer = document.getElementById('optionsContainer');
+                if (optionsContainer) {
+                    // 启用所有输入元素（除了已经回答过的题目）
+                    const inputs = optionsContainer.querySelectorAll('input, textarea, button');
+                    inputs.forEach(input => {
+                        // 如果当前题目已经回答过，保持禁用状态
+                        if (!this.answeredQuestions.has(this.currentQuestionIndex)) {
+                            input.disabled = false;
+                        }
+                        input.style.opacity = '';
+                    });
+                    
+                    // 启用选项点击（除了已经回答过的题目）
+                    const options = optionsContainer.querySelectorAll('.option');
+                    options.forEach(option => {
+                        if (!this.answeredQuestions.has(this.currentQuestionIndex)) {
+                            option.style.pointerEvents = '';
+                        }
+                        option.style.opacity = '';
+                    });
+                }
+                
+                // 隐藏暂停提示
+                this.hidePauseOverlay();
+            }
+            
+            // 显示暂停提示覆盖层
+            showPauseOverlay() {
+                let overlay = document.getElementById('pauseOverlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'pauseOverlay';
+                    overlay.innerHTML = `
+                        <div class="pause-message">
+                            <h3>⏸️ 考试已暂停</h3>
+                            <p>考试计时已暂停，所有答题功能已禁用</p>
+                            <button id="resumeFromOverlay" class="resume-btn">▶️ 恢复考试</button>
+                        </div>
+                    `;
+                    overlay.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.7);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 9999;
+                        backdrop-filter: blur(5px);
+                    `;
+                    
+                    const pauseMessage = overlay.querySelector('.pause-message');
+                    pauseMessage.style.cssText = `
+                        background: white;
+                        padding: 30px;
+                        border-radius: 10px;
+                        text-align: center;
+                        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                        max-width: 400px;
+                        margin: 20px;
+                    `;
+                    
+                    // 为覆盖层中的恢复按钮添加样式
+                    const resumeBtn = overlay.querySelector('#resumeFromOverlay');
+                    resumeBtn.style.cssText = `
+                        background: #28a745;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 6px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        margin-top: 20px;
+                        transition: background-color 0.3s;
+                    `;
+                    
+                    // 添加悬停效果
+                    resumeBtn.addEventListener('mouseenter', () => {
+                        resumeBtn.style.backgroundColor = '#218838';
+                    });
+                    resumeBtn.addEventListener('mouseleave', () => {
+                        resumeBtn.style.backgroundColor = '#28a745';
+                    });
+                    
+                    // 绑定点击事件到恢复功能
+                    resumeBtn.addEventListener('click', () => {
+                        this.togglePauseResume();
+                    });
+                    
+                    document.body.appendChild(overlay);
+                }
+                overlay.style.display = 'flex';
+            }
+            
+            // 隐藏暂停提示覆盖层
+            hidePauseOverlay() {
+                const overlay = document.getElementById('pauseOverlay');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                }
             }
         }
 
