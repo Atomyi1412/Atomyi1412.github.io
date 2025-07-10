@@ -41,6 +41,9 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            /* 防止移动端下拉刷新 */
+            overscroll-behavior: none;
+            overscroll-behavior-y: none;
         }
         
         /* 允许文本选择的元素 */
@@ -1341,6 +1344,27 @@
                  font-size: 14px;
                  padding: 0 15px;
              }
+             
+             /* 修复开始答题按钮样式 */
+             .setting-actions {
+                 flex-direction: column;
+                 gap: 15px;
+                 align-items: stretch;
+             }
+             
+             .setting-actions .btn {
+                 min-width: auto;
+                 width: 100%;
+                 padding: 16px 20px;
+                 font-size: 18px;
+             }
+             
+             #startExam {
+                 width: 100%;
+                 padding: 16px 20px;
+                 font-size: 18px;
+                 margin: 10px 0;
+             }
          }
          
          /* 导出控件样式 */
@@ -1793,7 +1817,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.5.0"; // 可手动修改版本号
+                this.version = "v3.5.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1849,6 +1873,35 @@
                 // 时间设置事件监听器
                 document.getElementById('noTimeLimit').addEventListener('change', this.toggleTimeInput.bind(this));
                 document.getElementById('hasTimeLimit').addEventListener('change', this.toggleTimeInput.bind(this));
+                
+                // 防止移动端下拉刷新的事件监听器
+                this.initTouchPreventListeners();
+            }
+            
+            initTouchPreventListeners() {
+                // 防止移动端下拉刷新
+                let startY = 0;
+                
+                document.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].clientY;
+                }, { passive: false });
+                
+                document.addEventListener('touchmove', (e) => {
+                    const currentY = e.touches[0].clientY;
+                    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                    
+                    // 如果在页面顶部且向下滑动，阻止默认行为
+                    if (scrollTop === 0 && currentY > startY) {
+                        e.preventDefault();
+                    }
+                    
+                    // 如果在页面底部且向上滑动，阻止默认行为
+                    const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+                    const clientHeight = document.documentElement.clientHeight || window.innerHeight;
+                    if (scrollTop + clientHeight >= scrollHeight && currentY < startY) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
             }
             
             initExportEventListeners() {
@@ -3989,6 +4042,11 @@
             
             // 显示暂停提示覆盖层
             showPauseOverlay() {
+                // 防止页面滚动
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                
                 let overlay = document.getElementById('pauseOverlay');
                 if (!overlay) {
                     overlay = document.createElement('div');
@@ -4059,6 +4117,11 @@
             
             // 隐藏暂停提示覆盖层
             hidePauseOverlay() {
+                // 恢复页面滚动
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+                
                 const overlay = document.getElementById('pauseOverlay');
                 if (overlay) {
                     overlay.style.display = 'none';
