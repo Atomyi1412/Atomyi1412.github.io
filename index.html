@@ -1572,7 +1572,7 @@
                 <div id="file-info" class="info hidden">
                     <p>文件已选择，点击下方按钮解析题库</p>
                 </div>
-                <button id="parseBtn" class="btn" disabled>解析题库</button>
+                <button id="parseBtn" class="btn" disabled style="display: none;">解析题库</button>
             </div>
 
             <!-- 题库信息区域 -->
@@ -1765,11 +1765,16 @@
                             <div class="stat-number" id="examTime">00:00</div>
                             <div class="stat-label">考试用时</div>
                         </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="avgTimePerQuestion">00:00</div>
+                            <div class="stat-label">平均用时</div>
+                        </div>
                     </div>
                     
                     <!-- 保存数据到多维表按钮 -->
                     <div class="save-to-table-container" style="margin: 20px 0; text-align: center;">
-                        <button id="saveToTableBtn" class="btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); transition: all 0.3s ease;">📊 保存数据到多维表</button>
+                        <button id="saveToTableBtn" class="btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); transition: all 0.3s ease; margin-right: 10px;">📊 保存到多维表</button>
+                        <button id="viewTableBtn" class="btn" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3); transition: all 0.3s ease;">👁️ 查看多维表</button>
                     </div>
                     
                     <div class="wrong-questions" id="wrongQuestions">
@@ -1852,7 +1857,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.5.3"; // 可手动修改版本号
+                this.version = "v3.5.5"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1991,6 +1996,16 @@
                     });
                 }
                 
+                // 查看多维表按钮事件监听器
+                const viewTableBtn = document.getElementById('viewTableBtn');
+                if (viewTableBtn) {
+                    viewTableBtn.addEventListener('click', () => {
+                        // 飞书多维表链接地址，可在此处修改
+                        const tableUrl = 'https://more2.feishu.cn/wiki/NEXXw0M6Micnfikr6MEcvZe1nXr?table=tbljG2LmtiCazz1W&view=vewAKqlLr5';
+                        window.open(tableUrl, '_blank');
+                    });
+                }
+                
                 // 确认保存按钮事件监听器
                 const confirmSaveBtn = document.getElementById('confirmSaveBtn');
                 if (confirmSaveBtn) {
@@ -2063,6 +2078,7 @@
                 const examTime = document.getElementById('examTime').textContent;
                 
                 // 准备发送的数据
+                const avgTimePerQuestion = this.getAverageTimePerQuestion();
                 const data = {
                     用户名称: userName,
                     总分: totalScore,
@@ -2070,6 +2086,7 @@
                     错误题数: wrongCount,
                     正确率: accuracy,
                     考试用时: examTime,
+                    平均用时: avgTimePerQuestion,
                     提交时间: new Date().toLocaleString('zh-CN')
                 };
                 
@@ -2124,7 +2141,7 @@
                     console.error('保存数据到多维表失败:', error);
                     
                     // 提供备用方案：复制数据到剪贴板
-                    const dataText = `用户名称: ${userName}\n总分: ${totalScore}\n正确题数: ${correctCount}\n错误题数: ${wrongCount}\n正确率: ${accuracy}\n考试用时: ${examTime}\n提交时间: ${new Date().toLocaleString('zh-CN')}`;
+                    const dataText = `用户名称: ${userName}\n总分: ${totalScore}\n正确题数: ${correctCount}\n错误题数: ${wrongCount}\n正确率: ${accuracy}\n考试用时: ${examTime}\n平均用时: ${avgTimePerQuestion}\n提交时间: ${new Date().toLocaleString('zh-CN')}`;
                     
                     try {
                         await navigator.clipboard.writeText(dataText);
@@ -2224,11 +2241,13 @@
                 // 清除手动上传的文件选择
                 document.getElementById('csvFile').value = '';
                 
-                // 显示文件信息并启用解析按钮
+                // 显示文件信息
                 const fileInfo = document.getElementById('file-info');
-                fileInfo.querySelector('p').textContent = `已选择文件: ${fileName}`;
+                fileInfo.querySelector('p').textContent = `正在解析文件: ${fileName}...`;
                 fileInfo.classList.remove('hidden');
-                document.getElementById('parseBtn').disabled = false;
+                
+                // 自动解析文件
+                this.parseCSV();
             }
 
             handleFileSelect(event) {
@@ -2241,8 +2260,10 @@
                     this.selectedFile = null;
                     
                     document.getElementById('file-info').classList.remove('hidden');
-                    document.getElementById('file-info').querySelector('p').textContent = '文件已选择，点击下方按钮解析题库';
-                    document.getElementById('parseBtn').disabled = false;
+                    document.getElementById('file-info').querySelector('p').textContent = `正在解析文件: ${file.name}...`;
+                    
+                    // 自动解析文件
+                    this.parseCSV();
                 }
             }
 
@@ -2529,6 +2550,21 @@
                 if (fileInput) {
                     fileInput.value = '';
                 }
+                
+                // 重置文件信息显示状态
+                const fileInfo = document.getElementById('file-info');
+                if (fileInfo) {
+                    fileInfo.classList.add('hidden');
+                    fileInfo.querySelector('p').textContent = '文件已选择，点击下方按钮解析题库';
+                }
+                
+                // 清除检测文件的选中状态
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                // 重置选中文件变量
+                this.selectedFile = null;
             }
             
             updateAvailableQuestions() {
@@ -3302,6 +3338,10 @@
                 document.getElementById('accuracy').textContent = `${accuracy}%`;
                 document.getElementById('examTime').textContent = this.getExamDuration();
                 
+                // 计算平均用时
+                const avgTimePerQuestion = this.getAverageTimePerQuestion();
+                document.getElementById('avgTimePerQuestion').textContent = avgTimePerQuestion;
+                
                 // 计算正确题目
                 const correctQuestions = [];
                 const wrongQuestionIndexes = new Set(wrongQuestions.map(wq => wq.index - 1)); // 转换为0基索引
@@ -4013,6 +4053,18 @@
                 
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = elapsed % 60;
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            getAverageTimePerQuestion() {
+                if (!this.examStartTime || this.questions.length === 0) return '00:00';
+                
+                const endTime = this.examEndTime || new Date();
+                const totalElapsed = Math.floor((endTime - this.examStartTime - this.pausedTime) / 1000); // 扣除暂停时间
+                const avgSeconds = Math.floor(totalElapsed / this.questions.length);
+                
+                const minutes = Math.floor(avgSeconds / 60);
+                const seconds = avgSeconds % 60;
                 return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
             
