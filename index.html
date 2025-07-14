@@ -3300,91 +3300,25 @@
                     
                     // 检测同目录下的题库文件（CSV和Excel）
                     // 由于浏览器CORS限制，只能检测通过HTTP服务器访问的文件
-                    // 使用更广泛的文件名模式进行检测
-                    const commonFilePatterns = [
-                        // 常见的题库文件名模式
-                        'AI导师考题_数据表_表格',
-                        '点击开始复习 AI 导师考题_数据表_表格',
-                        '题库',
-                        'questions',
-                        'exam',
-                        'test',
-                        'quiz',
-                        '考试',
-                        '考题',
-                        '试题',
-                        '练习',
-                        'practice',
-                        'study',
-                        '复习',
-                        'review',
-                        'data',
-                        '数据',
-                        '表格',
-                        'table',
-                        'sheet',
-                        // 添加更多可能的文件名
-                        '题目',
-                        'question_bank',
-                        'question_pool',
-                        'exercise',
-                        'training',
-                        '训练',
-                        'mock_exam',
-                        '模拟考试',
-                        'sample',
-                        '样本',
-                        'demo'
+                    const knownFiles = [
+                        'AI导师考题_数据表_表格.csv',
+                        'AI导师考题_数据表_表格.xlsx',
+                        '点击开始复习 AI 导师考题_数据表_表格.csv',
+                        '点击开始复习 AI 导师考题_数据表_表格.xlsx',
+                        '题库.csv',
+                        '题库.xlsx'
                     ];
-                    
-                    const extensions = ['.csv', '.xlsx'];
-                    const filesToCheck = [];
-                    
-                    // 生成所有可能的文件名组合
-                    commonFilePatterns.forEach(pattern => {
-                        extensions.forEach(ext => {
-                            filesToCheck.push(pattern + ext);
-                        });
-                    });
-                    
-                    // 添加一些常见的变体（带空格、下划线等）
-                    const additionalVariants = [
-                        'AI 导师考题_数据表_表格',
-                        'AI导师 考题_数据表_表格',
-                        'AI导师考题 数据表_表格',
-                        'AI导师考题_数据表 表格',
-                        'AI_导师考题_数据表_表格',
-                        'AI导师考题数据表表格',
-                        '点击开始复习AI导师考题_数据表_表格',
-                        '点击开始复习 AI导师考题数据表表格'
-                    ];
-                    
-                    additionalVariants.forEach(variant => {
-                        extensions.forEach(ext => {
-                            filesToCheck.push(variant + ext);
-                        });
-                    });
-                    
                     const availableFiles = [];
-                    const checkedFiles = new Set(); // 避免重复检测
                     
-                    for (const fileName of filesToCheck) {
-                        if (checkedFiles.has(fileName)) continue;
-                        checkedFiles.add(fileName);
-                        
+                    for (const fileName of knownFiles) {
                         try {
                             // 使用HEAD请求检测文件是否存在
-                            const response = await fetch(fileName, { 
-                                method: 'HEAD',
-                                cache: 'no-cache'
-                            });
+                            const response = await fetch(fileName, { method: 'HEAD' });
                             if (response.ok) {
                                 availableFiles.push(fileName);
-                                console.log(`检测到可用文件: ${fileName}`);
                             }
                         } catch (error) {
-                            // 静默处理网络错误和404错误
-                            // 这些错误是正常的，因为我们在尝试检测多个可能的文件名
+                            console.log(`文件 ${fileName} 不可访问:`, error.message);
                         }
                     }
                     
