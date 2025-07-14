@@ -3040,6 +3040,91 @@
                 ['singleCount', 'multiCount', 'trueOrFalseCount', 'essayCount'].forEach(id => {
                     document.getElementById(id).addEventListener('input', this.updateTotalCount.bind(this));
                 });
+            },
+
+            // 优化的文件检测方法
+            async detectFilesWithOptimization(knownFiles) {
+                // 检查缓存（5分钟有效期）
+                const cacheKey = 'fileDetectionCache';
+                const cacheExpiry = 5 * 60 * 1000; // 5分钟
+                const cached = localStorage.getItem(cacheKey);
+                
+                if (cached) {
+                    const { data, timestamp } = JSON.parse(cached);
+                    if (Date.now() - timestamp < cacheExpiry) {
+                        console.log('使用缓存的文件检测结果');
+                        return data;
+                    }
+                }
+
+                // 创建带超时的fetch函数
+                const fetchWithTimeout = async (url, timeout = 3000) => {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeout);
+                    
+                    try {
+                        const response = await fetch(url, {
+                            method: 'HEAD',
+                            signal: controller.signal,
+                            cache: 'no-cache' // 避免缓存干扰
+                        });
+                        clearTimeout(timeoutId);
+                        return response;
+                    } catch (error) {
+                        clearTimeout(timeoutId);
+                        throw error;
+                    }
+                };
+
+                // 并发检测所有文件（限制并发数为3）
+                const concurrencyLimit = 3;
+                const availableFiles = [];
+                const results = [];
+                
+                // 分批处理文件检测
+                for (let i = 0; i < knownFiles.length; i += concurrencyLimit) {
+                    const batch = knownFiles.slice(i, i + concurrencyLimit);
+                    const batchPromises = batch.map(async (fileName) => {
+                        try {
+                            const response = await fetchWithTimeout(fileName, 2000); // 2秒超时
+                            if (response.ok) {
+                                return { fileName, available: true };
+                            }
+                        } catch (error) {
+                            // 静默处理404和超时错误，减少控制台噪音
+                            if (!error.message.includes('404') && !error.name.includes('AbortError')) {
+                                console.log(`文件 ${fileName} 检测失败:`, error.message);
+                            }
+                        }
+                        return { fileName, available: false };
+                    });
+                    
+                    const batchResults = await Promise.all(batchPromises);
+                    results.push(...batchResults);
+                    
+                    // 实时更新UI显示进度
+                    const progress = Math.round(((i + batch.length) / knownFiles.length) * 100);
+                    const fileList = document.getElementById('fileList');
+                    if (fileList) {
+                        fileList.innerHTML = `<p class="loading-message">正在检测题库文件... ${progress}%</p>`;
+                    }
+                }
+                
+                // 收集可用文件
+                results.forEach(result => {
+                    if (result.available) {
+                        availableFiles.push(result.fileName);
+                    }
+                });
+                
+                // 缓存结果
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    data: availableFiles,
+                    timestamp: Date.now()
+                }));
+                
+                return availableFiles;
+            },
                 
                 // 时间设置事件监听器
                 document.getElementById('noTimeLimit').addEventListener('change', this.toggleTimeInput.bind(this));
@@ -3308,19 +3393,9 @@
                         '题库.csv',
                         '题库.xlsx'
                     ];
-                    const availableFiles = [];
                     
-                    for (const fileName of knownFiles) {
-                        try {
-                            // 使用HEAD请求检测文件是否存在
-                            const response = await fetch(fileName, { method: 'HEAD' });
-                            if (response.ok) {
-                                availableFiles.push(fileName);
-                            }
-                        } catch (error) {
-                            console.log(`文件 ${fileName} 不可访问:`, error.message);
-                        }
-                    }
+                    // 优化检测逻辑：并发检测 + 超时控制 + 缓存
+                    const availableFiles = await this.detectFilesWithOptimization(knownFiles);
                     
                     fileList.innerHTML = '';
                     
