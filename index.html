@@ -3140,7 +3140,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.6.0"; // 可手动修改版本号
+                this.version = "v3.6.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -3452,29 +3452,8 @@
                     const fileList = document.getElementById('fileList');
                     fileList.innerHTML = '<p class="loading-message">正在检测题库文件...</p>';
                     
-                    // 检测同目录下的题库文件（CSV和Excel）
-                    // 由于浏览器CORS限制，只能检测通过HTTP服务器访问的文件
-                    const knownFiles = [
-                        'AI导师考题_数据表_表格.csv',
-                        'AI导师考题_数据表_表格.xlsx',
-                        '点击开始复习 AI 导师考题_数据表_表格.csv',
-                        '点击开始复习 AI 导师考题_数据表_表格.xlsx',
-                        '题库.csv',
-                        '题库.xlsx'
-                    ];
-                    const availableFiles = [];
-                    
-                    for (const fileName of knownFiles) {
-                        try {
-                            // 使用HEAD请求检测文件是否存在
-                            const response = await fetch(fileName, { method: 'HEAD' });
-                            if (response.ok) {
-                                availableFiles.push(fileName);
-                            }
-                        } catch (error) {
-                            console.log(`文件 ${fileName} 不可访问:`, error.message);
-                        }
-                    }
+                    // 优化的文件检测逻辑：动态获取所有CSV和XLSX文件
+                    const availableFiles = await this.getAllCSVAndExcelFiles();
                     
                     fileList.innerHTML = '';
                     
@@ -3564,6 +3543,92 @@
                 if (versionElement) {
                     versionElement.textContent = this.version;
                 }
+            }
+
+            async getAllCSVAndExcelFiles() {
+                const availableFiles = [];
+                
+                try {
+                    // 尝试通过目录列表API获取文件（如果服务器支持）
+                    const response = await fetch('./', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const html = await response.text();
+                        // 解析HTML中的文件链接
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const links = doc.querySelectorAll('a[href]');
+                        
+                        const filePromises = [];
+                        
+                        links.forEach(link => {
+                            const href = link.getAttribute('href');
+                            if (href && (href.toLowerCase().endsWith('.csv') || href.toLowerCase().endsWith('.xlsx'))) {
+                                // 过滤掉目录导航链接
+                                if (!href.startsWith('../') && !href.startsWith('./') && href !== '/') {
+                                    filePromises.push(this.verifyFileAccess(href));
+                                }
+                            }
+                        });
+                        
+                        // 并行验证文件访问性
+                        const results = await Promise.allSettled(filePromises);
+                        results.forEach(result => {
+                            if (result.status === 'fulfilled' && result.value) {
+                                availableFiles.push(result.value);
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.log('无法通过目录列表获取文件，尝试备用方案:', error.message);
+                }
+                
+                // 如果目录列表方式失败，使用常见文件名检测作为备用方案
+                if (availableFiles.length === 0) {
+                    const commonFileNames = [
+                        'AI导师考题.csv', 'AI导师考题.xlsx',
+                        'AI导师考题_数据表_表格.csv', 'AI导师考题_数据表_表格.xlsx',
+                        '点击开始复习 AI 导师考题_数据表_表格.csv', '点击开始复习 AI 导师考题_数据表_表格.xlsx',
+                        '题库.csv', '题库.xlsx',
+                        '考题.csv', '考题.xlsx',
+                        '到时考题.csv', '到时考题.xlsx',
+                        '录制题库.csv', '录制题库.xlsx',
+                        'questions.csv', 'questions.xlsx',
+                        'exam.csv', 'exam.xlsx',
+                        'test.csv', 'test.xlsx'
+                    ];
+                    
+                    const filePromises = commonFileNames.map(fileName => this.verifyFileAccess(fileName));
+                    const results = await Promise.allSettled(filePromises);
+                    
+                    results.forEach(result => {
+                        if (result.status === 'fulfilled' && result.value) {
+                            availableFiles.push(result.value);
+                        }
+                    });
+                }
+                
+                return availableFiles;
+            }
+            
+            async verifyFileAccess(fileName) {
+                try {
+                    const response = await fetch(fileName, { 
+                        method: 'HEAD',
+                        cache: 'no-cache'
+                    });
+                    if (response.ok) {
+                        return fileName;
+                    }
+                } catch (error) {
+                    // 文件不存在或无法访问
+                }
+                return null;
             }
 
             async parseCSV() {
