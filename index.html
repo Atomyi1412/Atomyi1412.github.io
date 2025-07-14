@@ -3374,13 +3374,17 @@
                         
                         try {
                             // 使用HEAD请求检测文件是否存在
-                            const response = await fetch(fileName, { method: 'HEAD' });
+                            const response = await fetch(fileName, { 
+                                method: 'HEAD',
+                                cache: 'no-cache'
+                            });
                             if (response.ok) {
                                 availableFiles.push(fileName);
                                 console.log(`检测到可用文件: ${fileName}`);
                             }
                         } catch (error) {
-                            // 静默处理错误，避免控制台输出过多信息
+                            // 静默处理网络错误和404错误
+                            // 这些错误是正常的，因为我们在尝试检测多个可能的文件名
                         }
                     }
                     
