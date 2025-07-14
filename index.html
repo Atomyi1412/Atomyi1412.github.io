@@ -3460,11 +3460,50 @@
                         '点击开始复习 AI 导师考题_数据表_表格.csv',
                         '点击开始复习 AI 导师考题_数据表_表格.xlsx',
                         '题库.csv',
-                        '题库.xlsx'
+                        '题库.xlsx',
+                        'AI导师考题.csv',
+                        'AI导师考题.xlsx',
+                        '考题.csv',
+                        '考题.xlsx',
+                        '考试题库.csv',
+                        '考试题库.xlsx',
+                        '练习题库.csv',
+                        '练习题库.xlsx',
+                        '复习题库.csv',
+                        '复习题库.xlsx'
                     ];
+                    
+                    // 动态检测包含关键字的文件
+                    const keywords = ['题库', '考题'];
+                    const extensions = ['.csv', '.xlsx'];
+                    const dynamicFiles = [];
+                    
+                    // 生成可能的文件名组合
+                    keywords.forEach(keyword => {
+                        extensions.forEach(ext => {
+                            // 基本组合
+                            dynamicFiles.push(keyword + ext);
+                            // 带前缀的组合
+                            dynamicFiles.push('AI' + keyword + ext);
+                            dynamicFiles.push('AI导师' + keyword + ext);
+                            dynamicFiles.push('在线' + keyword + ext);
+                            dynamicFiles.push('练习' + keyword + ext);
+                            dynamicFiles.push('复习' + keyword + ext);
+                            dynamicFiles.push('考试' + keyword + ext);
+                            dynamicFiles.push('测试' + keyword + ext);
+                            // 带后缀的组合
+                            dynamicFiles.push(keyword + '文件' + ext);
+                            dynamicFiles.push(keyword + '数据' + ext);
+                            dynamicFiles.push(keyword + '表格' + ext);
+                            dynamicFiles.push(keyword + '系统' + ext);
+                        });
+                    });
+                    
+                    // 合并所有可能的文件名，去重
+                    const allPossibleFiles = [...new Set([...knownFiles, ...dynamicFiles])];
                     const availableFiles = [];
                     
-                    for (const fileName of knownFiles) {
+                    for (const fileName of allPossibleFiles) {
                         try {
                             // 使用HEAD请求检测文件是否存在
                             const response = await fetch(fileName, { method: 'HEAD' });
