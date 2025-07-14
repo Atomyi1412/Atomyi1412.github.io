@@ -2146,12 +2146,27 @@
 
         @media (max-width: 768px) {
             .header {
-                padding: 20px 15px;
+                padding: 25px 20px;
+                min-height: 90px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
             }
             
             .header h1 {
                 font-size: 22px;
+                margin: 0;
                 padding-right: 110px; /* 为右侧按钮留出空间 */
+                text-align: center;
+                width: 100%;
+                box-sizing: border-box;
+                line-height: 1.3;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 10px;
             }
             
             .answer-comparison {
@@ -2181,8 +2196,12 @@
             /* 中等屏幕版本号适配 */
             .version-tag {
                 font-size: 12px;
-                padding: 3px 7px;
-                margin-left: 8px;
+                padding: 4px 10px;
+                margin-left: 0;
+                margin-top: 2px;
+                border-radius: 12px;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
             
             /* 中等屏幕主题切换器适配 */
@@ -2382,11 +2401,12 @@
             }
             
             .header {
-                padding: 15px;
+                padding: 20px 15px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                justify-content: center;
+                min-height: 80px;
             }
             
             .header h1 {
@@ -2396,13 +2416,23 @@
                 text-align: center;
                 width: 100%;
                 box-sizing: border-box;
+                line-height: 1.3;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
             }
             
             /* 移动端版本号适配 */
             .version-tag {
                 font-size: 10px !important;
-                padding: 2px 6px;
-                margin-left: 6px;
+                padding: 3px 8px;
+                margin-left: 0;
+                margin-top: 2px;
+                border-radius: 10px;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
             
             /* 移动端主题切换器适配 */
@@ -2787,7 +2817,6 @@
                 </div>
             </div>
             <h1>📚 题库复习系统 <span id="version-display" class="version-tag"></span></h1>
-            <p>导入题库，开始你的复习之旅</p>
         </div>
         
         <div class="content">
