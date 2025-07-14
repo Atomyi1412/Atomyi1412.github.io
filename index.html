@@ -13,6 +13,264 @@
             box-sizing: border-box;
         }
         
+        /* CSS变量定义 - 默认主题（绿色）浅色模式 */
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --primary-light: #81C784;
+            --secondary-color: #2196F3;
+            --secondary-dark: #1976D2;
+            --accent-color: #FF9800;
+            --background-gradient-start: #667eea;
+            --background-gradient-end: #764ba2;
+            --text-color: #333;
+            --text-light: #666;
+            --card-background: white;
+            --border-color: #ddd;
+            --hover-background: #f0f8f0;
+            --selected-background: #e8f5e8;
+            --shadow-color: rgba(0,0,0,0.1);
+            --success-color: #4CAF50;
+            --success-dark: #388e3c;
+            --success-background: #d4edda;
+            --success-border: #c3e6cb;
+            --error-color: #f44336;
+            --error-dark: #d32f2f;
+            --error-background: #f8d7da;
+            --error-border: #f5c6cb;
+            --warning-color: #FF9800;
+            --warning-dark: #f57c00;
+            --warning-background: #fff3cd;
+            --info-color: #2196f3;
+            --info-dark: #1976d2;
+        }
+        
+        /* 默认主题（绿色）深色模式 */
+        [data-mode="dark"] {
+            --primary-color: #66BB6A;
+            --primary-dark: #4CAF50;
+            --primary-light: #81C784;
+            --secondary-color: #42A5F5;
+            --secondary-dark: #2196F3;
+            --accent-color: #FFB74D;
+            --background-gradient-start: #424242;
+            --background-gradient-end: #616161;
+            --text-color: #E0E0E0;
+            --text-light: #BDBDBD;
+            --card-background: #2E2E2E;
+            --border-color: #555;
+            --hover-background: #3E3E3E;
+            --selected-background: #4E4E4E;
+            --shadow-color: rgba(0,0,0,0.3);
+            --success-color: #66BB6A;
+            --success-dark: #4CAF50;
+            --success-background: #1B5E20;
+            --success-border: #2E7D32;
+            --error-color: #EF5350;
+            --error-dark: #F44336;
+            --error-background: #B71C1C;
+            --error-border: #D32F2F;
+            --warning-color: #FFB74D;
+            --warning-dark: #FF9800;
+            --warning-background: #4a3d2d;
+            --info-color: #42A5F5;
+            --info-dark: #2196F3;
+        }
+        
+        /* 蓝色主题浅色模式 */
+        [data-theme="blue"] {
+            --primary-color: #2196F3;
+            --primary-dark: #1976D2;
+            --primary-light: #64B5F6;
+            --secondary-color: #03A9F4;
+            --secondary-dark: #0288D1;
+            --accent-color: #FF5722;
+            --background-gradient-start: #74b9ff;
+            --background-gradient-end: #fd79a8;
+            --hover-background: #e3f2fd;
+            --selected-background: #bbdefb;
+            --success-color: #4caf50;
+            --success-dark: #388e3c;
+            --success-background: #d4edda;
+            --success-border: #c3e6cb;
+            --warning-color: #ff9800;
+            --warning-dark: #f57c00;
+            --warning-background: #fff3cd;
+            --error-color: #f44336;
+            --error-dark: #d32f2f;
+            --error-background: #f8d7da;
+            --error-border: #f5c6cb;
+            --info-color: #00bcd4;
+            --info-dark: #0097a7;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(33, 150, 243, 0.1);
+        }
+        
+        /* 蓝色主题深色模式 */
+        [data-theme="blue"][data-mode="dark"] {
+            --primary-color: #64B5F6;
+            --primary-dark: #42A5F5;
+            --primary-light: #90CAF9;
+            --secondary-color: #29B6F6;
+            --secondary-dark: #0288D1;
+            --accent-color: #FF7043;
+            --background-gradient-start: #424242;
+            --background-gradient-end: #616161;
+            --text-color: #E0E0E0;
+            --text-light: #BDBDBD;
+            --card-background: #2E2E2E;
+            --border-color: #555;
+            --hover-background: #3E3E3E;
+            --selected-background: #4E4E4E;
+            --shadow-color: rgba(0,0,0,0.3);
+            --success-color: #66BB6A;
+            --success-dark: #4CAF50;
+            --success-background: #1B5E20;
+            --success-border: #2E7D32;
+            --warning-color: #FFB74D;
+            --warning-dark: #FF9800;
+            --warning-background: #4a3d2d;
+            --error-color: #EF5350;
+            --error-dark: #F44336;
+            --error-background: #B71C1C;
+            --error-border: #D32F2F;
+            --info-color: #29B6F6;
+            --info-dark: #0288D1;
+        }
+        
+        /* 紫色主题浅色模式 */
+        [data-theme="purple"] {
+            --primary-color: #9C27B0;
+            --primary-dark: #7B1FA2;
+            --primary-light: #BA68C8;
+            --secondary-color: #673AB7;
+            --secondary-dark: #512DA8;
+            --accent-color: #E91E63;
+            --background-gradient-start: #a29bfe;
+            --background-gradient-end: #55efc4;
+            --hover-background: #f3e5f5;
+            --selected-background: #e1bee7;
+            --success-color: #8bc34a;
+            --success-dark: #689f38;
+            --success-background: #d4edda;
+            --success-border: #c3e6cb;
+            --warning-color: #ff9800;
+            --warning-dark: #f57c00;
+            --warning-background: #fff3cd;
+            --error-color: #e91e63;
+            --error-dark: #c2185b;
+            --error-background: #f8d7da;
+            --error-border: #f5c6cb;
+            --info-color: #2196f3;
+            --info-dark: #1976d2;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(156, 39, 176, 0.1);
+        }
+        
+        /* 紫色主题深色模式 */
+        [data-theme="purple"][data-mode="dark"] {
+            --primary-color: #CE93D8;
+            --primary-dark: #BA68C8;
+            --primary-light: #E1BEE7;
+            --secondary-color: #9575CD;
+            --secondary-dark: #7E57C2;
+            --accent-color: #F48FB1;
+            --background-gradient-start: #424242;
+            --background-gradient-end: #616161;
+            --text-color: #E0E0E0;
+            --text-light: #BDBDBD;
+            --card-background: #2E2E2E;
+            --border-color: #555;
+            --hover-background: #3E3E3E;
+            --selected-background: #4E4E4E;
+            --shadow-color: rgba(0,0,0,0.3);
+            --success-color: #AED581;
+            --success-dark: #8BC34A;
+            --success-background: #1B5E20;
+            --success-border: #2E7D32;
+            --warning-color: #FFB74D;
+            --warning-dark: #FF9800;
+            --warning-background: #4a3d2d;
+            --error-color: #F48FB1;
+            --error-dark: #E91E63;
+            --error-background: #880E4F;
+            --error-border: #AD1457;
+            --info-color: #64B5F6;
+            --info-dark: #2196F3;
+        }
+        
+        /* 橙色主题浅色模式 */
+        [data-theme="orange"] {
+            --primary-color: #FF9800;
+            --primary-dark: #F57C00;
+            --primary-light: #FFB74D;
+            --secondary-color: #FF5722;
+            --secondary-dark: #D84315;
+            --accent-color: #4CAF50;
+            --background-gradient-start: #fdcb6e;
+            --background-gradient-end: #74b9ff;
+            --hover-background: #fff3e0;
+            --selected-background: #ffe0b2;
+            --success-color: #4caf50;
+            --success-dark: #388e3c;
+            --success-background: #d4edda;
+            --success-border: #c3e6cb;
+            --warning-color: #ffc107;
+            --warning-dark: #f57c00;
+            --warning-background: #fff3cd;
+            --error-color: #f44336;
+            --error-dark: #d32f2f;
+            --error-background: #f8d7da;
+            --error-border: #f5c6cb;
+            --info-color: #2196f3;
+            --info-dark: #1976d2;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(255, 152, 0, 0.1);
+        }
+        
+        /* 橙色主题深色模式 */
+        [data-theme="orange"][data-mode="dark"] {
+            --primary-color: #FFB74D;
+            --primary-dark: #FF9800;
+            --primary-light: #FFCC02;
+            --secondary-color: #FF7043;
+            --secondary-dark: #FF5722;
+            --accent-color: #66BB6A;
+            --background-gradient-start: #424242;
+            --background-gradient-end: #616161;
+            --text-color: #E0E0E0;
+            --text-light: #BDBDBD;
+            --card-background: #2E2E2E;
+            --border-color: #555;
+            --hover-background: #3E3E3E;
+            --selected-background: #4E4E4E;
+            --shadow-color: rgba(0,0,0,0.3);
+            --success-color: #66BB6A;
+            --success-dark: #4CAF50;
+            --success-background: #1B5E20;
+            --success-border: #2E7D32;
+            --warning-color: #FFB74D;
+            --warning-dark: #FF9800;
+            --warning-background: #4a3d2d;
+            --error-color: #EF5350;
+            --error-dark: #F44336;
+            --error-background: #B71C1C;
+            --error-border: #D32F2F;
+            --info-color: #64B5F6;
+            --info-dark: #2196F3;
+        }
+        
+
+        
         /* 触摸设备优化 */
         @media (hover: none) and (pointer: coarse) {
             .btn, .option, .status-item, .file-item, .tab-btn {
@@ -31,9 +289,10 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
             min-height: 100vh;
             padding: 20px;
+            color: var(--text-color);
             -webkit-overflow-scrolling: touch;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
@@ -44,6 +303,7 @@
             /* 防止移动端下拉刷新 */
             overscroll-behavior: none;
             overscroll-behavior-y: none;
+            transition: all 0.3s ease;
         }
         
         /* 允许文本选择的元素 */
@@ -57,17 +317,176 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: var(--card-background);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px var(--shadow-color);
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .header {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
+        }
+        
+        /* 主题切换器样式 */
+        .theme-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .theme-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .theme-btn, .mode-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .theme-btn:hover, .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .mode-btn.dark-mode {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .mode-btn.dark-mode:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .theme-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            min-width: 200px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .theme-menu:not(.hidden) {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .theme-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 5px;
+        }
+        
+        .theme-option:hover {
+            background: var(--hover-background);
+            transform: translateX(5px);
+        }
+        
+        .theme-option.active {
+            background: var(--success-background);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        /* 深色模式下各主题的选中效果优化 */
+        [data-theme="blue"][data-mode="dark"] .theme-option.active {
+            background: rgba(100, 181, 246, 0.2);
+            border-left: 4px solid #64B5F6;
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.3);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .theme-option.active {
+            background: rgba(206, 147, 216, 0.2);
+            border-left: 4px solid #CE93D8;
+            box-shadow: 0 2px 8px rgba(206, 147, 216, 0.3);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .theme-option.active {
+            background: rgba(255, 183, 77, 0.2);
+            border-left: 4px solid #FFB74D;
+            box-shadow: 0 2px 8px rgba(255, 183, 77, 0.3);
+        }
+        
+        /* 深色模式下各主题的悬停效果优化 */
+        [data-theme="blue"][data-mode="dark"] .theme-option:hover {
+            background: rgba(100, 181, 246, 0.1);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .theme-option:hover {
+            background: rgba(206, 147, 216, 0.1);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .theme-option:hover {
+            background: rgba(255, 183, 77, 0.1);
+        }
+        
+        .theme-preview {
+            display: flex;
+            gap: 3px;
+            margin-right: 12px;
+        }
+        
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .theme-option span {
+            font-size: 14px;
+            color: var(--text-color) !important;
+            font-weight: 500;
+        }
+        
+        /* 强制深色模式下主题菜单文字为白色 */
+        [data-mode="dark"] .theme-option span {
+            color: #FFFFFF !important;
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .theme-option span {
+            color: #E3F2FD !important;
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .theme-option span {
+            color: #F3E5F5 !important;
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .theme-option span {
+            color: #FFF3E0 !important;
         }
 
         .header h1 {
@@ -94,7 +513,7 @@
         }
 
         .section h2 {
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 15px;
             font-size: 1.5em;
         }
@@ -109,7 +528,7 @@
 
         .file-upload:hover {
             border-color: #4CAF50;
-            background-color: #f9f9f9;
+            background-color: var(--hover-background);
         }
 
         .file-upload input[type="file"] {
@@ -129,9 +548,284 @@
         .file-upload label:hover {
             background: #45a049;
         }
+        
+        /* 各主题文件上传按钮优化 */
+        [data-theme="blue"] .file-upload label {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        [data-theme="blue"] .file-upload label:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+        
+        [data-theme="blue"] .file-upload:hover {
+            border-color: #2196F3;
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .file-upload label {
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .file-upload label:hover {
+            background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
+        }
+        
+        [data-theme="purple"] .file-upload label {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+        }
+        
+        [data-theme="purple"] .file-upload label:hover {
+            background: linear-gradient(135deg, #7B1FA2 0%, #6A1B9A 100%);
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+        }
+        
+        [data-theme="purple"] .file-upload:hover {
+            border-color: #9C27B0;
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .file-upload label {
+            background: linear-gradient(135deg, #CE93D8 0%, #BA68C8 100%);
+            box-shadow: 0 2px 8px rgba(206, 147, 216, 0.4);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .file-upload label:hover {
+            background: linear-gradient(135deg, #BA68C8 0%, #AB47BC 100%);
+        }
+        
+        [data-theme="orange"] .file-upload label {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+        }
+        
+        [data-theme="orange"] .file-upload label:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #EF6C00 100%);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+        }
+        
+        [data-theme="orange"] .file-upload:hover {
+            border-color: #FF9800;
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .file-upload label {
+            background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+            box-shadow: 0 2px 8px rgba(255, 183, 77, 0.4);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .file-upload label:hover {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        }
+        
+        /* 默认主题深色模式文件上传按钮优化 */
+        [data-mode="dark"] .file-upload label {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+        }
+        
+        [data-mode="dark"] .file-upload label:hover {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+        }
+        
+        [data-mode="dark"] .file-upload:hover {
+            border-color: #66BB6A;
+        }
+        
+        /* 特定按钮样式 */
+        .save-table-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .save-table-btn:hover {
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%) !important;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        
+        .view-table-btn {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+            color: white !important;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .view-table-btn:hover {
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%) !important;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        }
+        
+        .retake-wrong-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%) !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+        
+        .retake-wrong-btn:hover {
+            background: linear-gradient(135deg, #ee5a24 0%, #d63031 100%) !important;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+        
+        /* 各主题特定按钮优化 */
+        [data-theme="blue"] .save-table-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%) !important;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+        
+        [data-theme="blue"] .save-table-btn:hover {
+            background: linear-gradient(135deg, #388E3C 0%, #2E7D32 100%) !important;
+        }
+        
+        [data-theme="blue"] .view-table-btn {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%) !important;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        [data-theme="blue"] .view-table-btn:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+        }
+        
+        [data-theme="blue"] .retake-wrong-btn {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%) !important;
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+        }
+        
+        [data-theme="blue"] .retake-wrong-btn:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%) !important;
+        }
+        
+        [data-theme="purple"] .save-table-btn {
+            background: linear-gradient(135deg, #8BC34A 0%, #689F38 100%) !important;
+            box-shadow: 0 2px 8px rgba(139, 195, 74, 0.3);
+        }
+        
+        [data-theme="purple"] .save-table-btn:hover {
+            background: linear-gradient(135deg, #689F38 0%, #558B2F 100%) !important;
+        }
+        
+        [data-theme="purple"] .view-table-btn {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%) !important;
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+        }
+        
+        [data-theme="purple"] .view-table-btn:hover {
+            background: linear-gradient(135deg, #7B1FA2 0%, #6A1B9A 100%) !important;
+        }
+        
+        [data-theme="purple"] .retake-wrong-btn {
+            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%) !important;
+            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.3);
+        }
+        
+        [data-theme="purple"] .retake-wrong-btn:hover {
+            background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%) !important;
+        }
+        
+        [data-theme="orange"] .save-table-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%) !important;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+        
+        [data-theme="orange"] .save-table-btn:hover {
+            background: linear-gradient(135deg, #388E3C 0%, #2E7D32 100%) !important;
+        }
+        
+        [data-theme="orange"] .view-table-btn {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%) !important;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+        }
+        
+        [data-theme="orange"] .view-table-btn:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #EF6C00 100%) !important;
+        }
+        
+        [data-theme="orange"] .retake-wrong-btn {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%) !important;
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+        }
+        
+        [data-theme="orange"] .retake-wrong-btn:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%) !important;
+        }
+        
+        /* 深色模式特定按钮优化 */
+        [data-theme="blue"][data-mode="dark"] .save-table-btn {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%) !important;
+            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .view-table-btn {
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%) !important;
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .retake-wrong-btn {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%) !important;
+            box-shadow: 0 2px 8px rgba(239, 83, 80, 0.4);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .save-table-btn {
+            background: linear-gradient(135deg, #AED581 0%, #8BC34A 100%) !important;
+            box-shadow: 0 2px 8px rgba(174, 213, 129, 0.4);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .view-table-btn {
+            background: linear-gradient(135deg, #CE93D8 0%, #BA68C8 100%) !important;
+            box-shadow: 0 2px 8px rgba(206, 147, 216, 0.4);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .retake-wrong-btn {
+            background: linear-gradient(135deg, #f48fb1 0%, #e91e63 100%) !important;
+            box-shadow: 0 2px 8px rgba(244, 143, 177, 0.4);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .save-table-btn {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%) !important;
+            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .view-table-btn {
+            background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%) !important;
+            box-shadow: 0 2px 8px rgba(255, 183, 77, 0.4);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .retake-wrong-btn {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%) !important;
+            box-shadow: 0 2px 8px rgba(239, 83, 80, 0.4);
+        }
+        
+        /* 默认主题深色模式特定按钮优化 */
+        [data-mode="dark"] .save-table-btn {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%) !important;
+            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+        }
+        
+        [data-mode="dark"] .view-table-btn {
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%) !important;
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
+        }
+        
+        [data-mode="dark"] .retake-wrong-btn {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%) !important;
+            box-shadow: 0 2px 8px rgba(239, 83, 80, 0.4);
+        }
 
         .btn {
-            background: #4CAF50;
+            background: var(--primary-color);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -143,7 +837,7 @@
         }
 
         .btn:hover {
-            background: #45a049;
+            background: var(--primary-dark);
             transform: translateY(-2px);
         }
 
@@ -154,15 +848,116 @@
         }
 
         .btn-secondary {
-            background: #2196F3;
+            background: var(--secondary-color);
         }
 
         .btn-secondary:hover {
-            background: #1976D2;
+            background: var(--secondary-dark);
+        }
+        
+        /* 蓝色主题按钮优化 */
+        [data-theme="blue"] .btn {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        [data-theme="blue"] .btn:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+        
+        [data-theme="blue"] .btn-secondary {
+            background: linear-gradient(135deg, #03A9F4 0%, #0288D1 100%);
+            box-shadow: 0 2px 8px rgba(3, 169, 244, 0.3);
+        }
+        
+        [data-theme="blue"] .btn-secondary:hover {
+            background: linear-gradient(135deg, #0288D1 0%, #0277BD 100%);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .btn {
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .btn:hover {
+            background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
+            box-shadow: 0 4px 12px rgba(100, 181, 246, 0.5);
+        }
+        
+        /* 紫色主题按钮优化 */
+        [data-theme="purple"] .btn {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+        }
+        
+        [data-theme="purple"] .btn:hover {
+            background: linear-gradient(135deg, #7B1FA2 0%, #6A1B9A 100%);
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+        }
+        
+        [data-theme="purple"] .btn-secondary {
+            background: linear-gradient(135deg, #673AB7 0%, #512DA8 100%);
+            box-shadow: 0 2px 8px rgba(103, 58, 183, 0.3);
+        }
+        
+        [data-theme="purple"] .btn-secondary:hover {
+            background: linear-gradient(135deg, #512DA8 0%, #4527A0 100%);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .btn {
+            background: linear-gradient(135deg, #CE93D8 0%, #BA68C8 100%);
+            box-shadow: 0 2px 8px rgba(206, 147, 216, 0.4);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .btn:hover {
+            background: linear-gradient(135deg, #BA68C8 0%, #AB47BC 100%);
+            box-shadow: 0 4px 12px rgba(206, 147, 216, 0.5);
+        }
+        
+        /* 橙色主题按钮优化 */
+        [data-theme="orange"] .btn {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+        }
+        
+        [data-theme="orange"] .btn:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #EF6C00 100%);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+        }
+        
+        [data-theme="orange"] .btn-secondary {
+            background: linear-gradient(135deg, #FF5722 0%, #D84315 100%);
+            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.3);
+        }
+        
+        [data-theme="orange"] .btn-secondary:hover {
+            background: linear-gradient(135deg, #D84315 0%, #BF360C 100%);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .btn {
+            background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+            box-shadow: 0 2px 8px rgba(255, 183, 77, 0.4);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .btn:hover {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            box-shadow: 0 4px 12px rgba(255, 183, 77, 0.5);
+        }
+        
+        /* 默认主题深色模式按钮优化 */
+        [data-mode="dark"] .btn {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+        }
+        
+        [data-mode="dark"] .btn:hover {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            box-shadow: 0 4px 12px rgba(102, 187, 106, 0.5);
         }
 
         .btn-danger {
-            background: #f44336;
+            background: var(--error-color);
         }
 
         .btn-danger:hover {
@@ -170,10 +965,11 @@
         }
 
         .question-container {
-            background: #f9f9f9;
+            background: var(--card-background);
             border-radius: 10px;
             padding: 25px;
             margin: 20px 0;
+            border: 1px solid var(--border-color);
         }
 
         .question-header {
@@ -184,7 +980,7 @@
         }
 
         .question-number {
-            background: #4CAF50;
+            background: var(--primary-color);
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
@@ -192,18 +988,84 @@
         }
 
         .question-type {
-            background: #2196F3;
+            background: var(--secondary-color);
             color: white;
             padding: 5px 12px;
             border-radius: 15px;
             font-size: 14px;
+        }
+        
+        /* 各主题问题编号和类型标签优化 */
+        [data-theme="blue"] .question-number {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+        }
+        
+        [data-theme="blue"] .question-type {
+            background: linear-gradient(135deg, #03A9F4 0%, #0288D1 100%);
+            box-shadow: 0 2px 6px rgba(3, 169, 244, 0.3);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .question-number {
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .question-type {
+            background: linear-gradient(135deg, #29B6F6 0%, #03A9F4 100%);
+        }
+        
+        [data-theme="purple"] .question-number {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            box-shadow: 0 2px 6px rgba(156, 39, 176, 0.3);
+        }
+        
+        [data-theme="purple"] .question-type {
+            background: linear-gradient(135deg, #673AB7 0%, #512DA8 100%);
+            box-shadow: 0 2px 6px rgba(103, 58, 183, 0.3);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .question-number {
+            background: linear-gradient(135deg, #CE93D8 0%, #BA68C8 100%);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .question-type {
+            background: linear-gradient(135deg, #9575CD 0%, #7E57C2 100%);
+        }
+        
+        [data-theme="orange"] .question-number {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
+        }
+        
+        [data-theme="orange"] .question-type {
+            background: linear-gradient(135deg, #FF5722 0%, #D84315 100%);
+            box-shadow: 0 2px 6px rgba(255, 87, 34, 0.3);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .question-number {
+            background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .question-type {
+            background: linear-gradient(135deg, #FF7043 0%, #FF5722 100%);
+        }
+        
+        /* 默认主题深色模式优化 */
+        [data-mode="dark"] .question-number {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            box-shadow: 0 2px 6px rgba(102, 187, 106, 0.4);
+        }
+        
+        [data-mode="dark"] .question-type {
+            background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
+            box-shadow: 0 2px 6px rgba(66, 165, 245, 0.4);
         }
 
         .question-text {
             font-size: 18px;
             line-height: 1.6;
             margin-bottom: 20px;
-            color: #333;
+            color: var(--text-color);
         }
 
         .options {
@@ -213,21 +1075,22 @@
         .option {
             margin: 10px 0;
             padding: 12px;
-            background: white;
-            border: 2px solid #ddd;
+            background: var(--card-background);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            color: var(--text-color);
         }
 
         .option:hover {
-            border-color: #4CAF50;
-            background: #f0f8f0;
+            border-color: var(--primary-color);
+            background: var(--hover-background);
         }
 
         .option.selected {
-            border-color: #4CAF50;
-            background: #e8f5e8;
+            border-color: var(--primary-color);
+            background: var(--selected-background);
             box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
         }
 
@@ -235,11 +1098,11 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #4CAF50;
+            background: var(--success-color);
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px var(--shadow-color);
             z-index: 1000;
             opacity: 0;
             transform: translateX(100%);
@@ -259,23 +1122,25 @@
             width: 100%;
             min-height: 120px;
             padding: 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 16px;
             font-family: inherit;
             resize: vertical;
             transition: border-color 0.3s ease;
+            background: var(--card-background);
+            color: var(--text-color);
         }
 
         .textarea-answer:focus {
             outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--hover-background);
         }
 
         .options-display {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background: var(--hover-background);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
@@ -283,16 +1148,16 @@
 
         .options-display h4 {
             margin: 0 0 10px 0;
-            color: #495057;
+            color: var(--text-color);
             font-size: 16px;
         }
 
         .option-text {
               padding: 10px 0;
-              color: #6c757d;
+              color: var(--text-light);
               font-size: 15px;
               line-height: 1.5;
-              border-bottom: 1px solid #e9ecef;
+              border-bottom: 1px solid var(--border-color);
               display: block;
               width: 100%;
           }
@@ -313,26 +1178,28 @@
             display: block;
             margin-bottom: 10px;
             font-weight: 600;
-            color: #495057;
+            color: var(--text-color);
             font-size: 16px;
         }
 
         .answer-input {
             width: 320px;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 18px;
             font-weight: 600;
             text-align: center;
             text-transform: uppercase;
             transition: all 0.3s ease;
+            background: var(--card-background);
+            color: var(--text-color);
         }
 
         .answer-input:focus {
             outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--hover-background);
             transform: scale(1.02);
         }
 
@@ -355,7 +1222,7 @@
             gap: 8px;
             margin: 20px 0;
             padding: 15px;
-            background: #f9f9f9;
+            background: var(--hover-background);
             border-radius: 10px;
             transition: all 0.3s ease;
             overflow: hidden;
@@ -375,7 +1242,7 @@
         }
 
         .total-count-toggle:hover {
-            color: #4CAF50;
+            color: var(--primary-color);
         }
 
         #toggleIcon {
@@ -394,20 +1261,20 @@
         }
 
         .detected-files h3 {
-            color: #4CAF50;
+            color: var(--primary-color);
             margin-bottom: 15px;
             font-size: 18px;
         }
 
         .file-list {
-            background: #f9f9f9;
+            background: var(--hover-background);
             border-radius: 8px;
             padding: 15px;
             min-height: 60px;
         }
 
         .loading-text {
-            color: #666;
+            color: var(--text-light);
             font-style: italic;
             text-align: center;
             margin: 0;
@@ -419,30 +1286,31 @@
             align-items: center;
             padding: 10px 15px;
             margin: 8px 0;
-            background: white;
+            background: var(--card-background);
             border-radius: 6px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             transition: all 0.3s ease;
             cursor: pointer;
+            color: var(--text-color);
         }
 
         .file-item:hover {
-            border-color: #4CAF50;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px var(--shadow-color);
         }
 
         .file-item.selected {
-            border-color: #4CAF50;
-            background: #e8f5e8;
+            border-color: var(--primary-color);
+            background: var(--selected-background);
         }
 
         .file-name {
             font-weight: 500;
-            color: #333;
+            color: var(--text-color);
         }
 
         .file-size {
-            color: #666;
+            color: var(--text-light);
             font-size: 14px;
         }
 
@@ -459,20 +1327,20 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: #ddd;
+            background: var(--border-color);
         }
 
         .divider span {
-            background: white;
+            background: var(--card-background);
             padding: 0 20px;
-            color: #666;
+            color: var(--text-light);
             font-size: 14px;
         }
         
         /* 考试设置样式 */
         .exam-settings {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
+            background: var(--hover-background);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
@@ -480,7 +1348,7 @@
         
         .exam-settings h3 {
             margin: 0 0 20px 0;
-            color: #495057;
+            color: var(--text-color);
             font-size: 18px;
         }
         
@@ -492,7 +1360,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
-            color: #495057;
+            color: var(--text-color);
         }
         
         .question-type-selection {
@@ -507,8 +1375,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 10px;
-            background: white;
-            border: 1px solid #dee2e6;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-weight: normal !important;
             margin-bottom: 0 !important;
@@ -517,7 +1385,7 @@
         .available-count {
             margin-left: auto;
             font-size: 12px;
-            color: #6c757d;
+            color: var(--text-light);
         }
         
         .number-input-group {
@@ -536,7 +1404,7 @@
         
         .max-count-hint {
             font-size: 12px;
-            color: #6c757d;
+            color: var(--text-light);
         }
         
         .setting-actions {
@@ -552,8 +1420,8 @@
         
         /* 题型数量设置样式 */
         .question-count-settings {
-            background: white;
-            border: 1px solid #dee2e6;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 15px;
             margin-top: 10px;
@@ -574,7 +1442,7 @@
             min-width: 80px;
             margin: 0 !important;
             font-weight: normal !important;
-            color: #495057;
+            color: var(--text-color);
         }
         
         .count-input-row input {
@@ -588,28 +1456,28 @@
         
         .count-input-row input:focus {
             outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.25);
         }
         
         .max-hint {
             font-size: 12px;
-            color: #6c757d;
+            color: var(--text-light);
             margin-left: auto;
         }
         
         .total-count-display {
             margin-top: 15px;
             padding: 10px;
-            background: #e9ecef;
+            background: var(--hover-background);
             border-radius: 4px;
             text-align: center;
             font-size: 14px;
-            color: #495057;
+            color: var(--text-color);
         }
         
         .total-count-display strong {
-            color: #007bff;
+            color: var(--primary-color);
             font-size: 16px;
         }
         
@@ -639,15 +1507,15 @@
             gap: 10px;
             margin-top: 15px;
             padding: 10px;
-            background: #f8f9fa;
+            background: var(--hover-background);
             border-radius: 6px;
-            border: 1px solid #dee2e6;
+            border: 1px solid var(--border-color);
         }
         
         .time-input-group label {
             margin: 0 !important;
             font-weight: normal !important;
-            color: #495057;
+            color: var(--text-color);
         }
         
         .time-input-group input {
@@ -661,8 +1529,8 @@
         
         .time-input-group input:focus {
              outline: none;
-             border-color: #007bff;
-             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+             border-color: var(--primary-color);
+             box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.25);
          }
          
          /* 考试时间显示样式 */
@@ -676,12 +1544,70 @@
          }
          
          .exam-timer {
-             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-         }
-         
-         .exam-duration {
-             background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-         }
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+        
+        .exam-duration {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        }
+        
+        /* 各主题计时器优化 */
+        [data-theme="blue"] .exam-timer {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        
+        [data-theme="blue"] .exam-duration {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .exam-timer {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .exam-duration {
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+        }
+        
+        [data-theme="purple"] .exam-timer {
+            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+        }
+        
+        [data-theme="purple"] .exam-duration {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .exam-timer {
+            background: linear-gradient(135deg, #f48fb1 0%, #e91e63 100%);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .exam-duration {
+            background: linear-gradient(135deg, #CE93D8 0%, #BA68C8 100%);
+        }
+        
+        [data-theme="orange"] .exam-timer {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        
+        [data-theme="orange"] .exam-duration {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .exam-timer {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .exam-duration {
+            background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+        }
+        
+        /* 默认主题深色模式计时器优化 */
+        [data-mode="dark"] .exam-timer {
+            background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+        }
+        
+        [data-mode="dark"] .exam-duration {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+        }
          
          .timer-display, .duration-display {
              display: flex;
@@ -756,23 +1682,23 @@
 
         .no-files-message {
             text-align: center;
-            color: #666;
+            color: var(--text-light);
             font-style: italic;
             padding: 20px;
-            background: #f8f9fa;
+            background: var(--hover-background);
             border-radius: 8px;
-            border: 1px dashed #ddd;
+            border: 1px dashed var(--border-color);
             margin: 10px 0;
         }
         
         .loading-message {
             text-align: center;
-            color: #666;
+            color: var(--text-light);
             font-style: italic;
             padding: 20px;
-            background: #f0f8ff;
+            background: var(--hover-background);
             border-radius: 8px;
-            border: 1px solid #e3f2fd;
+            border: 1px solid var(--border-color);
             margin: 10px 0;
         }
 
@@ -787,29 +1713,110 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid #ddd;
-            background: white;
+            border: 2px solid var(--border-color);
+            background: var(--card-background);
+            color: var(--text-color);
         }
 
         .status-item.answered {
-            background: #4CAF50;
+            background: var(--success-color);
             color: white;
-            border-color: #4CAF50;
+            border-color: var(--success-color);
         }
 
         .status-item.current {
-            background: #2196F3;
+            background: var(--primary-color);
             color: white;
-            border-color: #2196F3;
+            border-color: var(--primary-color);
             transform: scale(1.1);
         }
 
         .status-item:hover {
             transform: scale(1.05);
         }
+        
+        /* 各主题题目状态指示器优化 */
+        [data-theme="blue"] .status-item.current {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            border-color: #2196F3;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+        }
+        
+        [data-theme="blue"] .status-item.answered {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            border-color: #4CAF50;
+            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .status-item.current {
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+            border-color: #64B5F6;
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .status-item.answered {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            border-color: #66BB6A;
+        }
+        
+        [data-theme="purple"] .status-item.current {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            border-color: #9C27B0;
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.4);
+        }
+        
+        [data-theme="purple"] .status-item.answered {
+            background: linear-gradient(135deg, #8BC34A 0%, #689F38 100%);
+            border-color: #8BC34A;
+            box-shadow: 0 2px 6px rgba(139, 195, 74, 0.3);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .status-item.current {
+            background: linear-gradient(135deg, #CE93D8 0%, #BA68C8 100%);
+            border-color: #CE93D8;
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .status-item.answered {
+            background: linear-gradient(135deg, #AED581 0%, #8BC34A 100%);
+            border-color: #AED581;
+        }
+        
+        [data-theme="orange"] .status-item.current {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            border-color: #FF9800;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+        }
+        
+        [data-theme="orange"] .status-item.answered {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            border-color: #4CAF50;
+            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .status-item.current {
+            background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+            border-color: #FFB74D;
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .status-item.answered {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            border-color: #66BB6A;
+        }
+        
+        /* 默认主题深色模式题目状态指示器优化 */
+        [data-mode="dark"] .status-item.current {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            border-color: #66BB6A;
+            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+        }
+        
+        [data-mode="dark"] .status-item.answered {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            border-color: #66BB6A;
+            box-shadow: 0 2px 6px rgba(102, 187, 106, 0.4);
+        }
 
         .progress {
-            background: #ddd;
+            background: var(--border-color);
             border-radius: 10px;
             height: 10px;
             margin: 20px 0;
@@ -817,34 +1824,50 @@
         }
 
         .progress-bar {
-            background: #4CAF50;
+            background: var(--primary-color);
             height: 100%;
             transition: width 0.3s ease;
         }
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin: 20px 0;
         }
+        
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
 
         .stat-card {
-            background: white;
+            background: var(--card-background);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .stat-number {
             font-size: 2em;
             font-weight: bold;
-            color: #4CAF50;
+            color: var(--primary-color);
         }
 
         .stat-label {
-            color: #666;
+            color: var(--text-light);
             margin-top: 5px;
         }
 
@@ -853,11 +1876,12 @@
         }
 
         .wrong-question {
-            background: #ffebee;
-            border-left: 4px solid #f44336;
+            background: rgba(244, 67, 54, 0.1);
+            border-left: 4px solid var(--error-color);
             padding: 15px;
             margin: 10px 0;
             border-radius: 5px;
+            color: var(--text-color);
         }
         
         .correct-questions {
@@ -865,11 +1889,12 @@
         }
         
         .correct-question {
-            background: #e8f5e9;
-            border-left: 4px solid #4CAF50;
+            background: var(--selected-background);
+            border-left: 4px solid var(--success-color);
             padding: 15px;
             margin: 10px 0;
             border-radius: 5px;
+            color: var(--text-color);
         }
         
         .correct-questions-header {
@@ -890,7 +1915,7 @@
         }
         
         .export-buttons .btn {
-            background-color: #17a2b8;
+            background-color: var(--info-color);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -900,13 +1925,58 @@
         }
         
         .export-buttons .btn:hover {
-            background-color: #138496;
+            background-color: var(--info-dark);
+        }
+        
+        /* 各主题导出按钮优化 */
+        [data-theme="blue"] .export-buttons .btn {
+            background: linear-gradient(135deg, #03A9F4 0%, #0288D1 100%);
+            box-shadow: 0 2px 6px rgba(3, 169, 244, 0.3);
+        }
+        
+        [data-theme="blue"] .export-buttons .btn:hover {
+            background: linear-gradient(135deg, #0288D1 0%, #0277BD 100%);
+        }
+        
+        [data-theme="blue"][data-mode="dark"] .export-buttons .btn {
+            background: linear-gradient(135deg, #29B6F6 0%, #03A9F4 100%);
+        }
+        
+        [data-theme="purple"] .export-buttons .btn {
+            background: linear-gradient(135deg, #673AB7 0%, #512DA8 100%);
+            box-shadow: 0 2px 6px rgba(103, 58, 183, 0.3);
+        }
+        
+        [data-theme="purple"] .export-buttons .btn:hover {
+            background: linear-gradient(135deg, #512DA8 0%, #4527A0 100%);
+        }
+        
+        [data-theme="purple"][data-mode="dark"] .export-buttons .btn {
+            background: linear-gradient(135deg, #9575CD 0%, #7E57C2 100%);
+        }
+        
+        [data-theme="orange"] .export-buttons .btn {
+            background: linear-gradient(135deg, #FF5722 0%, #D84315 100%);
+            box-shadow: 0 2px 6px rgba(255, 87, 34, 0.3);
+        }
+        
+        [data-theme="orange"] .export-buttons .btn:hover {
+            background: linear-gradient(135deg, #D84315 0%, #BF360C 100%);
+        }
+        
+        [data-theme="orange"][data-mode="dark"] .export-buttons .btn {
+            background: linear-gradient(135deg, #FF7043 0%, #FF5722 100%);
+        }
+        
+        [data-mode="dark"] .export-buttons .btn {
+            background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
+            box-shadow: 0 2px 6px rgba(66, 165, 245, 0.4);
         }
 
         .tab-navigation {
             display: flex;
             margin: 20px 0;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 2px solid var(--border-color);
         }
 
         .tab-btn {
@@ -915,20 +1985,20 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
-            color: #666;
+            color: var(--text-light);
             border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
         }
 
         .tab-btn.active {
-            color: #4CAF50;
-            border-bottom-color: #4CAF50;
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
             font-weight: bold;
         }
 
         .tab-btn:hover {
-            color: #4CAF50;
-            background-color: #f5f5f5;
+            color: var(--primary-color);
+            background-color: var(--hover-background);
         }
 
         .tab-content {
@@ -941,13 +2011,20 @@
         }
 
         .essay-answers {
-            background: #f9f9f9;
+            background: var(--card-background);
             border-radius: 8px;
             padding: 20px;
         }
 
+        .essay-answers h3 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
         .essay-question {
-            background: white;
+            background: var(--card-background);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
@@ -966,17 +2043,17 @@
         }
 
         .user-essay-answer {
-            background-color: #fff3cd;
-            border-left: 3px solid #ffc107;
+            background-color: var(--warning-background);
+            border-left: 3px solid var(--warning-color);
         }
 
         .correct-essay-answer {
-            background-color: #d4edda;
-            border-left: 3px solid #28a745;
+            background-color: var(--success-background);
+            border-left: 3px solid var(--success-color);
         }
 
         .confirm-answer-btn {
-            background-color: #4CAF50;
+            background-color: var(--success-color);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -987,7 +2064,7 @@
         }
 
         .confirm-answer-btn:hover {
-            background-color: #45a049;
+            background-color: var(--success-dark);
         }
 
         .answer-result {
@@ -1042,13 +2119,15 @@
         }
 
         .user-answer {
-            background: #fff3cd;
-            border-color: #ffeaa7;
+            background: rgba(255, 193, 7, 0.1);
+            border-color: var(--warning-color);
+            color: var(--text-color);
         }
 
         .correct-answer {
-            background: #d1ecf1;
-            border-color: #bee5eb;
+            background: var(--selected-background);
+            border-color: var(--info-color);
+            color: var(--text-color);
         }
 
         .answer-label {
@@ -1058,11 +2137,11 @@
         }
 
         .user-answer .answer-label {
-            color: #856404;
+            color: var(--warning-dark);
         }
 
         .correct-answer .answer-label {
-            color: #0c5460;
+            color: var(--info-dark);
         }
 
         @media (max-width: 768px) {
@@ -1096,21 +2175,21 @@
         }
 
         .info {
-            background: #e3f2fd;
-            border: 1px solid #2196F3;
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid var(--info-color);
             border-radius: 5px;
             padding: 15px;
             margin: 15px 0;
-            color: #1976D2;
+            color: var(--info-dark);
         }
 
         .success {
-            background: #e8f5e9;
-            border: 1px solid #4CAF50;
+            background: var(--selected-background);
+            border: 1px solid var(--success-color);
             border-radius: 5px;
             padding: 15px;
             margin: 15px 0;
-            color: #2e7d32;
+            color: var(--success-dark);
         }
 
         @media (max-width: 600px) {
@@ -1394,9 +2473,9 @@
              padding: 8px 10px;
              border: 2px solid #e1e5e9;
              border-radius: 6px;
-             background-color: white;
+             background-color: var(--card-background);
              font-size: 13px;
-             color: #333;
+             color: var(--text-color);
              cursor: pointer;
              transition: all 0.3s ease;
              min-width: 110px;
@@ -1540,6 +2619,48 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="theme-switcher">
+                <button id="modeSwitcherBtn" class="mode-btn" title="切换深浅模式">
+                    🌙
+                </button>
+                <button id="themeSwitcherBtn" class="theme-btn" title="切换主题">
+                    🎨
+                </button>
+                <div id="themeMenu" class="theme-menu hidden">
+                    <div class="theme-option" data-theme="default">
+                        <div class="theme-preview">
+                            <div class="color-dot" style="background: #4CAF50;"></div>
+                            <div class="color-dot" style="background: #667eea;"></div>
+                            <div class="color-dot" style="background: #764ba2;"></div>
+                        </div>
+                        <span>默认绿色</span>
+                    </div>
+                    <div class="theme-option" data-theme="blue">
+                        <div class="theme-preview">
+                            <div class="color-dot" style="background: #2196F3;"></div>
+                            <div class="color-dot" style="background: #1976D2;"></div>
+                            <div class="color-dot" style="background: #0D47A1;"></div>
+                        </div>
+                        <span>海洋蓝色</span>
+                    </div>
+                    <div class="theme-option" data-theme="purple">
+                        <div class="theme-preview">
+                            <div class="color-dot" style="background: #9C27B0;"></div>
+                            <div class="color-dot" style="background: #7B1FA2;"></div>
+                            <div class="color-dot" style="background: #4A148C;"></div>
+                        </div>
+                        <span>优雅紫色</span>
+                    </div>
+                    <div class="theme-option" data-theme="orange">
+                        <div class="theme-preview">
+                            <div class="color-dot" style="background: #FF9800;"></div>
+                            <div class="color-dot" style="background: #F57C00;"></div>
+                            <div class="color-dot" style="background: #E65100;"></div>
+                        </div>
+                        <span>活力橙色</span>
+                    </div>
+                </div>
+            </div>
             <h1>📚 题库复习系统 <span id="version-display" class="version-tag"></span></h1>
             <p>导入题库，开始你的复习之旅</p>
         </div>
@@ -1566,7 +2687,7 @@
                 <div class="file-upload">
                     <input type="file" id="csvFile" accept=".csv,.xlsx" />
                     <label for="csvFile">手动上传题库文件</label>
-                    <p style="margin-top: 15px; color: #666;">支持格式：CSV、Excel (.xlsx)<br>格式要求：编号,题目类型,题目,题目选项,题目答案,答案说明</p>
+                    <p style="margin-top: 15px; color: var(--text-light);">支持格式：CSV、Excel (.xlsx)<br>格式要求：编号,题目类型,题目,题目选项,题目答案,答案说明</p>
                 </div>
                 
                 <div id="file-info" class="info hidden">
@@ -1707,7 +2828,7 @@
                     </div>
                 </div>
                 
-                <div style="text-align: center; margin: 15px 0; color: #666;">
+                <div style="text-align: center; margin: 15px 0; color: var(--text-light);">
                     <span id="answeredCount">已答题: 0</span> / 
                     <span id="totalCount" class="total-count-toggle" onclick="toggleQuestionStatus()">总题数: 0 <span id="toggleIcon">▼</span></span>
                 </div>
@@ -1769,12 +2890,20 @@
                             <div class="stat-number" id="avgTimePerQuestion">00:00</div>
                             <div class="stat-label">平均用时</div>
                         </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="pauseCount">0</div>
+                            <div class="stat-label">暂停次数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="pauseTime">00:00</div>
+                            <div class="stat-label">暂停用时</div>
+                        </div>
                     </div>
                     
                     <!-- 保存数据到多维表按钮 -->
                     <div class="save-to-table-container" style="margin: 20px 0; text-align: center;">
-                        <button id="saveToTableBtn" class="btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); transition: all 0.3s ease; margin-right: 10px;">📊 保存到多维表</button>
-                        <button id="viewTableBtn" class="btn" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3); transition: all 0.3s ease;">👁️ 查看多维表</button>
+                        <button id="saveToTableBtn" class="btn save-table-btn">📊 保存到多维表</button>
+                        <button id="viewTableBtn" class="btn view-table-btn">👁️ 查看多维表</button>
                     </div>
                     
                     <div class="wrong-questions" id="wrongQuestions">
@@ -1789,7 +2918,7 @@
                                 </select>
                                 <button id="exportWrongBtn" class="export-btn btn btn-secondary">📥 导出错题</button>
                             </div>
-                            <button id="retakeWrongBtn" class="export-btn btn btn-primary" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);">🔄 错题重考</button>
+                            <button id="retakeWrongBtn" class="export-btn btn btn-primary retake-wrong-btn">🔄 错题重考</button>
                         </div>
                     </div>
                 </div>
@@ -1838,12 +2967,12 @@
 
     <!-- 保存到多维表弹窗 -->
     <div id="saveToTableModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-        <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: none; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div class="modal-content" style="background-color: var(--card-background); margin: 15% auto; padding: 20px; border: none; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 20px var(--shadow-color);">
             <div class="modal-header" style="text-align: center; margin-bottom: 20px;">
-                <h3 style="margin: 0; color: #333; font-size: 20px;">📊 保存数据到多维表</h3>
+                <h3 style="margin: 0; color: var(--text-color); font-size: 20px;">📊 保存数据到多维表</h3>
             </div>
             <div class="modal-body">
-                <label for="userName" style="display: block; margin-bottom: 8px; font-weight: bold; color: #555;">请输入用户名称：</label>
+                <label for="userName" style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--text-light);">请输入用户名称：</label>
                 <input type="text" id="userName" placeholder="请输入您的姓名" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; margin-bottom: 20px;" />
             </div>
             <div class="modal-footer" style="text-align: center;">
@@ -1857,7 +2986,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v3.5.5"; // 可手动修改版本号
+                this.version = "v3.6.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -1880,6 +3009,8 @@
                 this.isPaused = false; // 是否暂停
                 this.pausedTime = 0; // 累计暂停时间（毫秒）
                 this.pauseStartTime = null; // 暂停开始时间
+                this.pauseCount = 0; // 暂停次数
+                this.pauseOverlayTimer = null; // 暂停覆盖层定时器
                 
                 // 错题重考相关变量
                 this.isRetakeMode = false; // 是否为错题重考模式
@@ -2076,6 +3207,8 @@
                 const wrongCount = document.getElementById('wrongCount').textContent;
                 const accuracy = document.getElementById('accuracy').textContent;
                 const examTime = document.getElementById('examTime').textContent;
+                const pauseCount = document.getElementById('pauseCount').textContent;
+                const pauseTime = document.getElementById('pauseTime').textContent;
                 
                 // 准备发送的数据
                 const avgTimePerQuestion = this.getAverageTimePerQuestion();
@@ -2087,6 +3220,8 @@
                     正确率: accuracy,
                     考试用时: examTime,
                     平均用时: avgTimePerQuestion,
+                    暂停次数: pauseCount,
+                    暂停用时: pauseTime,
                     提交时间: new Date().toLocaleString('zh-CN')
                 };
                 
@@ -2141,7 +3276,7 @@
                     console.error('保存数据到多维表失败:', error);
                     
                     // 提供备用方案：复制数据到剪贴板
-                    const dataText = `用户名称: ${userName}\n总分: ${totalScore}\n正确题数: ${correctCount}\n错误题数: ${wrongCount}\n正确率: ${accuracy}\n考试用时: ${examTime}\n平均用时: ${avgTimePerQuestion}\n提交时间: ${new Date().toLocaleString('zh-CN')}`;
+                    const dataText = `用户名称: ${userName}\n总分: ${totalScore}\n正确题数: ${correctCount}\n错误题数: ${wrongCount}\n正确率: ${accuracy}\n考试用时: ${examTime}\n平均用时: ${avgTimePerQuestion}\n暂停次数: ${pauseCount}\n暂停用时: ${pauseTime}\n提交时间: ${new Date().toLocaleString('zh-CN')}`;
                     
                     try {
                         await navigator.clipboard.writeText(dataText);
@@ -2191,7 +3326,7 @@
                         fileList.innerHTML = `
                             <div class="no-files-message">
                                 <p>⚠️ 未检测到可访问的题库文件</p>
-                                <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                                <p style="font-size: 12px; color: var(--text-light); margin-top: 8px;">
                                     提示：请确保通过HTTP服务器访问此页面，或使用下方的手动上传功能
                                 </p>
                             </div>
@@ -2220,7 +3355,7 @@
                     document.getElementById('fileList').innerHTML = `
                         <div class="no-files-message">
                             <p>❌ 检测文件时出错</p>
-                            <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                            <p style="font-size: 12px; color: var(--text-light); margin-top: 8px;">
                                 请使用下方的手动上传功能
                             </p>
                         </div>
@@ -2762,6 +3897,8 @@
                 this.isPaused = false;
                 this.pausedTime = 0;
                 this.pauseStartTime = null;
+                this.pauseCount = 0; // 重置暂停次数
+                this.stopPauseOverlayTimer(); // 清除暂停覆盖层定时器
                 
                 // 隐藏设置区域，显示考试区域
                 document.getElementById('exam-settings').style.display = 'none';
@@ -2908,7 +4045,7 @@
                     const label = document.createElement('label');
                     label.textContent = question.type === '单选题' ? '请选择答案：' : '请选择答案（可多选）：';
                     label.className = 'answer-label';
-                    label.style.cssText = 'display: block; margin-bottom: 15px; font-weight: bold; color: #333;';
+                    label.style.cssText = 'display: block; margin-bottom: 15px; font-weight: bold; color: var(--text-color);';
                     optionsContainer.appendChild(label);
                     
                     const savedAnswer = this.userAnswers[this.currentQuestionIndex] || '';
@@ -2935,7 +4072,7 @@
                                 padding: 15px 20px;
                                 margin: 8px 0;
                                 border: 2px solid #ddd;
-                                background: white;
+                                background: var(--card-background);
                                 border-radius: 8px;
                                 cursor: pointer;
                                 font-size: 16px;
@@ -2947,9 +4084,9 @@
                             // 如果已选中，添加选中样式
                             if (selectedOptions.includes(letter)) {
                                 optionDiv.classList.add('selected');
-                                optionDiv.style.backgroundColor = '#007bff';
+                                optionDiv.style.backgroundColor = 'var(--primary-color)';
                                 optionDiv.style.color = 'white';
-                                optionDiv.style.borderColor = '#007bff';
+                                optionDiv.style.borderColor = 'var(--primary-color)';
                             }
                             
                             // 添加点击事件
@@ -2963,29 +4100,29 @@
                                     // 单选题：清除其他选择，只选中当前选项
                                     optionsContainer.querySelectorAll('.option-item').forEach(item => {
                                         item.classList.remove('selected');
-                                        item.style.backgroundColor = 'white';
-                                        item.style.color = 'black';
-                                        item.style.borderColor = '#ddd';
+                                        item.style.backgroundColor = 'var(--card-background)';
+                                        item.style.color = 'var(--text-color)';
+                                        item.style.borderColor = 'var(--border-color)';
                                     });
                                     
                                     optionDiv.classList.add('selected');
-                                    optionDiv.style.backgroundColor = '#007bff';
+                                    optionDiv.style.backgroundColor = 'var(--primary-color)';
                                     optionDiv.style.color = 'white';
-                                    optionDiv.style.borderColor = '#007bff';
+                                    optionDiv.style.borderColor = 'var(--primary-color)';
                                     
                                     this.userAnswers[this.currentQuestionIndex] = letter;
                                 } else {
                                     // 多选题：切换选中状态
                                     if (optionDiv.classList.contains('selected')) {
                                         optionDiv.classList.remove('selected');
-                                        optionDiv.style.backgroundColor = 'white';
-                                        optionDiv.style.color = 'black';
-                                        optionDiv.style.borderColor = '#ddd';
+                                        optionDiv.style.backgroundColor = 'var(--card-background)';
+                                        optionDiv.style.color = 'var(--text-color)';
+                                        optionDiv.style.borderColor = 'var(--border-color)';
                                     } else {
                                         optionDiv.classList.add('selected');
-                                        optionDiv.style.backgroundColor = '#007bff';
+                                        optionDiv.style.backgroundColor = 'var(--primary-color)';
                                         optionDiv.style.color = 'white';
-                                        optionDiv.style.borderColor = '#007bff';
+                                        optionDiv.style.borderColor = 'var(--primary-color)';
                                     }
                                     
                                     // 更新答案
@@ -3007,15 +4144,15 @@
                             // 添加悬停效果
                             optionDiv.addEventListener('mouseenter', () => {
                                 if (!optionDiv.classList.contains('selected') && !this.answeredQuestions.has(this.currentQuestionIndex)) {
-                                    optionDiv.style.backgroundColor = '#f8f9fa';
-                                    optionDiv.style.borderColor = '#007bff';
+                                    optionDiv.style.backgroundColor = 'var(--hover-background)';
+                                    optionDiv.style.borderColor = 'var(--primary-color)';
                                 }
                             });
                             
                             optionDiv.addEventListener('mouseleave', () => {
                                 if (!optionDiv.classList.contains('selected')) {
-                                    optionDiv.style.backgroundColor = 'white';
-                                    optionDiv.style.borderColor = '#ddd';
+                                    optionDiv.style.backgroundColor = 'var(--card-background)';
+                                    optionDiv.style.borderColor = 'var(--border-color)';
                                 }
                             });
                             
@@ -3342,6 +4479,10 @@
                 const avgTimePerQuestion = this.getAverageTimePerQuestion();
                 document.getElementById('avgTimePerQuestion').textContent = avgTimePerQuestion;
                 
+                // 显示暂停次数和暂停总用时
+                document.getElementById('pauseCount').textContent = this.pauseCount;
+                document.getElementById('pauseTime').textContent = this.formatPauseTime(this.pausedTime);
+                
                 // 计算正确题目
                 const correctQuestions = [];
                 const wrongQuestionIndexes = new Set(wrongQuestions.map(wq => wq.index - 1)); // 转换为0基索引
@@ -3389,7 +4530,7 @@
 
                 if (wrongQuestions.length === 0) {
                     const congratsMsg = document.createElement('p');
-                    congratsMsg.style.color = '#4CAF50';
+                    congratsMsg.style.color = 'var(--success-color)';
                     congratsMsg.style.fontWeight = 'bold';
                     congratsMsg.textContent = '🎉 恭喜！全部答对了！';
                     wrongQuestionsContainer.appendChild(congratsMsg);
@@ -3413,8 +4554,8 @@
                             <h4>第${index}题 (${question.type})</h4>
                             <p><strong>题目：</strong>${question.question}</p>
                             ${question.options ? `<p><strong>选项：</strong>${question.options.replace(/\|/g, ' | ')}</p>` : ''}
-                            <p><strong>您的答案：</strong><span style="color: #f44336;">${userAnswerText}</span></p>
-                            <p><strong>正确答案：</strong><span style="color: #4CAF50;">${question.answer}</span></p>
+                            <p><strong>您的答案：</strong><span style="color: var(--error-color);">${userAnswerText}</span></p>
+                            <p><strong>正确答案：</strong><span style="color: var(--success-color);">${question.answer}</span></p>
                             <p><strong>答案说明：</strong>${question.explanation}</p>
                         `;
                         
@@ -3461,7 +4602,7 @@
                 
                 if (correctQuestions.length === 0) {
                     const noCorrectMsg = document.createElement('p');
-                    noCorrectMsg.style.color = '#ff9800';
+                    noCorrectMsg.style.color = 'var(--warning-color)';
                     noCorrectMsg.style.fontWeight = 'bold';
                     noCorrectMsg.textContent = '😔 本次考试没有答对的题目，继续努力！';
                     correctQuestionsContainer.appendChild(noCorrectMsg);
@@ -3482,8 +4623,8 @@
                             <h4>第${index}题 (${question.type})</h4>
                             <p><strong>题目：</strong>${question.question}</p>
                             ${question.options ? `<p><strong>选项：</strong>${question.options.replace(/\|/g, ' | ')}</p>` : ''}
-                            <p><strong>您的答案：</strong><span style="color: #4CAF50;">${userAnswerText}</span></p>
-                            <p><strong>正确答案：</strong><span style="color: #4CAF50;">${question.answer}</span></p>
+                            <p><strong>您的答案：</strong><span style="color: var(--success-color);">${userAnswerText}</span></p>
+                            <p><strong>正确答案：</strong><span style="color: var(--success-color);">${question.answer}</span></p>
                             <p><strong>答案说明：</strong>${question.explanation}</p>
                         `;
                         
@@ -3496,7 +4637,7 @@
                 essayAnswersContainer.innerHTML = '<h3>📝 问答题答案对比</h3>';
 
                 if (essayQuestions.length === 0) {
-                    essayAnswersContainer.innerHTML += '<p style="color: #666;">本次考试没有问答题。</p>';
+                    essayAnswersContainer.innerHTML += '<p style="color: var(--text-light);">本次考试没有问答题。</p>';
                 } else {
                     essayQuestions.forEach(({ question, userAnswer, index }) => {
                         const essayDiv = document.createElement('div');
@@ -3691,18 +4832,18 @@
                 resultDiv.style.fontWeight = 'bold';
                 
                 if (isCorrect) {
-                    resultDiv.style.backgroundColor = '#d4edda';
-                    resultDiv.style.color = '#155724';
-                    resultDiv.style.border = '1px solid #c3e6cb';
+                    resultDiv.style.backgroundColor = 'var(--success-background)';
+                    resultDiv.style.color = 'var(--success-color)';
+                    resultDiv.style.border = '1px solid var(--success-border)';
                     let correctContent = '✅ <strong>正确！</strong>';
                     if (question.explanation && question.explanation.trim()) {
                         correctContent += `<br><span style="margin-top: 8px; display: block; font-weight: normal;">答案说明：${question.explanation}</span>`;
                     }
                     resultDiv.innerHTML = correctContent;
                 } else {
-                    resultDiv.style.backgroundColor = '#f8d7da';
-                    resultDiv.style.color = '#721c24';
-                    resultDiv.style.border = '1px solid #f5c6cb';
+                    resultDiv.style.backgroundColor = 'var(--error-background)';
+                    resultDiv.style.color = 'var(--error-color)';
+                    resultDiv.style.border = '1px solid var(--error-border)';
                     let errorContent = `❌ <strong>错误！</strong><br><span style="margin-top: 8px; display: block;">正确答案：${question.answer}</span>`;
                     if (question.explanation && question.explanation.trim()) {
                         errorContent += `<br><span style="margin-top: 8px; display: block; font-weight: normal;">答案说明：${question.explanation}</span>`;
@@ -4068,6 +5209,13 @@
                 return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
             
+            formatPauseTime(pausedTimeMs) {
+                const totalSeconds = Math.floor(pausedTimeMs / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
             // 暂停/恢复功能
             togglePauseResume() {
                 if (this.isPaused) {
@@ -4083,6 +5231,7 @@
                 if (!this.isPaused && this.timerInterval) {
                     this.isPaused = true;
                     this.pauseStartTime = new Date();
+                    this.pauseCount++; // 增加暂停次数
                     
                     // 更新按钮状态
                     const pauseBtn1 = document.getElementById('pauseResumeBtn');
@@ -4286,6 +5435,16 @@
                         <div class="pause-message">
                             <h3>⏸️ 考试已暂停</h3>
                             <p>考试计时已暂停，所有答题功能已禁用</p>
+                            <div class="pause-stats">
+                                <div class="pause-stat-item">
+                                    <span class="pause-stat-label">暂停次数:</span>
+                                    <span class="pause-stat-value" id="pauseOverlayCount">${this.pauseCount}</span>
+                                </div>
+                                <div class="pause-stat-item">
+                                    <span class="pause-stat-label">暂停总时长:</span>
+                                    <span class="pause-stat-value" id="pauseOverlayTime">${this.formatPauseTime(this.pausedTime)}</span>
+                                </div>
+                            </div>
                             <button id="resumeFromOverlay" class="resume-btn">▶️ 恢复考试</button>
                         </div>
                     `;
@@ -4305,7 +5464,7 @@
                     
                     const pauseMessage = overlay.querySelector('.pause-message');
                     pauseMessage.style.cssText = `
-                        background: white;
+                        background: var(--card-background);
                         padding: 30px;
                         border-radius: 10px;
                         text-align: center;
@@ -4314,10 +5473,47 @@
                         margin: 20px;
                     `;
                     
+                    // 为暂停统计信息添加样式
+                    const pauseStats = overlay.querySelector('.pause-stats');
+                    pauseStats.style.cssText = `
+                        margin: 20px 0;
+                        padding: 15px;
+                        background: var(--card-background);
+                        border-radius: 8px;
+                        border: 1px solid #e9ecef;
+                    `;
+                    
+                    const pauseStatItems = overlay.querySelectorAll('.pause-stat-item');
+                    pauseStatItems.forEach(item => {
+                        item.style.cssText = `
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin: 8px 0;
+                            font-size: 14px;
+                        `;
+                    });
+                    
+                    const pauseStatLabels = overlay.querySelectorAll('.pause-stat-label');
+                    pauseStatLabels.forEach(label => {
+                        label.style.cssText = `
+                            color: var(--text-light);
+                            font-weight: 500;
+                        `;
+                    });
+                    
+                    const pauseStatValues = overlay.querySelectorAll('.pause-stat-value');
+                    pauseStatValues.forEach(value => {
+                        value.style.cssText = `
+                            color: var(--text-color);
+                            font-weight: 600;
+                        `;
+                    });
+                    
                     // 为覆盖层中的恢复按钮添加样式
                     const resumeBtn = overlay.querySelector('#resumeFromOverlay');
                     resumeBtn.style.cssText = `
-                        background: #28a745;
+                        background: var(--success-color);
                         color: white;
                         border: none;
                         padding: 12px 24px;
@@ -4330,10 +5526,10 @@
                     
                     // 添加悬停效果
                     resumeBtn.addEventListener('mouseenter', () => {
-                        resumeBtn.style.backgroundColor = '#218838';
+                        resumeBtn.style.backgroundColor = 'var(--success-dark)';
                     });
                     resumeBtn.addEventListener('mouseleave', () => {
-                        resumeBtn.style.backgroundColor = '#28a745';
+                        resumeBtn.style.backgroundColor = 'var(--success-color)';
                     });
                     
                     // 绑定点击事件到恢复功能
@@ -4342,8 +5538,56 @@
                     });
                     
                     document.body.appendChild(overlay);
+                } else {
+                    // 如果覆盖层已存在，更新统计信息
+                    this.updatePauseOverlayStats();
                 }
                 overlay.style.display = 'flex';
+                
+                // 启动定时器来实时更新暂停时长
+                this.startPauseOverlayTimer();
+            }
+            
+            // 更新暂停覆盖层统计信息
+            updatePauseOverlayStats() {
+                const countElement = document.getElementById('pauseOverlayCount');
+                const timeElement = document.getElementById('pauseOverlayTime');
+                
+                if (countElement) {
+                    countElement.textContent = this.pauseCount;
+                }
+                
+                if (timeElement) {
+                    // 计算当前暂停时长（包括本次暂停的时间）
+                    let currentPausedTime = this.pausedTime;
+                    if (this.isPaused && this.pauseStartTime) {
+                        currentPausedTime += new Date() - this.pauseStartTime;
+                    }
+                    timeElement.textContent = this.formatPauseTime(currentPausedTime);
+                }
+            }
+            
+            // 启动暂停覆盖层定时器
+            startPauseOverlayTimer() {
+                // 清除之前的定时器
+                if (this.pauseOverlayTimer) {
+                    clearInterval(this.pauseOverlayTimer);
+                }
+                
+                // 每秒更新一次暂停时长显示
+                this.pauseOverlayTimer = setInterval(() => {
+                    if (this.isPaused) {
+                        this.updatePauseOverlayStats();
+                    }
+                }, 1000);
+            }
+            
+            // 停止暂停覆盖层定时器
+            stopPauseOverlayTimer() {
+                if (this.pauseOverlayTimer) {
+                    clearInterval(this.pauseOverlayTimer);
+                    this.pauseOverlayTimer = null;
+                }
             }
             
             // 隐藏暂停提示覆盖层
@@ -4357,6 +5601,9 @@
                 if (overlay) {
                     overlay.style.display = 'none';
                 }
+                
+                // 停止定时器
+                this.stopPauseOverlayTimer();
             }
         }
 
@@ -4385,8 +5632,116 @@
             }
         }
 
+        // 主题和模式切换功能
+        function initThemeSwitcher() {
+            const themeBtn = document.getElementById('themeSwitcherBtn');
+            const modeBtn = document.getElementById('modeSwitcherBtn');
+            const themeMenu = document.getElementById('themeMenu');
+            const themeOptions = document.querySelectorAll('.theme-option');
+            
+            if (!themeBtn || !themeMenu || !modeBtn) {
+                console.error('主题切换元素未找到');
+                return;
+            }
+            
+            // 从localStorage加载保存的主题和模式
+            const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+            const savedMode = localStorage.getItem('selectedMode') || 'light';
+            
+            // 应用主题和模式
+            function applyThemeAndMode(theme, mode) {
+                document.body.setAttribute('data-theme', theme);
+                if (mode === 'dark') {
+                    document.body.setAttribute('data-mode', 'dark');
+                } else {
+                    document.body.removeAttribute('data-mode');
+                }
+            }
+            
+            applyThemeAndMode(savedTheme, savedMode);
+            
+            // 更新模式按钮图标和样式
+            function updateModeButton(mode) {
+                if (mode === 'dark') {
+                    modeBtn.textContent = '☀️';
+                    modeBtn.classList.add('dark-mode');
+                    modeBtn.title = '切换到浅色模式';
+                } else {
+                    modeBtn.textContent = '🌙';
+                    modeBtn.classList.remove('dark-mode');
+                    modeBtn.title = '切换到深色模式';
+                }
+            }
+            
+            updateModeButton(savedMode);
+            
+            // 更新当前选中的主题选项
+            function updateActiveTheme(selectedTheme) {
+                themeOptions.forEach(option => {
+                    option.classList.remove('active');
+                    if (option.getAttribute('data-theme') === selectedTheme) {
+                        option.classList.add('active');
+                    }
+                });
+            }
+            
+            updateActiveTheme(savedTheme);
+            
+            // 深浅模式切换
+            modeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const currentMode = localStorage.getItem('selectedMode') || 'light';
+                const newMode = currentMode === 'light' ? 'dark' : 'light';
+                const currentTheme = localStorage.getItem('selectedTheme') || 'default';
+                
+                localStorage.setItem('selectedMode', newMode);
+                applyThemeAndMode(currentTheme, newMode);
+                updateModeButton(newMode);
+                
+                // 添加切换动画效果
+                document.body.style.transition = 'all 0.3s ease';
+            });
+            
+            // 切换菜单显示/隐藏
+            themeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                themeMenu.classList.toggle('hidden');
+            });
+            
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', function() {
+                themeMenu.classList.add('hidden');
+            });
+            
+            // 阻止菜单内部点击事件冒泡
+            themeMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 主题选择
+            themeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    const currentMode = localStorage.getItem('selectedMode') || 'light';
+                    
+                    localStorage.setItem('selectedTheme', theme);
+                    applyThemeAndMode(theme, currentMode);
+                    updateActiveTheme(theme);
+                    themeMenu.classList.add('hidden');
+                    
+                    // 添加切换动画效果
+                    document.body.style.transition = 'all 0.3s ease';
+                });
+            });
+        }
+
         // 初始化应用
         const app = new QuestionBank();
+        
+        // 初始化主题切换器
+        document.addEventListener('DOMContentLoaded', function() {
+            initThemeSwitcher();
+        });
 
         // 题目状态区域折叠/展开功能
         function toggleQuestionStatus() {
