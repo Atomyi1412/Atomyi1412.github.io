@@ -3569,9 +3569,14 @@
                         links.forEach(link => {
                             const href = link.getAttribute('href');
                             if (href && (href.toLowerCase().endsWith('.csv') || href.toLowerCase().endsWith('.xlsx'))) {
-                                // 过滤掉目录导航链接
-                                if (!href.startsWith('../') && !href.startsWith('./') && href !== '/') {
-                                    filePromises.push(this.verifyFileAccess(href));
+                                // 过滤掉明显的目录导航链接，但保留所有可能的文件
+                                if (href !== '../' && href !== './' && href !== '/' && !href.startsWith('#')) {
+                                    // 处理相对路径，确保能正确访问文件
+                                    let filePath = href;
+                                    if (href.startsWith('./')) {
+                                        filePath = href.substring(2);
+                                    }
+                                    filePromises.push(this.verifyFileAccess(filePath));
                                 }
                             }
                         });
@@ -3588,26 +3593,30 @@
                     console.log('无法通过目录列表获取文件，尝试备用方案:', error.message);
                 }
                 
-                // 如果目录列表方式失败，使用常见文件名检测作为备用方案
-                if (availableFiles.length === 0) {
-                    const commonFileNames = [
-                        'AI导师考题.csv', 'AI导师考题.xlsx',
-                        'AI导师考题_数据表_表格.csv', 'AI导师考题_数据表_表格.xlsx',
-                        '点击开始复习 AI 导师考题_数据表_表格.csv', '点击开始复习 AI 导师考题_数据表_表格.xlsx',
-                        '题库.csv', '题库.xlsx',
-                        '考题.csv', '考题.xlsx',
-                        '到时考题.csv', '到时考题.xlsx',
-                        '录制题库.csv', '录制题库.xlsx',
-                        'questions.csv', 'questions.xlsx',
-                        'exam.csv', 'exam.xlsx',
-                        'test.csv', 'test.xlsx'
-                    ];
-                    
-                    const filePromises = commonFileNames.map(fileName => this.verifyFileAccess(fileName));
-                    const results = await Promise.allSettled(filePromises);
-                    
-                    results.forEach(result => {
-                        if (result.status === 'fulfilled' && result.value) {
+                // 补充检测常见文件名，确保不遗漏任何可能的题库文件
+                const commonFileNames = [
+                    'AI导师考题.csv', 'AI导师考题.xlsx',
+                    'AI导师考题_数据表_表格.csv', 'AI导师考题_数据表_表格.xlsx',
+                    '点击开始复习 AI 导师考题_数据表_表格.csv', '点击开始复习 AI 导师考题_数据表_表格.xlsx',
+                    '题库.csv', '题库.xlsx',
+                    '考题.csv', '考题.xlsx',
+                    '到时考题.csv', '到时考题.xlsx',
+                    '录制题库.csv', '录制题库.xlsx',
+                    '但是 123av题库.xlsx', // 添加实际存在的文件
+                    'questions.csv', 'questions.xlsx',
+                    'exam.csv', 'exam.xlsx',
+                    'test.csv', 'test.xlsx'
+                ];
+                
+                // 检测常见文件名中尚未发现的文件
+                const additionalFilePromises = commonFileNames
+                    .filter(fileName => !availableFiles.includes(fileName))
+                    .map(fileName => this.verifyFileAccess(fileName));
+                
+                if (additionalFilePromises.length > 0) {
+                    const additionalResults = await Promise.allSettled(additionalFilePromises);
+                    additionalResults.forEach(result => {
+                        if (result.status === 'fulfilled' && result.value && !availableFiles.includes(result.value)) {
                             availableFiles.push(result.value);
                         }
                     });
