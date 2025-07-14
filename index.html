@@ -2194,6 +2194,25 @@
                 right: -5px;
                 min-width: 190px;
             }
+            
+            /* 中等屏幕文件项适配 */
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding: 14px;
+            }
+            
+            .file-item .file-name {
+                word-break: break-word;
+                line-height: 1.3;
+                width: 100%;
+            }
+            
+            .file-item .file-size {
+                align-self: flex-end;
+                font-size: 13px;
+            }
         }
 
         .hidden {
@@ -2475,6 +2494,20 @@
              .file-item {
                  padding: 12px;
                  font-size: 14px;
+                 flex-direction: column;
+                 align-items: flex-start;
+                 gap: 8px;
+             }
+             
+             .file-item .file-name {
+                 word-break: break-all;
+                 line-height: 1.4;
+                 width: 100%;
+             }
+             
+             .file-item .file-size {
+                 align-self: flex-end;
+                 font-size: 12px;
              }
              
              .answer-input {
