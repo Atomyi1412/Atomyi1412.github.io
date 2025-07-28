@@ -4294,10 +4294,12 @@
                     }
                     
                     // 检查题库是否已加载
-                    if (this.allQuestions.length > 0) {
+                    if (this.allQuestions && this.allQuestions.length > 0) {
+                        console.log(`题库已加载，共 ${this.allQuestions.length} 道题目，开始自动考试`);
                         // 题库已加载，直接开始自动考试
                         this.executeAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit);
                     } else {
+                        console.error('题库未加载或为空:', this.allQuestions);
                         // 题库未加载，显示提示
                         alert('题库文件加载失败！\n\n可能的原因：\n1. 题库文件不存在或无法访问\n2. 网络连接问题\n3. 文件格式不正确\n\n请手动上传题库文件后重试。');
                         this.showLibrarySection();
@@ -4311,6 +4313,14 @@
             }
             
             executeAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit) {
+                // 检查题库是否已加载
+                if (!this.allQuestions || this.allQuestions.length === 0) {
+                    console.error('题库未加载或为空');
+                    alert('题库加载失败，请刷新页面重试或手动上传题库文件。');
+                    this.showLibrarySection();
+                    return;
+                }
+                
                 // 验证题库中各题型的可用数量
                 const availableByType = {
                     '单选题': this.allQuestions.filter(q => q.type === '单选题'),
