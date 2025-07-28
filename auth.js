@@ -673,7 +673,7 @@ async function getUserProfile() {
       return {
         nickname: data.name || '',
         avatar: data.icon || '👤',
-        isAdmin: data.isAdmin || false
+        isAdmin: data.isAdmin || data.isadmin || false
       };
     } else {
       // 用户文档不存在，返回默认值
@@ -714,7 +714,7 @@ async function getAllUsers() {
         email: userData.email || '',
         name: userData.name || '',
         icon: userData.icon || '👤',
-        isAdmin: userData.isAdmin || false,
+        isAdmin: userData.isAdmin || userData.isadmin || false,
         disabled: userData.disabled || false,
         lastUpdated: userData.lastUpdated || '',
         createdAt: userData.createdAt || ''
