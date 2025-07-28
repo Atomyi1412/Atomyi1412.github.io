@@ -863,9 +863,13 @@ async function showUserCenterModal() {
     });
     
     // 显示或隐藏管理员按钮
+    console.log('用户配置:', userProfile);
+    console.log('是否为管理员:', userProfile.isAdmin);
     const adminButton = document.getElementById('admin-user-management');
+    console.log('管理员按钮元素:', adminButton);
     if (adminButton) {
       adminButton.style.display = userProfile.isAdmin ? 'block' : 'none';
+      console.log('管理员按钮显示状态:', adminButton.style.display);
     }
     
     modal.style.display = 'block';
