@@ -4202,7 +4202,7 @@
                 this.displayVersion(); // 显示版本号
             }
             
-            checkAutoStartExam() {
+            async checkAutoStartExam() {
                 // 检查URL参数是否包含考试设置
                 const urlParams = new URLSearchParams(window.location.search);
                 const autoStart = urlParams.get('auto');
@@ -4219,10 +4219,50 @@
                     const totalCount = singleCount + multiCount + judgeCount + essayCount;
                     if (totalCount > 0) {
                         // 延迟执行，确保页面完全加载
-                        setTimeout(() => {
+                        setTimeout(async () => {
+                            // 先尝试自动加载题库文件
+                            await this.autoLoadQuestionBank();
+                            // 然后开始考试
                             this.startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit);
                         }, 1000);
                     }
+                }
+            }
+            
+            async autoLoadQuestionBank() {
+                try {
+                    // 检测可用的题库文件
+                    const knownFiles = [
+                        'AI导师考题.csv',
+                        'AI导师考题.xlsx',
+                        '点击开始复习 AI 导师考题.xlsx',
+                        '题库.csv',
+                        '题库.xlsx'
+                    ];
+                    
+                    for (const fileName of knownFiles) {
+                        try {
+                            // 使用HEAD请求检测文件是否存在
+                            const response = await fetch(fileName, { method: 'HEAD' });
+                            if (response.ok) {
+                                console.log(`找到题库文件: ${fileName}，正在加载...`);
+                                // 设置选中的文件
+                                this.selectedFile = fileName;
+                                // 解析文件
+                                await this.parseCSV();
+                                console.log(`题库文件 ${fileName} 加载成功，共 ${this.allQuestions.length} 道题目`);
+                                return true; // 成功加载
+                            }
+                        } catch (error) {
+                            console.log(`文件 ${fileName} 不可访问:`, error.message);
+                        }
+                    }
+                    
+                    console.warn('未找到可用的题库文件');
+                    return false;
+                } catch (error) {
+                    console.error('自动加载题库失败:', error);
+                    return false;
                 }
             }
             
@@ -4236,25 +4276,15 @@
                         }
                     }
                     
-                    // 等待题库加载
-                    let attempts = 0;
-                    const maxAttempts = 10;
-                    
-                    const waitForQuestions = () => {
-                        if (this.allQuestions.length > 0) {
-                            // 题库已加载，开始自动考试
-                            this.executeAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit);
-                        } else if (attempts < maxAttempts) {
-                            attempts++;
-                            setTimeout(waitForQuestions, 500);
-                        } else {
-                            // 题库加载失败，显示提示
-                            alert('题库加载失败，请手动上传题库文件后重试。');
-                            this.showLibrarySection();
-                        }
-                    };
-                    
-                    waitForQuestions();
+                    // 检查题库是否已加载
+                    if (this.allQuestions.length > 0) {
+                        // 题库已加载，直接开始自动考试
+                        this.executeAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit);
+                    } else {
+                        // 题库未加载，显示提示
+                        alert('题库文件加载失败！\n\n可能的原因：\n1. 题库文件不存在或无法访问\n2. 网络连接问题\n3. 文件格式不正确\n\n请手动上传题库文件后重试。');
+                        this.showLibrarySection();
+                    }
                     
                 } catch (error) {
                     console.error('自动开始考试失败:', error);
