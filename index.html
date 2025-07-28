@@ -1598,6 +1598,39 @@
             background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
         }
         
+        /* 答案显示设置样式 */
+        .answer-display-setting {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .answer-option {
+            display: flex !important;
+            align-items: center;
+            margin: 0 !important;
+            font-weight: normal !important;
+            cursor: pointer;
+        }
+        
+        .answer-option input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+        
+        .answer-display-hint {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: var(--hover-background);
+            border-radius: 4px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .answer-display-hint small {
+            color: var(--text-light);
+            font-size: 12px;
+        }
+        
         /* 各主题计时器优化 */
         [data-theme="blue"] .exam-timer {
             background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
@@ -3987,6 +4020,23 @@
                         </div>
                     </div>
                     
+                    <div class="setting-group">
+                        <label>答案显示设置：</label>
+                        <div class="answer-display-setting">
+                            <label class="answer-option">
+                                <input type="radio" name="answerDisplay" id="showAnswers" value="show" checked>
+                                <span>显示正确答案</span>
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="answerDisplay" id="hideAnswers" value="hide">
+                                <span>隐藏正确答案</span>
+                            </label>
+                        </div>
+                        <div class="answer-display-hint">
+                            <small>选择"隐藏正确答案"时，答题后不会显示对错状态和正确答案解析</small>
+                        </div>
+                    </div>
+                    
                     <div class="setting-actions">
                         <button id="confirmSettings" class="btn btn-primary">✅ 开始答题</button>
                         <button id="generateExamLink" class="btn btn-success">🔗 生成考试链接</button>
@@ -4208,6 +4258,9 @@
                 this.isRetakeMode = false; // 是否为错题重考模式
                 this.retakeQuestions = null; // 错题重考的题目列表
                 
+                // 答案显示设置
+                this.showAnswers = true; // 是否显示正确答案，默认为显示
+                
                 this.initEventListeners();
                 this.detectCSVFiles(); // 自动检测CSV文件
                 this.checkAutoStartExam(); // 检查是否需要自动开始考试
@@ -4226,6 +4279,7 @@
                     const judgeCount = parseInt(urlParams.get('judge')) || 0;
                     const essayCount = parseInt(urlParams.get('essay')) || 0;
                     const timeLimit = parseInt(urlParams.get('time')) || 0;
+                    const showAnswers = urlParams.get('answers') === '1'; // 默认为false（隐藏答案）
                     
                     // 验证参数有效性
                     const totalCount = singleCount + multiCount + judgeCount + essayCount;
@@ -4235,7 +4289,7 @@
                             // 先尝试自动加载题库文件
                             await this.autoLoadQuestionBank();
                             // 然后开始考试
-                            this.startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit);
+                            this.startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit, showAnswers);
                         }, 1000);
                     }
                 }
@@ -4295,7 +4349,7 @@
                 }
             }
             
-            async startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit) {
+            async startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit, showAnswers = true) {
                 try {
                     // 首先尝试匿名登录
                     if (typeof window.authModule !== 'undefined' && window.authModule.signInAnonymouslyUser) {
@@ -4304,6 +4358,9 @@
                             console.warn('匿名登录失败，继续以访客身份开始考试');
                         }
                     }
+                    
+                    // 设置答案显示选项
+                    this.showAnswers = showAnswers;
                     
                     // 检查题库是否已加载
                     if (this.allQuestions && this.allQuestions.length > 0) {
@@ -5350,6 +5407,9 @@
                     this.examTimeLimit = parseInt(document.getElementById('examTimeLimit').value) || 60;
                 }
                 
+                // 处理答案显示设置
+                this.showAnswers = document.getElementById('showAnswers').checked;
+                
                 // 重置考试状态
                 this.wrongQuestionsData = null;
                 this.correctQuestionsData = null;
@@ -5418,6 +5478,9 @@
                 const hasTimeLimit = document.getElementById('hasTimeLimit').checked;
                 const timeLimit = hasTimeLimit ? (parseInt(document.getElementById('examTimeLimit').value) || 60) : 0;
                 
+                // 检查答案显示设置
+                const showAnswers = document.getElementById('showAnswers').checked;
+                
                 // 创建考试设置对象
                 const examSettings = {
                     single: singleCount,
@@ -5425,6 +5488,7 @@
                     judge: trueOrFalseCount,
                     essay: essayCount,
                     time: timeLimit,
+                    answers: showAnswers ? 1 : 0, // 答案显示设置
                     auto: 1 // 标记为自动开始考试
                 };
                 
@@ -5456,6 +5520,7 @@
                                         ${settings.essay > 0 ? `<li>问答题：${settings.essay} 题</li>` : ''}
                                         <li>总题数：${settings.single + settings.multi + settings.judge + settings.essay} 题</li>
                                         <li>时间限制：${settings.time > 0 ? settings.time + ' 分钟' : '无限制'}</li>
+                                        <li>答案显示：${settings.answers === 1 ? '显示正确答案' : '隐藏正确答案'}</li>
                                     </ul>
                                 </div>
                                 <div style="margin-bottom: 15px;">
@@ -6351,6 +6416,16 @@
             showAnswerResult(questionIndex, container, isCorrect = null) {
                 const question = this.questions[questionIndex];
                 const userAnswer = this.userAnswers[questionIndex];
+                
+                // 如果设置为隐藏答案，则不显示任何反馈
+                if (!this.showAnswers) {
+                    // 移除之前的结果显示
+                    const existingResult = container.querySelector('.answer-result');
+                    if (existingResult) {
+                        existingResult.remove();
+                    }
+                    return;
+                }
                 
                 // 如果没有传入isCorrect，重新计算
                 if (isCorrect === null) {
