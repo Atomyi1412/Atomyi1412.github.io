@@ -1319,5 +1319,6 @@ window.authModule = {
   getUserProfile,
   getCurrentUser,
   isCurrentUserAdmin,
-  saveUserProfile
+  saveUserProfile,
+  signInAnonymouslyUser
 };

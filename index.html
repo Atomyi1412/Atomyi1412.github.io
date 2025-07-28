@@ -3977,6 +3977,7 @@
                     
                     <div class="setting-actions">
                         <button id="confirmSettings" class="btn btn-primary">✅ 开始答题</button>
+                        <button id="generateExamLink" class="btn btn-success">🔗 生成考试链接</button>
                         <button id="cancelSettings" class="btn btn-secondary">❌ 取消</button>
                     </div>
                 </div>
@@ -4197,7 +4198,149 @@
                 
                 this.initEventListeners();
                 this.detectCSVFiles(); // 自动检测CSV文件
+                this.checkAutoStartExam(); // 检查是否需要自动开始考试
                 this.displayVersion(); // 显示版本号
+            }
+            
+            checkAutoStartExam() {
+                // 检查URL参数是否包含考试设置
+                const urlParams = new URLSearchParams(window.location.search);
+                const autoStart = urlParams.get('auto');
+                
+                if (autoStart === '1') {
+                    // 获取考试设置参数
+                    const singleCount = parseInt(urlParams.get('single')) || 0;
+                    const multiCount = parseInt(urlParams.get('multi')) || 0;
+                    const judgeCount = parseInt(urlParams.get('judge')) || 0;
+                    const essayCount = parseInt(urlParams.get('essay')) || 0;
+                    const timeLimit = parseInt(urlParams.get('time')) || 0;
+                    
+                    // 验证参数有效性
+                    const totalCount = singleCount + multiCount + judgeCount + essayCount;
+                    if (totalCount > 0) {
+                        // 延迟执行，确保页面完全加载
+                        setTimeout(() => {
+                            this.startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit);
+                        }, 1000);
+                    }
+                }
+            }
+            
+            async startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit) {
+                try {
+                    // 首先尝试匿名登录
+                    if (typeof window.authModule !== 'undefined' && window.authModule.signInAnonymouslyUser) {
+                        const result = await window.authModule.signInAnonymouslyUser();
+                        if (!result.success) {
+                            console.warn('匿名登录失败，继续以访客身份开始考试');
+                        }
+                    }
+                    
+                    // 等待题库加载
+                    let attempts = 0;
+                    const maxAttempts = 10;
+                    
+                    const waitForQuestions = () => {
+                        if (this.allQuestions.length > 0) {
+                            // 题库已加载，开始自动考试
+                            this.executeAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit);
+                        } else if (attempts < maxAttempts) {
+                            attempts++;
+                            setTimeout(waitForQuestions, 500);
+                        } else {
+                            // 题库加载失败，显示提示
+                            alert('题库加载失败，请手动上传题库文件后重试。');
+                            this.showLibrarySection();
+                        }
+                    };
+                    
+                    waitForQuestions();
+                    
+                } catch (error) {
+                    console.error('自动开始考试失败:', error);
+                    alert('自动开始考试失败，请手动操作。');
+                    this.showLibrarySection();
+                }
+            }
+            
+            executeAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit) {
+                // 验证题库中各题型的可用数量
+                const availableByType = {
+                    '单选题': this.allQuestions.filter(q => q.type === '单选题'),
+                    '多选题': this.allQuestions.filter(q => q.type === '多选题'),
+                    '判断题': this.allQuestions.filter(q => q.type === '判断题'),
+                    '问答题': this.allQuestions.filter(q => q.type === '问答题')
+                };
+                
+                // 检查题目数量是否足够
+                if (singleCount > availableByType['单选题'].length ||
+                    multiCount > availableByType['多选题'].length ||
+                    judgeCount > availableByType['判断题'].length ||
+                    essayCount > availableByType['问答题'].length) {
+                    alert(`题库中的题目数量不足以满足考试要求！\n可用题目：单选${availableByType['单选题'].length}题，多选${availableByType['多选题'].length}题，判断${availableByType['判断题'].length}题，问答${availableByType['问答题'].length}题`);
+                    this.showLibrarySection();
+                    return;
+                }
+                
+                // 随机选择题目
+                const selectedQuestions = [];
+                
+                // 添加各题型的题目
+                if (singleCount > 0) {
+                    const shuffled = this.shuffleArray([...availableByType['单选题']]);
+                    selectedQuestions.push(...shuffled.slice(0, singleCount));
+                }
+                if (multiCount > 0) {
+                    const shuffled = this.shuffleArray([...availableByType['多选题']]);
+                    selectedQuestions.push(...shuffled.slice(0, multiCount));
+                }
+                if (judgeCount > 0) {
+                    const shuffled = this.shuffleArray([...availableByType['判断题']]);
+                    selectedQuestions.push(...shuffled.slice(0, judgeCount));
+                }
+                if (essayCount > 0) {
+                    const shuffled = this.shuffleArray([...availableByType['问答题']]);
+                    selectedQuestions.push(...shuffled.slice(0, essayCount));
+                }
+                
+                // 随机打乱题目顺序
+                this.questions = this.shuffleArray(selectedQuestions);
+                this.currentQuestionIndex = 0;
+                this.userAnswers = new Array(this.questions.length).fill(null);
+                
+                // 设置时间限制
+                if (timeLimit > 0) {
+                    this.isTimeLimited = true;
+                    this.examTimeLimit = timeLimit;
+                } else {
+                    this.isTimeLimited = false;
+                    this.examTimeLimit = null;
+                }
+                
+                // 重置考试状态
+                this.examStartTime = new Date();
+                this.examEndTime = null;
+                this.isPaused = false;
+                this.pausedTime = 0;
+                this.pauseStartTime = null;
+                this.pauseCount = 0;
+                
+                // 显示考试界面
+                document.getElementById('library-section').classList.add('hidden');
+                document.getElementById('exam-section').classList.remove('hidden');
+                
+                // 显示自动开始提示
+                alert(`匿名考试已自动开始！\n题目设置：单选${singleCount}题，多选${multiCount}题，判断${judgeCount}题，问答${essayCount}题\n${timeLimit > 0 ? '时间限制：' + timeLimit + '分钟' : '无时间限制'}`);
+                
+                // 开始计时和显示题目
+                this.startTimer();
+                this.displayQuestion();
+                this.updateQuestionStatus();
+            }
+            
+            showLibrarySection() {
+                document.getElementById('library-section').classList.remove('hidden');
+                document.getElementById('exam-section').classList.add('hidden');
             }
 
             initEventListeners() {
@@ -4205,6 +4348,7 @@
                 document.getElementById('parseBtn').addEventListener('click', this.parseCSV.bind(this));
                 document.getElementById('startExam').addEventListener('click', this.showExamSettings.bind(this));
                 document.getElementById('confirmSettings').addEventListener('click', this.startExamWithSettings.bind(this));
+                document.getElementById('generateExamLink').addEventListener('click', this.generateExamLink.bind(this));
                 document.getElementById('cancelSettings').addEventListener('click', this.hideExamSettings.bind(this));
                 document.getElementById('prevBtn').addEventListener('click', this.previousQuestion.bind(this));
                 document.getElementById('nextBtn').addEventListener('click', this.nextQuestion.bind(this));
@@ -5181,6 +5325,105 @@
                 
                 this.displayQuestion();
                 this.updateQuestionStatus();
+            }
+
+            generateExamLink() {
+                // 获取当前考试设置
+                const singleCount = parseInt(document.getElementById('singleCount').value) || 0;
+                const multiCount = parseInt(document.getElementById('multiCount').value) || 0;
+                const trueOrFalseCount = parseInt(document.getElementById('trueOrFalseCount').value) || 0;
+                const essayCount = parseInt(document.getElementById('essayCount').value) || 0;
+                
+                const totalCount = singleCount + multiCount + trueOrFalseCount + essayCount;
+                
+                if (totalCount === 0) {
+                    alert('请至少设置一种题型的数量！');
+                    return;
+                }
+                
+                // 检查是否有限时设置
+                const hasTimeLimit = document.getElementById('hasTimeLimit').checked;
+                const timeLimit = hasTimeLimit ? (parseInt(document.getElementById('examTimeLimit').value) || 60) : 0;
+                
+                // 创建考试设置对象
+                const examSettings = {
+                    single: singleCount,
+                    multi: multiCount,
+                    judge: trueOrFalseCount,
+                    essay: essayCount,
+                    time: timeLimit,
+                    auto: 1 // 标记为自动开始考试
+                };
+                
+                // 将设置编码为URL参数
+                const params = new URLSearchParams(examSettings);
+                const currentUrl = window.location.origin + window.location.pathname;
+                const examUrl = `${currentUrl}?${params.toString()}`;
+                
+                // 创建模态框显示链接
+                this.showExamLinkModal(examUrl, examSettings);
+            }
+            
+            showExamLinkModal(examUrl, settings) {
+                // 创建模态框HTML
+                const modalHtml = `
+                    <div id="exam-link-modal" class="modal" style="display: block;">
+                        <div class="modal-content" style="max-width: 600px;">
+                            <div class="modal-header">
+                                <h2>🔗 考试链接生成成功</h2>
+                                <span class="close" onclick="document.getElementById('exam-link-modal').remove()">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                <div style="margin-bottom: 15px;">
+                                    <h4>📋 考试设置摘要：</h4>
+                                    <ul style="margin: 10px 0; padding-left: 20px; color: var(--text-light);">
+                                        ${settings.single > 0 ? `<li>单选题：${settings.single} 题</li>` : ''}
+                                        ${settings.multi > 0 ? `<li>多选题：${settings.multi} 题</li>` : ''}
+                                        ${settings.judge > 0 ? `<li>判断题：${settings.judge} 题</li>` : ''}
+                                        ${settings.essay > 0 ? `<li>问答题：${settings.essay} 题</li>` : ''}
+                                        <li>总题数：${settings.single + settings.multi + settings.judge + settings.essay} 题</li>
+                                        <li>时间限制：${settings.time > 0 ? settings.time + ' 分钟' : '无限制'}</li>
+                                    </ul>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: bold;">考试链接：</label>
+                                    <textarea id="exam-url-text" readonly style="width: 100%; height: 80px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-family: monospace; font-size: 12px; resize: vertical;">${examUrl}</textarea>
+                                </div>
+                                <div style="margin-bottom: 15px; padding: 12px; background: #e8f4fd; border: 1px solid #bee5eb; border-radius: 4px; color: #0c5460;">
+                                    <strong>📝 使用说明：</strong><br>
+                                    • 复制上方链接发送给考生<br>
+                                    • 考生点击链接后将自动以匿名身份开始考试<br>
+                                    • 考试设置已包含在链接中，无需额外配置
+                                </div>
+                                <div class="form-actions">
+                                    <button onclick="app.copyExamUrl()" class="btn btn-primary">📋 复制链接</button>
+                                    <button onclick="document.getElementById('exam-link-modal').remove()" class="btn btn-secondary">关闭</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加到页面
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            }
+            
+            copyExamUrl() {
+                const textarea = document.getElementById('exam-url-text');
+                textarea.select();
+                textarea.setSelectionRange(0, 99999); // 移动端兼容
+                
+                try {
+                    document.execCommand('copy');
+                    alert('链接已复制到剪贴板！');
+                } catch (err) {
+                    // 备用方案：使用现代API
+                    navigator.clipboard.writeText(textarea.value).then(() => {
+                        alert('链接已复制到剪贴板！');
+                    }).catch(() => {
+                        alert('复制失败，请手动复制链接');
+                    });
+                }
             }
 
             startExam() {
