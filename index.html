@@ -5293,24 +5293,24 @@
                 this.questions = [];
                 
                 if (singleCount > 0) {
-                    this.shuffleArray(availableByType['单选题']);
-                    this.questions.push(...availableByType['单选题'].slice(0, singleCount));
+                    const shuffled = this.shuffleArray(availableByType['单选题']);
+                    this.questions.push(...shuffled.slice(0, singleCount));
                 }
                 if (multiCount > 0) {
-                    this.shuffleArray(availableByType['多选题']);
-                    this.questions.push(...availableByType['多选题'].slice(0, multiCount));
+                    const shuffled = this.shuffleArray(availableByType['多选题']);
+                    this.questions.push(...shuffled.slice(0, multiCount));
                 }
                 if (trueOrFalseCount > 0) {
-                    this.shuffleArray(availableByType['判断题']);
-                    this.questions.push(...availableByType['判断题'].slice(0, trueOrFalseCount));
+                    const shuffled = this.shuffleArray(availableByType['判断题']);
+                    this.questions.push(...shuffled.slice(0, trueOrFalseCount));
                 }
                 if (essayCount > 0) {
-                    this.shuffleArray(availableByType['问答题']);
-                    this.questions.push(...availableByType['问答题'].slice(0, essayCount));
+                    const shuffled = this.shuffleArray(availableByType['问答题']);
+                    this.questions.push(...shuffled.slice(0, essayCount));
                 }
                 
                 // 打乱最终题目顺序
-                this.shuffleArray(this.questions);
+                this.questions = this.shuffleArray(this.questions);
                 
                 // 计算分数分配（问答题不计分）
                 const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
@@ -5507,7 +5507,7 @@
                 this.questions = [...availableQuestions]; // 创建副本，避免修改原数组
                 
                 // 打乱题目顺序
-                this.shuffleArray(this.questions);
+                this.questions = this.shuffleArray(this.questions);
                 
                 // 计算分数分配（问答题不计分）
                 const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
@@ -5537,10 +5537,15 @@
             }
 
             shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
+                if (!array || array.length === 0) {
+                    return [];
                 }
+                const shuffled = [...array]; // 创建副本
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled; // 返回打乱后的数组
             }
 
             displayQuestion() {
