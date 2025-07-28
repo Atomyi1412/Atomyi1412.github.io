@@ -4231,17 +4231,17 @@
             
             async autoLoadQuestionBank() {
                 try {
-                    // 检测可用的题库文件（包含URL编码版本）
+                    // 检测可用的题库文件（优先使用英文文件名）
                     const knownFiles = [
-                        'AI导师考题.csv',
-                        encodeURIComponent('AI导师考题.csv'),
-                        'AI%E5%AF%BC%E5%B8%88%E8%80%83%E9%A2%98.csv',
-                        'AI导师考题.xlsx',
-                        encodeURIComponent('AI导师考题.xlsx'),
-                        '点击开始复习 AI 导师考题.xlsx',
-                        encodeURIComponent('点击开始复习 AI 导师考题.xlsx'),
+                        'ai-tutor-questions.csv',
+                        'ai-tutor-questions.xlsx',
+                        'questions.csv',
+                        'questions.xlsx',
                         '题库.csv',
-                        '题库.xlsx'
+                        '题库.xlsx',
+                        'AI导师考题.csv',
+                        'AI导师考题.xlsx',
+                        '点击开始复习 AI 导师考题.xlsx'
                     ];
                     
                     for (const fileName of knownFiles) {
@@ -4262,18 +4262,18 @@
                          }
                      }
                      
-                     // 如果所有文件都无法访问，尝试直接使用原始文件名
-                     console.log('尝试直接加载 AI导师考题.csv...');
-                     try {
-                         this.selectedFile = 'AI导师考题.csv';
-                         await this.parseCSV();
-                         if (this.allQuestions.length > 0) {
-                             console.log(`直接加载成功，共 ${this.allQuestions.length} 道题目`);
-                             return true;
-                         }
-                     } catch (error) {
-                         console.log('直接加载也失败:', error.message);
-                     }
+                     // 如果所有文件都无法访问，尝试直接使用英文文件名
+                      console.log('尝试直接加载 ai-tutor-questions.csv...');
+                      try {
+                          this.selectedFile = 'ai-tutor-questions.csv';
+                          await this.parseCSV();
+                          if (this.allQuestions.length > 0) {
+                              console.log(`直接加载成功，共 ${this.allQuestions.length} 道题目`);
+                              return true;
+                          }
+                      } catch (error) {
+                          console.log('直接加载也失败:', error.message);
+                      }
                     
                     console.warn('未找到可用的题库文件');
                     return false;
