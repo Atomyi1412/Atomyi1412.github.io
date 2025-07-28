@@ -3007,6 +3007,8 @@
              border-radius: 12px;
              width: 90%;
              max-width: 400px;
+             max-height: 90vh;
+             overflow-y: auto;
              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
              animation: modalSlideIn 0.3s ease;
          }
@@ -3054,6 +3056,7 @@
          
          .modal-body {
              padding: 24px;
+             padding-bottom: 30px; /* 确保底部有足够空间 */
          }
          
          .auth-form {
@@ -3421,8 +3424,9 @@
              }
              
              .modal-content {
-                 margin: 5% auto;
+                 margin: 2% auto;
                  width: 98%;
+                 max-height: 95vh;
              }
              
              .modal-header {
@@ -3431,6 +3435,7 @@
              
              .modal-body {
                  padding: 20px;
+                 padding-bottom: 40px; /* 移动端增加底部间距 */
              }
              
              /* 用户中心移动端优化 */
@@ -3507,10 +3512,11 @@
              }
              
              /* 超小屏幕用户中心优化 */
-             .modal-content {
-                 margin: 2% auto;
-                 width: 99%;
-             }
+              .modal-content {
+                  margin: 1% auto;
+                  width: 99%;
+                  max-height: 98vh;
+              }
              
              .modal-header {
                  padding: 12px 16px;
@@ -3521,8 +3527,9 @@
              }
              
              .modal-body {
-                 padding: 16px;
-             }
+                  padding: 16px;
+                  padding-bottom: 50px; /* 超小屏幕增加更多底部间距 */
+              }
              
              .avatar-selection {
                  gap: 6px;
