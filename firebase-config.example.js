@@ -9,17 +9,15 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// SECURITY NOTE: In production, these values should be loaded from environment variables
-// For client-side apps, these are public configuration values (not secrets)
-// The actual security is handled by Firebase Security Rules
+// IMPORTANT: Replace these values with your actual Firebase configuration
 const firebaseConfig = {
-  apiKey: window.FIREBASE_API_KEY || "AIzaSyAgVBFMVz1pOdalUsCSPKqbdCZDUQ60ib0",
-  authDomain: "exam-review-system.firebaseapp.com",
-  projectId: "exam-review-system",
-  storageBucket: "exam-review-system.firebasestorage.app",
-  messagingSenderId: "450061237183",
-  appId: "1:450061237183:web:f49a6be57df84eae7cff0a",
-  measurementId: "G-BCD6FT0299"
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.firebasestorage.app",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
 
 // Initialize Firebase
@@ -27,6 +25,5 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 
 export { app, analytics, auth, db };
