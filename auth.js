@@ -972,6 +972,46 @@ function renderUserList(users) {
             删除
           </button>
         </div>
+        
+        <!-- 移动端卡片式布局 -->
+        <div class="mobile-user-card" style="display: none;">
+          <div class="mobile-user-header" style="display: flex; align-items: center; margin-bottom: 12px;">
+            <span class="user-avatar" style="font-size: 28px; margin-right: 12px;">${user.icon || '👤'}</span>
+            <div class="user-info" style="flex: 1;">
+              <div class="user-name" style="font-weight: bold; color: var(--text-color); font-size: 16px;">${user.name || '未设置昵称'}</div>
+              <div class="user-email" style="font-size: 14px; color: var(--text-light);">${user.email || '无邮箱'}</div>
+            </div>
+          </div>
+          <div class="mobile-user-details" style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span style="color: var(--text-light);">注册时间:</span>
+              <span style="color: var(--text-color);">${createdDate}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span style="color: var(--text-light);">账号状态:</span>
+              <span style="color: ${user.disabled ? 'var(--error-color)' : 'var(--success-color)'}; font-weight: bold;">
+                ${user.disabled ? '已停用' : '正常'}
+              </span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-light);">用户角色:</span>
+              <span style="color: ${user.isAdmin ? 'var(--warning-color)' : 'var(--text-light)'}; font-weight: bold;">
+                ${user.isAdmin ? '管理员' : '普通用户'}
+              </span>
+            </div>
+          </div>
+          <div class="user-actions" style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-sm ${user.disabled ? 'btn-success' : 'btn-warning'} toggle-status" data-uid="${user.uid}" data-disabled="${!user.disabled}" style="width: 100%; padding: 12px; font-size: 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">
+              ${user.disabled ? '✅ 启用账号' : '⏸️ 停用账号'}
+            </button>
+            <button class="btn-sm btn-info reset-password" data-uid="${user.uid}" data-email="${user.email}" style="width: 100%; padding: 12px; font-size: 16px; border-radius: 6px; border: none; cursor: pointer; background: #17a2b8; color: white; font-weight: 600;">
+              🔑 重置密码
+            </button>
+            <button class="btn-sm btn-danger delete-user" data-uid="${user.uid}" data-name="${user.name || user.email || '未命名用户'}" style="width: 100%; padding: 12px; font-size: 16px; border-radius: 6px; border: none; cursor: pointer; background: #dc3545; color: white; font-weight: 600;">
+              🗑️ 删除用户
+            </button>
+          </div>
+        </div>
       </div>
     `;
   });
