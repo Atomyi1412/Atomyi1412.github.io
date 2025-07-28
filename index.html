@@ -508,6 +508,25 @@
 
         .content {
             padding: 30px;
+            display: none; /* 默认隐藏，登录后显示 */
+        }
+        
+        /* 确保登录区域在页面加载时显示 */
+        #login-section {
+            display: block;
+        }
+        
+        #user-section {
+            display: none;
+        }
+        
+        /* 强制登录模态框样式 */
+        #auth-modal.force-login {
+            display: block !important;
+        }
+        
+        #auth-modal.force-login .modal-content {
+            pointer-events: all;
         }
 
         .section {
@@ -6459,8 +6478,19 @@
             });
         }
 
-        // 初始化应用
-        const app = new QuestionBank();
+        // 应用实例，将在认证状态确定后初始化
+        let app = null;
+        
+        // 初始化应用的函数
+        function initializeApp() {
+            if (!app) {
+                app = new QuestionBank();
+                console.log('题库应用已初始化');
+            }
+        }
+        
+        // 将初始化函数暴露到全局，供认证模块调用
+        window.initializeApp = initializeApp;
         
         // 初始化主题切换器
         document.addEventListener('DOMContentLoaded', function() {

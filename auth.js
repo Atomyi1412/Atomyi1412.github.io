@@ -37,6 +37,37 @@ onAuthStateChanged(auth, async (user) => {
   updateUIForAuthState(user);
 });
 
+// 页面加载时立即检查认证状态并强制显示登录界面（如果未登录）
+function initializeAuthState() {
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    // 用户未登录，立即显示强制登录界面
+    const authModal = document.getElementById('auth-modal');
+    if (authModal) {
+      authModal.style.display = 'block';
+      authModal.classList.add('force-login');
+      showLoginForm();
+    }
+    
+    // 确保主内容隐藏
+    const mainContent = document.querySelector('.content');
+    if (mainContent) mainContent.style.display = 'none';
+    
+    // 确保登录区域显示
+    const loginSection = document.getElementById('login-section');
+    const userSection = document.getElementById('user-section');
+    if (loginSection) loginSection.style.display = 'block';
+    if (userSection) userSection.style.display = 'none';
+  }
+}
+
+// 页面加载完成后立即初始化认证状态
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeAuthState);
+} else {
+  initializeAuthState();
+}
+
 // 邮箱密码登录
 export async function signInWithEmail(email, password) {
   try {
@@ -392,6 +423,11 @@ async function updateUIForAuthState(user) {
       // 移除强制登录提示
       const notice = authModal.querySelector('.force-login-notice');
       if (notice) notice.remove();
+    }
+    
+    // 初始化题库应用
+    if (typeof window.initializeApp === 'function') {
+      window.initializeApp();
     }
     
     if (userInfo) {
