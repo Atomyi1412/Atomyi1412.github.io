@@ -266,10 +266,28 @@ export async function resendEmailVerification(email, password) {
 }
 
 // 邮箱密码注册
-export async function signUpWithEmail(email, password) {
+export async function signUpWithEmail(email, password, nickname) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     console.log('注册成功:', userCredential.user);
+    
+    // 保存用户昵称到Firestore
+    try {
+      const userDocRef = doc(db, 'users', userCredential.user.uid);
+      await setDoc(userDocRef, {
+        name: nickname || '',
+        email: email,
+        icon: '👤',
+        isAdmin: false,
+        disabled: false,
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
+      });
+      console.log('用户昵称保存成功');
+    } catch (profileError) {
+      console.error('保存用户昵称失败:', profileError);
+      // 即使保存昵称失败，也不影响注册流程
+    }
     
     // 发送邮箱验证邮件
     try {
@@ -583,9 +601,21 @@ export function initAuthUI() {
   if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const nickname = document.getElementById('signup-nickname').value.trim();
       const email = document.getElementById('signup-email').value;
       const password = document.getElementById('signup-password').value;
       const confirmPassword = document.getElementById('confirm-password').value;
+      
+      // 验证昵称
+      if (!nickname) {
+        showNotification('请输入昵称！', 'error');
+        return;
+      }
+      
+      if (nickname.length > 20) {
+        showNotification('昵称不能超过20个字符！', 'error');
+        return;
+      }
       
       // 验证密码和确认密码是否匹配
       if (password !== confirmPassword) {
@@ -594,7 +624,7 @@ export function initAuthUI() {
       }
       
       try {
-        const user = await signUpWithEmail(email, password);
+        const user = await signUpWithEmail(email, password, nickname);
         // 注册成功，但需要验证邮箱，不关闭模态框
         // 成功消息已在 signUpWithEmail 函数中显示
         // 清空表单

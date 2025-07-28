@@ -7055,6 +7055,10 @@
                 <div id="register-form-container" class="auth-form" style="display: none;">
                     <form id="signup-form">
                         <div class="form-group">
+                            <label for="signup-nickname">昵称：</label>
+                            <input type="text" id="signup-nickname" required maxlength="20" placeholder="请输入昵称（必填）">
+                        </div>
+                        <div class="form-group">
                             <label for="signup-email">邮箱：</label>
                             <input type="email" id="signup-email" required>
                         </div>
@@ -7327,13 +7331,28 @@
                 }
             });
             
-            // 注册表单密码确认验证
+            // 注册表单验证
             const signupForm = document.getElementById('signup-form');
             if (signupForm) {
                 signupForm.addEventListener('submit', (e) => {
+                    const nickname = document.getElementById('signup-nickname').value.trim();
                     const password = document.getElementById('signup-password').value;
                     const confirmPassword = document.getElementById('confirm-password').value;
                     
+                    // 验证昵称
+                    if (!nickname) {
+                        e.preventDefault();
+                        alert('请输入昵称！');
+                        return false;
+                    }
+                    
+                    if (nickname.length > 20) {
+                        e.preventDefault();
+                        alert('昵称不能超过20个字符！');
+                        return false;
+                    }
+                    
+                    // 验证密码确认
                     if (password !== confirmPassword) {
                         e.preventDefault();
                         alert('密码和确认密码不匹配！');
