@@ -324,6 +324,7 @@
             box-shadow: 0 10px 30px var(--shadow-color);
             overflow: hidden;
             transition: all 0.3s ease;
+            touch-action: manipulation;
         }
 
         .header {
@@ -509,6 +510,7 @@
         .content {
             padding: 30px;
             display: none; /* 默认隐藏，登录后显示 */
+            touch-action: manipulation;
         }
         
         /* 确保登录区域在页面加载时显示 */
@@ -2998,6 +3000,7 @@
              height: 100%;
              background-color: rgba(0, 0, 0, 0.5);
              backdrop-filter: blur(5px);
+             touch-action: manipulation;
          }
          
          .modal-content {
@@ -3011,6 +3014,8 @@
              overflow-y: auto;
              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
              animation: modalSlideIn 0.3s ease;
+             touch-action: pan-y;
+             -webkit-overflow-scrolling: touch;
          }
          
          @keyframes modalSlideIn {
@@ -3390,6 +3395,16 @@
          }
          
          @media (max-width: 480px) {
+             /* 移动端滑动响应优化 */
+             * {
+                 touch-action: manipulation;
+             }
+             
+             .modal-content, .user-list, .container, .content {
+                 touch-action: pan-y;
+                 -webkit-overflow-scrolling: touch;
+             }
+             
              .header {
                  flex-direction: column;
                  align-items: stretch;
@@ -7090,7 +7105,7 @@
                             <div>角色</div>
                             <div>操作</div>
                         </div>
-                        <div id="user-list" class="user-list" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 4px; margin-top: 5px;">
+                        <div id="user-list" class="user-list" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 4px; margin-top: 5px; touch-action: pan-y; -webkit-overflow-scrolling: touch;">
                             <div class="loading-text" style="text-align: center; padding: 40px; color: var(--text-light);">正在加载用户列表...</div>
                         </div>
                     </div>
