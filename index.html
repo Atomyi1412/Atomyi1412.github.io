@@ -3253,8 +3253,69 @@
          }
          
          .user-name {
-             color: var(--text-color);
-         }
+            color: var(--text-color);
+        }
+        
+        /* 登出按钮特殊样式 - 确保在所有主题下都有足够对比度 */
+        #logout-btn {
+            background: #6c757d !important;
+            color: white !important;
+            border: 1px solid #5a6268 !important;
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        #logout-btn:hover {
+            background: #5a6268 !important;
+            border-color: #545b62 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* 各主题下的登出按钮优化 */
+        [data-theme="blue"] #logout-btn {
+            background: #607D8B !important;
+            border-color: #546E7A !important;
+        }
+        
+        [data-theme="blue"] #logout-btn:hover {
+            background: #546E7A !important;
+            border-color: #455A64 !important;
+        }
+        
+        [data-theme="purple"] #logout-btn {
+            background: #795548 !important;
+            border-color: #6D4C41 !important;
+        }
+        
+        [data-theme="purple"] #logout-btn:hover {
+            background: #6D4C41 !important;
+            border-color: #5D4037 !important;
+        }
+        
+        [data-theme="orange"] #logout-btn {
+            background: #607D8B !important;
+            border-color: #546E7A !important;
+        }
+        
+        [data-theme="orange"] #logout-btn:hover {
+            background: #546E7A !important;
+            border-color: #455A64 !important;
+        }
+        
+        /* 深色模式下的登出按钮 */
+        [data-mode="dark"] #logout-btn {
+            background: #495057 !important;
+            border-color: #343a40 !important;
+            color: #f8f9fa !important;
+        }
+        
+        [data-mode="dark"] #logout-btn:hover {
+            background: #343a40 !important;
+            border-color: #23272b !important;
+        }
          
          /* 响应式设计 - 认证部分 */
          @media (max-width: 768px) {
