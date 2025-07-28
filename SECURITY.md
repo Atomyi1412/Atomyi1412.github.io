@@ -56,7 +56,41 @@ service cloud.firestore {
 - 监控异常的 API 调用
 - 保持 Security Rules 更新
 
+## 飞书 Webhook URL 安全配置
+
+### 问题说明
+飞书 Webhook URL 和多维表链接包含敏感信息，不应直接暴露在公开代码中。
+
+### 解决方案
+
+#### 1. 配置文件方式（推荐）
+1. 复制 `config.example.js` 为 `config.js`
+2. 在 `config.js` 中填入你的实际飞书配置：
+   ```javascript
+   const AppConfig = {
+       feishu: {
+           tableUrl: 'YOUR_FEISHU_TABLE_URL',
+           webhookUrl: 'YOUR_FEISHU_WEBHOOK_URL'
+       }
+   };
+   ```
+3. `config.js` 文件已在 `.gitignore` 中，不会被提交到版本控制
+
+#### 2. 环境变量方式
+在生产环境中，可以通过设置 window 对象来配置：
+```javascript
+window.FEISHU_TABLE_URL = 'your_table_url';
+window.FEISHU_WEBHOOK_URL = 'your_webhook_url';
+```
+
+#### 3. 飞书 Webhook 安全最佳实践
+- 定期更换 Webhook URL
+- 在飞书后台设置 IP 白名单（如果支持）
+- 监控 Webhook 使用情况
+- 避免在日志中记录完整的 URL
+
 ### 注意事项
 - 本项目的 Firebase 配置主要用于客户端认证和数据访问
 - 实际的数据安全由 Firebase Security Rules 保证
-- 如果担心安全问题，建议重新生成 API 密钥并更新配置
+- 飞书 Webhook URL 应当作敏感信息处理
+- 如果担心安全问题，建议重新生成 API 密钥和 Webhook URL 并更新配置

@@ -67,9 +67,10 @@
    cd kaoti
    ```
 
-2. **配置Firebase**（重要）
+2. **配置Firebase和飞书**（重要）
    - 复制 `firebase-config.example.js` 为 `firebase-config.js`
-   - 填入你的Firebase项目配置信息
+   - 复制 `config.example.js` 为 `config.js`
+   - 填入你的Firebase项目配置信息和飞书配置
    - 详细安全配置请参考 `SECURITY.md` 文件
 
 3. **启动HTTP服务器**（推荐）
@@ -126,15 +127,16 @@
 
 如果你收到GitHub关于"Secrets detected"的警告邮件，请按以下步骤处理：
 
-1. **理解Firebase客户端密钥**
-   - Firebase客户端API密钥是公开的，设计为在客户端使用
-   - 真正的安全性由Firebase Security Rules控制
-   - 这些密钥主要用于项目标识，而非认证
+1. **理解不同类型的敏感信息**
+   - **Firebase客户端密钥**：是公开的，设计为在客户端使用，真正的安全性由Firebase Security Rules控制
+   - **飞书Webhook URL**：包含敏感信息，应当作秘密处理，不应暴露在公开代码中
 
 2. **安全最佳实践**
    - 使用 `.gitignore` 防止敏感文件提交
+   - 将敏感URL移至配置文件（`config.js`）
    - 配置严格的Firebase Security Rules
    - 在生产环境使用环境变量
+   - 定期更换飞书Webhook URL
 
 3. **详细解决方案**
    请查看 `SECURITY.md` 文件获取完整的安全配置指南

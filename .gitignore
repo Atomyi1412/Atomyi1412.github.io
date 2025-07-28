@@ -1,6 +1,9 @@
 # Firebase configuration with sensitive data
 firebase-config.js
 
+# Application configuration (contains sensitive URLs)
+config.js
+
 # Environment variables
 .env
 .env.local

@@ -6,6 +6,8 @@
     <title>题库复习系统</title>
     <!-- SheetJS库用于Excel文件解析 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- 应用配置文件 -->
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -3847,8 +3849,8 @@
                 const viewTableBtn = document.getElementById('viewTableBtn');
                 if (viewTableBtn) {
                     viewTableBtn.addEventListener('click', () => {
-                        // 飞书多维表链接地址，可在此处修改
-                        const tableUrl = 'https://more2.feishu.cn/wiki/NEXXw0M6Micnfikr6MEcvZe1nXr?table=tbljG2LmtiCazz1W&view=vewAKqlLr5';
+                        // 从配置文件获取飞书多维表链接地址
+                        const tableUrl = window.AppConfig?.feishu?.tableUrl || 'https://more2.feishu.cn/wiki/NEXXw0M6Micnfikr6MEcvZe1nXr?table=tbljG2LmtiCazz1W&view=vewAKqlLr5';
                         window.open(tableUrl, '_blank');
                     });
                 }
@@ -3948,9 +3950,14 @@
                     confirmBtn.textContent = '保存中...';
                     confirmBtn.disabled = true;
                     
-                    // 使用代理服务器解决CORS问题
-                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                    const webhookUrl = 'https://more2.feishu.cn/base/automation/webhook/event/XVQuaSLWZw3cAKhOUULcAnpHnJh';
+                    // 从配置文件获取URL，如果配置文件不存在则使用默认值
+                    const proxyUrl = window.AppConfig?.proxy?.url || 'https://cors-anywhere.herokuapp.com/';
+                    const webhookUrl = window.AppConfig?.feishu?.webhookUrl || 'https://more2.feishu.cn/base/automation/webhook/event/XVQuaSLWZw3cAKhOUULcAnpHnJh';
+                    
+                    // 检查配置是否正确加载
+                    if (!window.AppConfig) {
+                        console.warn('配置文件未加载，使用默认配置。请确保 config.js 文件存在并正确配置。');
+                    }
                     
                     // 尝试直接发送，如果失败则使用备用方案
                     let response;
