@@ -4231,32 +4231,49 @@
             
             async autoLoadQuestionBank() {
                 try {
-                    // 检测可用的题库文件
+                    // 检测可用的题库文件（包含URL编码版本）
                     const knownFiles = [
                         'AI导师考题.csv',
+                        encodeURIComponent('AI导师考题.csv'),
+                        'AI%E5%AF%BC%E5%B8%88%E8%80%83%E9%A2%98.csv',
                         'AI导师考题.xlsx',
+                        encodeURIComponent('AI导师考题.xlsx'),
                         '点击开始复习 AI 导师考题.xlsx',
+                        encodeURIComponent('点击开始复习 AI 导师考题.xlsx'),
                         '题库.csv',
                         '题库.xlsx'
                     ];
                     
                     for (const fileName of knownFiles) {
-                        try {
-                            // 使用HEAD请求检测文件是否存在
-                            const response = await fetch(fileName, { method: 'HEAD' });
-                            if (response.ok) {
-                                console.log(`找到题库文件: ${fileName}，正在加载...`);
-                                // 设置选中的文件
-                                this.selectedFile = fileName;
-                                // 解析文件
-                                await this.parseCSV();
-                                console.log(`题库文件 ${fileName} 加载成功，共 ${this.allQuestions.length} 道题目`);
-                                return true; // 成功加载
-                            }
-                        } catch (error) {
-                            console.log(`文件 ${fileName} 不可访问:`, error.message);
-                        }
-                    }
+                         try {
+                             // 使用HEAD请求检测文件是否存在
+                             const response = await fetch(fileName, { method: 'HEAD' });
+                             if (response.ok) {
+                                 console.log(`找到题库文件: ${fileName}，正在加载...`);
+                                 // 设置选中的文件
+                                 this.selectedFile = fileName;
+                                 // 解析文件
+                                 await this.parseCSV();
+                                 console.log(`题库文件 ${fileName} 加载成功，共 ${this.allQuestions.length} 道题目`);
+                                 return true; // 成功加载
+                             }
+                         } catch (error) {
+                             console.log(`文件 ${fileName} 不可访问:`, error.message);
+                         }
+                     }
+                     
+                     // 如果所有文件都无法访问，尝试直接使用原始文件名
+                     console.log('尝试直接加载 AI导师考题.csv...');
+                     try {
+                         this.selectedFile = 'AI导师考题.csv';
+                         await this.parseCSV();
+                         if (this.allQuestions.length > 0) {
+                             console.log(`直接加载成功，共 ${this.allQuestions.length} 道题目`);
+                             return true;
+                         }
+                     } catch (error) {
+                         console.log('直接加载也失败:', error.message);
+                     }
                     
                     console.warn('未找到可用的题库文件');
                     return false;
