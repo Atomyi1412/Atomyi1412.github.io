@@ -273,6 +273,16 @@
         
 
         
+        /* 全局触摸优化 */
+        html {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
         /* 触摸设备优化 */
         @media (hover: none) and (pointer: coarse) {
             .btn, .option, .status-item, .file-item, .tab-btn {
@@ -306,6 +316,8 @@
             overscroll-behavior: none;
             overscroll-behavior-y: none;
             transition: all 0.3s ease;
+            /* 强制启用触摸滚动 */
+            touch-action: pan-y pinch-zoom;
         }
         
         /* 允许文本选择的元素 */
@@ -3396,13 +3408,22 @@
          
          @media (max-width: 480px) {
              /* 移动端滑动响应优化 */
-             * {
-                 touch-action: manipulation;
+             html, body {
+                 touch-action: pan-y pinch-zoom;
+                 -webkit-overflow-scrolling: touch;
              }
              
              .modal-content, .user-list, .container, .content {
                  touch-action: pan-y;
                  -webkit-overflow-scrolling: touch;
+                 overflow: auto;
+             }
+             
+             /* 确保滚动容器可以正常滚动 */
+             .modal-body, .user-list-container {
+                 touch-action: pan-y;
+                 -webkit-overflow-scrolling: touch;
+                 overflow-y: auto;
              }
              
              .header {
@@ -4211,26 +4232,33 @@
             }
             
             initTouchPreventListeners() {
-                // 防止移动端下拉刷新
+                // 优化移动端触摸事件处理
                 let startY = 0;
+                let startX = 0;
                 
                 document.addEventListener('touchstart', (e) => {
                     startY = e.touches[0].clientY;
-                }, { passive: false });
+                    startX = e.touches[0].clientX;
+                }, { passive: true });
                 
                 document.addEventListener('touchmove', (e) => {
                     const currentY = e.touches[0].clientY;
+                    const currentX = e.touches[0].clientX;
                     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
                     
-                    // 如果在页面顶部且向下滑动，阻止默认行为
-                    if (scrollTop === 0 && currentY > startY) {
+                    // 计算滑动距离
+                    const deltaY = currentY - startY;
+                    const deltaX = currentX - startX;
+                    
+                    // 只在明确的下拉刷新手势时阻止（垂直滑动且在页面顶部）
+                    if (scrollTop <= 5 && deltaY > 50 && Math.abs(deltaX) < 30) {
                         e.preventDefault();
                     }
                     
-                    // 如果在页面底部且向上滑动，阻止默认行为
+                    // 只在明确的上拉手势时阻止（垂直滑动且在页面底部）
                     const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
                     const clientHeight = document.documentElement.clientHeight || window.innerHeight;
-                    if (scrollTop + clientHeight >= scrollHeight && currentY < startY) {
+                    if (scrollTop + clientHeight >= scrollHeight - 5 && deltaY < -50 && Math.abs(deltaX) < 30) {
                         e.preventDefault();
                     }
                 }, { passive: false });
