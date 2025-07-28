@@ -4736,11 +4736,15 @@
                     // 检测同目录下的题库文件（CSV和Excel）
                     // 由于浏览器CORS限制，只能检测通过HTTP服务器访问的文件
                     const knownFiles = [
+                        'ai-tutor-questions.csv',
+                        'ai-tutor-questions.xlsx',
+                        'questions.csv',
+                        'questions.xlsx',
+                        '题库.csv',
+                        '题库.xlsx',
                         'AI导师考题.csv',
                         'AI导师考题.xlsx',
-                        '点击开始复习 AI 导师考题.xlsx',
-                        '题库.csv',
-                        '题库.xlsx'
+                        '点击开始复习 AI 导师考题.xlsx'
                     ];
                     const availableFiles = [];
                     
