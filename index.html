@@ -3313,9 +3313,52 @@
         }
         
         [data-mode="dark"] #logout-btn:hover {
-            background: #343a40 !important;
-            border-color: #23272b !important;
-        }
+             background: #343a40 !important;
+             border-color: #23272b !important;
+         }
+         
+         /* 用户管理按钮样式 */
+         .btn-warning {
+             background: #ffc107;
+             color: #212529;
+         }
+         
+         .btn-warning:hover {
+             background: #e0a800;
+         }
+         
+         .btn-success {
+             background: #28a745;
+             color: white;
+         }
+         
+         .btn-success:hover {
+             background: #218838;
+         }
+         
+         .btn-info {
+             background: #17a2b8;
+             color: white;
+         }
+         
+         .btn-info:hover {
+             background: #138496;
+         }
+         
+         /* 小按钮样式 */
+         .btn-sm {
+             padding: 4px 8px;
+             font-size: 12px;
+             border-radius: 3px;
+             border: none;
+             cursor: pointer;
+             transition: all 0.2s ease;
+         }
+         
+         .btn-sm:hover {
+             transform: translateY(-1px);
+             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+         }
          
          /* 响应式设计 - 认证部分 */
          @media (max-width: 768px) {
@@ -6701,10 +6744,75 @@
                             </div>
                         </div>
                     </div>
+                    <!-- 管理员功能区域 -->
+                    <div id="admin-user-management" class="admin-section" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <h3 style="color: var(--text-color); margin-bottom: 15px;">🛠️ 管理员功能</h3>
+                        <button id="show-user-management" class="btn btn-primary" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); border: none;">👥 用户管理</button>
+                    </div>
+                    
                     <div class="form-actions">
                         <button id="save-user-profile" class="btn btn-primary">保存设置</button>
                         <button id="cancel-user-profile" class="btn btn-secondary">取消</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 用户管理模态框 -->
+    <div id="user-management-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; width: 90%;">
+            <div class="modal-header">
+                <h2 id="user-management-title">👥 用户管理</h2>
+                <span class="close" id="close-user-management">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="user-management-container">
+                    <div class="user-management-header">
+                        <div class="search-container">
+                            <input type="text" id="user-search" placeholder="搜索用户（邮箱或昵称）" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; width: 300px;">
+                            <button id="refresh-users" class="btn btn-secondary" style="margin-left: 10px;">🔄 刷新</button>
+                        </div>
+                        <div class="user-stats" style="margin-top: 10px; color: var(--text-light); font-size: 14px;">
+                            <span id="total-users-count">总用户数: 0</span>
+                            <span style="margin-left: 20px;" id="admin-users-count">管理员: 0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="user-list-container" style="margin-top: 20px;">
+                        <div class="user-list-header" style="display: grid; grid-template-columns: 60px 1fr 150px 100px 80px 200px; gap: 10px; padding: 10px; background: var(--hover-background); border-radius: 4px; font-weight: bold; color: var(--text-color);">
+                            <div>头像</div>
+                            <div>用户信息</div>
+                            <div>注册时间</div>
+                            <div>状态</div>
+                            <div>角色</div>
+                            <div>操作</div>
+                        </div>
+                        <div id="user-list" class="user-list" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 4px; margin-top: 5px;">
+                            <div class="loading-text" style="text-align: center; padding: 40px; color: var(--text-light);">正在加载用户列表...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="user-management-actions" style="margin-top: 20px; text-align: right;">
+                        <button id="close-user-management-btn" class="btn btn-secondary">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 用户操作确认模态框 -->
+    <div id="user-action-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="user-action-title">确认操作</h3>
+                <span class="close" id="close-user-action">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="user-action-content" style="margin-bottom: 20px;"></div>
+                <div class="form-actions">
+                    <button id="confirm-user-action" class="btn btn-danger">确认</button>
+                    <button id="cancel-user-action" class="btn btn-secondary">取消</button>
                 </div>
             </div>
         </div>

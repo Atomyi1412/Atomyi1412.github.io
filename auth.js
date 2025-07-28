@@ -13,7 +13,12 @@ import {
   doc,
   getDoc,
   setDoc,
-  updateDoc
+  updateDoc,
+  collection,
+  getDocs,
+  deleteDoc,
+  query,
+  orderBy
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 
@@ -658,7 +663,7 @@ async function getUserProfile() {
   if (!currentUser || currentUser.isAnonymous) {
     // 匿名用户或未登录用户使用本地存储
     const profile = localStorage.getItem('userProfile');
-    return profile ? JSON.parse(profile) : { nickname: '', avatar: '👤' };
+    return profile ? JSON.parse(profile) : { nickname: '', avatar: '👤', isAdmin: false };
   }
   
   try {
@@ -667,17 +672,126 @@ async function getUserProfile() {
       const data = userDoc.data();
       return {
         nickname: data.name || '',
-        avatar: data.icon || '👤'
+        avatar: data.icon || '👤',
+        isAdmin: data.isAdmin || false
       };
     } else {
       // 用户文档不存在，返回默认值
-      return { nickname: '', avatar: '👤' };
+      return { nickname: '', avatar: '👤', isAdmin: false };
     }
   } catch (error) {
     console.error('获取用户配置失败:', error);
     // 出错时使用本地存储作为备用
     const profile = localStorage.getItem('userProfile');
-    return profile ? JSON.parse(profile) : { nickname: '', avatar: '👤' };
+    return profile ? JSON.parse(profile) : { nickname: '', avatar: '👤', isAdmin: false };
+  }
+}
+
+// 检查当前用户是否为管理员
+export async function isCurrentUserAdmin() {
+  const userProfile = await getUserProfile();
+  return userProfile.isAdmin || false;
+}
+
+// 用户管理功能
+// 获取所有用户列表
+async function getAllUsers() {
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      console.error('非管理员用户无权访问用户列表');
+      return { success: false, error: '权限不足' };
+    }
+    
+    const usersQuery = query(collection(db, 'users'), orderBy('lastUpdated', 'desc'));
+    const querySnapshot = await getDocs(usersQuery);
+    
+    const users = [];
+    querySnapshot.forEach((doc) => {
+      const userData = doc.data();
+      users.push({
+        uid: doc.id,
+        email: userData.email || '',
+        name: userData.name || '',
+        icon: userData.icon || '👤',
+        isAdmin: userData.isAdmin || false,
+        disabled: userData.disabled || false,
+        lastUpdated: userData.lastUpdated || '',
+        createdAt: userData.createdAt || ''
+      });
+    });
+    
+    return { success: true, users };
+  } catch (error) {
+    console.error('获取用户列表失败:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// 停用/启用用户账号
+async function toggleUserStatus(uid, disabled) {
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      return { success: false, error: '权限不足' };
+    }
+    
+    const userDocRef = doc(db, 'users', uid);
+    await updateDoc(userDocRef, {
+      disabled: disabled,
+      lastUpdated: new Date().toISOString()
+    });
+    
+    return { 
+      success: true, 
+      message: disabled ? '用户账号已停用' : '用户账号已启用'
+    };
+  } catch (error) {
+    console.error('更新用户状态失败:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// 删除用户账号
+async function deleteUserAccount(uid) {
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      return { success: false, error: '权限不足' };
+    }
+    
+    // 删除用户文档
+    const userDocRef = doc(db, 'users', uid);
+    await deleteDoc(userDocRef);
+    
+    return { 
+      success: true, 
+      message: '用户账号已删除'
+    };
+  } catch (error) {
+    console.error('删除用户账号失败:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// 重置用户密码
+async function resetUserPassword(email) {
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      return { success: false, error: '权限不足' };
+    }
+    
+    // 发送密码重置邮件
+    await sendPasswordResetEmail(auth, email);
+    
+    return { 
+      success: true, 
+      message: `密码重置邮件已发送至 ${email}`
+    };
+  } catch (error) {
+    console.error('重置用户密码失败:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -748,6 +862,12 @@ async function showUserCenterModal() {
       }
     });
     
+    // 显示或隐藏管理员按钮
+    const adminButton = document.getElementById('admin-user-management');
+    if (adminButton) {
+      adminButton.style.display = userProfile.isAdmin ? 'block' : 'none';
+    }
+    
     modal.style.display = 'block';
   }
 }
@@ -758,6 +878,229 @@ function hideUserCenterModal() {
   if (modal) {
     modal.style.display = 'none';
   }
+}
+
+// 显示用户管理模态框
+async function showUserManagementModal() {
+  const modal = document.getElementById('user-management-modal');
+  if (!modal) return;
+  
+  // 检查是否为管理员
+  const isAdmin = await isCurrentUserAdmin();
+  if (!isAdmin) {
+    showNotification('您没有管理员权限', 'error');
+    return;
+  }
+  
+  // 显示模态框
+  modal.style.display = 'block';
+  
+  // 加载用户列表
+  await loadUserList();
+}
+
+// 隐藏用户管理模态框
+function hideUserManagementModal() {
+  const modal = document.getElementById('user-management-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// 加载用户列表
+async function loadUserList() {
+  const userListContainer = document.getElementById('user-list');
+  if (!userListContainer) return;
+  
+  // 显示加载中
+  userListContainer.innerHTML = '<div class="loading-text" style="text-align: center; padding: 40px; color: var(--text-light);">正在加载用户列表...</div>';
+  
+  // 获取用户列表
+  const result = await getAllUsers();
+  
+  if (!result.success) {
+    userListContainer.innerHTML = `<div class="error-text" style="text-align: center; padding: 40px; color: var(--error-color);">加载失败: ${result.error}</div>`;
+    return;
+  }
+  
+  const { users } = result;
+  
+  // 更新用户统计
+  document.getElementById('total-users-count').textContent = `总用户数: ${users.length}`;
+  document.getElementById('admin-users-count').textContent = `管理员: ${users.filter(user => user.isAdmin).length}`;
+  
+  // 如果没有用户
+  if (users.length === 0) {
+    userListContainer.innerHTML = '<div class="empty-text" style="text-align: center; padding: 40px; color: var(--text-light);">暂无用户数据</div>';
+    return;
+  }
+  
+  // 渲染用户列表
+  renderUserList(users);
+}
+
+// 渲染用户列表
+function renderUserList(users) {
+  const userListContainer = document.getElementById('user-list');
+  let html = '';
+  
+  users.forEach(user => {
+    const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '未知';
+    
+    html += `
+      <div class="user-item" data-uid="${user.uid}" style="display: grid; grid-template-columns: 60px 1fr 150px 100px 80px 200px; gap: 10px; padding: 15px 10px; border-bottom: 1px solid var(--border-color); align-items: center;">
+        <div class="user-avatar" style="font-size: 24px; text-align: center;">${user.icon || '👤'}</div>
+        <div class="user-info">
+          <div class="user-name" style="font-weight: bold; color: var(--text-color);">${user.name || '未设置昵称'}</div>
+          <div class="user-email" style="font-size: 13px; color: var(--text-light);">${user.email || '无邮箱'}</div>
+        </div>
+        <div class="user-date">${createdDate}</div>
+        <div class="user-status" style="color: ${user.disabled ? 'var(--error-color)' : 'var(--success-color)'}">
+          ${user.disabled ? '已停用' : '正常'}
+        </div>
+        <div class="user-role" style="color: ${user.isAdmin ? 'var(--warning-color)' : 'var(--text-light)'}">
+          ${user.isAdmin ? '管理员' : '普通用户'}
+        </div>
+        <div class="user-actions">
+          <button class="btn-sm ${user.disabled ? 'btn-success' : 'btn-warning'} toggle-status" data-uid="${user.uid}" data-disabled="${!user.disabled}" style="margin-right: 5px; padding: 4px 8px; font-size: 12px; border-radius: 3px; border: none; cursor: pointer;">
+            ${user.disabled ? '启用' : '停用'}
+          </button>
+          <button class="btn-sm btn-info reset-password" data-uid="${user.uid}" data-email="${user.email}" style="margin-right: 5px; padding: 4px 8px; font-size: 12px; border-radius: 3px; border: none; cursor: pointer; background: #17a2b8; color: white;">
+            重置密码
+          </button>
+          <button class="btn-sm btn-danger delete-user" data-uid="${user.uid}" data-name="${user.name || user.email || '未命名用户'}" style="padding: 4px 8px; font-size: 12px; border-radius: 3px; border: none; cursor: pointer; background: #dc3545; color: white;">
+            删除
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  userListContainer.innerHTML = html;
+  
+  // 添加用户操作事件
+  addUserActionEvents();
+}
+
+// 添加用户操作事件
+function addUserActionEvents() {
+  // 停用/启用按钮
+  document.querySelectorAll('.toggle-status').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const uid = e.target.dataset.uid;
+      const disabled = e.target.dataset.disabled === 'true';
+      const userName = e.target.closest('.user-item').querySelector('.user-name').textContent;
+      
+      showUserActionConfirmation(
+        `确定要${disabled ? '停用' : '启用'}用户 "${userName}" 的账号吗？`,
+        async () => {
+          const result = await toggleUserStatus(uid, disabled);
+          if (result.success) {
+            showNotification(result.message, 'success');
+            await loadUserList(); // 重新加载用户列表
+          } else {
+            showNotification(`操作失败: ${result.error}`, 'error');
+          }
+        }
+      );
+    });
+  });
+  
+  // 重置密码按钮
+  document.querySelectorAll('.reset-password').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const email = e.target.dataset.email;
+      if (!email) {
+        showNotification('该用户没有关联邮箱，无法重置密码', 'error');
+        return;
+      }
+      
+      const userName = e.target.closest('.user-item').querySelector('.user-name').textContent;
+      
+      showUserActionConfirmation(
+        `确定要为用户 "${userName}" 重置密码吗？重置链接将发送到邮箱 ${email}`,
+        async () => {
+          const result = await resetUserPassword(email);
+          if (result.success) {
+            showNotification(result.message, 'success');
+          } else {
+            showNotification(`重置密码失败: ${result.error}`, 'error');
+          }
+        }
+      );
+    });
+  });
+  
+  // 删除用户按钮
+  document.querySelectorAll('.delete-user').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const uid = e.target.dataset.uid;
+      const name = e.target.dataset.name;
+      
+      showUserActionConfirmation(
+        `<div style="color: var(--error-color); font-weight: bold;">⚠️ 警告：此操作不可撤销</div><p>确定要删除用户 "${name}" 吗？</p>`,
+        async () => {
+          const result = await deleteUserAccount(uid);
+          if (result.success) {
+            showNotification(result.message, 'success');
+            await loadUserList(); // 重新加载用户列表
+          } else {
+            showNotification(`删除失败: ${result.error}`, 'error');
+          }
+        }
+      );
+    });
+  });
+}
+
+// 显示用户操作确认对话框
+function showUserActionConfirmation(message, confirmCallback) {
+  const modal = document.getElementById('user-action-modal');
+  const content = document.getElementById('user-action-content');
+  const confirmBtn = document.getElementById('confirm-user-action');
+  const cancelBtn = document.getElementById('cancel-user-action');
+  const closeBtn = document.getElementById('close-user-action');
+  
+  if (!modal || !content || !confirmBtn || !cancelBtn) return;
+  
+  // 设置内容
+  content.innerHTML = message;
+  
+  // 显示模态框
+  modal.style.display = 'block';
+  
+  // 清除之前的事件监听器
+  const newConfirmBtn = confirmBtn.cloneNode(true);
+  const newCancelBtn = cancelBtn.cloneNode(true);
+  const newCloseBtn = closeBtn.cloneNode(true);
+  
+  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+  
+  // 确认按钮事件
+  newConfirmBtn.addEventListener('click', async () => {
+    modal.style.display = 'none';
+    await confirmCallback();
+  });
+  
+  // 取消按钮事件
+  const cancelHandler = () => {
+    modal.style.display = 'none';
+  };
+  
+  newCancelBtn.addEventListener('click', cancelHandler);
+  newCloseBtn.addEventListener('click', cancelHandler);
+  
+  // 点击模态框外部关闭
+  const outsideClickHandler = (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      modal.removeEventListener('click', outsideClickHandler);
+    }
+  };
+  
+  modal.addEventListener('click', outsideClickHandler);
 }
 
 // 初始化用户中心事件
@@ -779,7 +1122,64 @@ function initUserCenterEvents() {
     });
   });
   
-
+  // 用户管理按钮事件
+  const adminBtn = document.getElementById('show-user-management');
+  if (adminBtn) {
+    adminBtn.addEventListener('click', async () => {
+      // 隐藏用户中心模态框
+      hideUserCenterModal();
+      // 显示用户管理模态框
+      await showUserManagementModal();
+    });
+  }
+  
+  // 用户管理模态框关闭按钮
+  const closeUserManagementBtn = document.getElementById('close-user-management');
+  if (closeUserManagementBtn) {
+    closeUserManagementBtn.addEventListener('click', () => {
+      hideUserManagementModal();
+      // 重新显示用户中心模态框
+      showUserCenterModal();
+    });
+  }
+  
+  // 用户管理底部关闭按钮
+  const closeUserManagementBottomBtn = document.getElementById('close-user-management-btn');
+  if (closeUserManagementBottomBtn) {
+    closeUserManagementBottomBtn.addEventListener('click', () => {
+      hideUserManagementModal();
+      // 重新显示用户中心模态框
+      showUserCenterModal();
+    });
+  }
+  
+  // 刷新用户列表按钮
+  const refreshUsersBtn = document.getElementById('refresh-users');
+  if (refreshUsersBtn) {
+    refreshUsersBtn.addEventListener('click', async () => {
+      await loadUserList();
+    });
+  }
+  
+  // 用户搜索框
+  const userSearchInput = document.getElementById('user-search');
+  if (userSearchInput) {
+    userSearchInput.addEventListener('input', () => {
+      const searchTerm = userSearchInput.value.toLowerCase();
+      const userItems = document.querySelectorAll('.user-item');
+      
+      userItems.forEach(item => {
+        const userName = item.querySelector('.user-name').textContent.toLowerCase();
+        const userEmail = item.querySelector('.user-email').textContent.toLowerCase();
+        
+        if (userName.includes(searchTerm) || userEmail.includes(searchTerm)) {
+          item.style.display = 'grid';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  }
   
   // 保存按钮事件
   const saveBtn = document.getElementById('save-user-profile');
