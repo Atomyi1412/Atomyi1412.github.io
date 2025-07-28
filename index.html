@@ -4360,20 +4360,73 @@
                 }
             }
             
-            showSaveToTableModal() {
+            async showSaveToTableModal() {
                 const modal = document.getElementById('saveToTableModal');
                 const userNameInput = document.getElementById('userName');
+                const userNameLabel = document.querySelector('label[for="userName"]');
+                
                 if (modal && userNameInput) {
+                    // 获取当前用户配置
+                    let userProfile = null;
+                    try {
+                        // 尝试从auth.js获取用户配置
+                        if (typeof window.authModule !== 'undefined' && window.authModule.getUserProfile) {
+                            userProfile = await window.authModule.getUserProfile();
+                        } else {
+                            // 备用方案：从localStorage获取
+                            const profile = localStorage.getItem('userProfile');
+                            userProfile = profile ? JSON.parse(profile) : { nickname: '', avatar: '👤', isAdmin: false };
+                        }
+                    } catch (error) {
+                        console.log('获取用户配置失败，使用默认设置:', error);
+                        userProfile = { nickname: '', avatar: '👤', isAdmin: false };
+                    }
+                    
+                    // 如果用户有昵称，直接使用并隐藏输入框
+                    if (userProfile && userProfile.nickname && userProfile.nickname.trim()) {
+                        userNameInput.value = userProfile.nickname.trim();
+                        userNameInput.style.display = 'none';
+                        if (userNameLabel) {
+                            userNameLabel.textContent = `用户昵称：${userProfile.nickname.trim()}`;
+                            userNameLabel.style.color = 'var(--success-color)';
+                        }
+                        // 直接聚焦到确认按钮
+                        const confirmBtn = document.getElementById('confirmSaveBtn');
+                        if (confirmBtn) {
+                            confirmBtn.focus();
+                        }
+                    } else {
+                        // 用户没有昵称，显示输入框让用户填写
+                        userNameInput.value = '';
+                        userNameInput.style.display = 'block';
+                        if (userNameLabel) {
+                            userNameLabel.textContent = '请输入用户名称：';
+                            userNameLabel.style.color = 'var(--text-light)';
+                        }
+                        userNameInput.focus();
+                    }
+                    
                     modal.style.display = 'block';
-                    userNameInput.value = '';
-                    userNameInput.focus();
                 }
             }
             
             hideSaveToTableModal() {
                 const modal = document.getElementById('saveToTableModal');
+                const userNameInput = document.getElementById('userName');
+                const userNameLabel = document.querySelector('label[for="userName"]');
+                
                 if (modal) {
                     modal.style.display = 'none';
+                    
+                    // 重置输入框和标签状态
+                    if (userNameInput) {
+                        userNameInput.style.display = 'block';
+                        userNameInput.value = '';
+                    }
+                    if (userNameLabel) {
+                        userNameLabel.textContent = '请输入用户名称：';
+                        userNameLabel.style.color = 'var(--text-light)';
+                    }
                 }
             }
             

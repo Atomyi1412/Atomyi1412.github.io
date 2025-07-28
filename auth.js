@@ -1283,3 +1283,11 @@ function initUserCenterEvents() {
     });
   }
 }
+
+// 导出函数到window对象，供其他模块使用
+window.authModule = {
+  getUserProfile,
+  getCurrentUser,
+  isCurrentUserAdmin,
+  saveUserProfile
+};
