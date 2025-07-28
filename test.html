@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>题库文件测试</title>
+</head>
+<body>
+    <h1>题库文件访问测试</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testFiles() {
+            const files = [
+                'AI导师考题.csv',
+                encodeURIComponent('AI导师考题.csv'),
+                'AI%E5%AF%BC%E5%B8%88%E8%80%83%E9%A2%98.csv'
+            ];
+            
+            const result = document.getElementById('result');
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    result.innerHTML += `<p>${file}: ${response.ok ? '✅ 可访问' : '❌ 不可访问 (' + response.status + ')'}</p>`;
+                } catch (error) {
+                    result.innerHTML += `<p>${file}: ❌ 错误 - ${error.message}</p>`;
+                }
+            }
+        }
+        
+        testFiles();
+    </script>
+</body>
+</html>
