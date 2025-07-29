@@ -127,15 +127,32 @@ curl http://your-domain/config.js
 ```
 
 ### 常见错误
-1. **Firebase 初始化失败**
+1. **INVALID_PATH 错误**
+   - **错误描述**: `Invalid path. For more information, please refer to https://docs.cloudbase.net/error-code/service`
+   - **原因分析**: 腾讯云找不到匹配的转发规则或路径配置错误
+   - **解决方案**:
+     ```bash
+     # 检查腾讯云配置
+     - 确认「目标目录」设置为: /
+     - 确认「端口」设置为: 80
+     - 确认「Dockerfile名称」设置为: Dockerfile
+     - 检查服务是否正常启动（查看部署日志）
+     ```
+   - **重新部署步骤**:
+     1. 进入腾讯云控制台 → 云开发 → 云托管
+     2. 选择你的服务 → 版本管理
+     3. 新建版本，重新配置路径参数
+     4. 等待部署完成（通常需要3-5分钟）
+
+2. **Firebase 初始化失败**
    - 检查 Firebase 环境变量是否正确设置
    - 验证 Firebase 项目配置
 
-2. **飞书数据提交失败**
+3. **飞书数据提交失败**
    - 检查 FEISHU_WEBHOOK_URL 是否正确
    - 验证飞书 Webhook 权限
 
-3. **CORS 错误**
+4. **CORS 错误**
    - 检查 PROXY_URL 配置
    - 验证代理服务器状态
 
