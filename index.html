@@ -4370,6 +4370,11 @@
                 try {
                     console.log('开始自动加载题库文件');
                     
+                    // 更新loading步骤到加载题库
+                    if (window.updateLoadingStep) {
+                        window.updateLoadingStep('load');
+                    }
+                    
                     // 检测可用的题库文件（优先使用英文文件名）
                     const knownFiles = [
                         'ai-tutor-questions.csv',
@@ -4425,6 +4430,11 @@
             async startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit, showAnswers = true) {
                 try {
                     console.log('开始自动考试，无需登录');
+                    
+                    // 更新loading步骤到准备考试
+                    if (window.updateLoadingStep) {
+                        window.updateLoadingStep('start');
+                    }
                     
                     // 设置答案显示选项
                     this.showAnswers = showAnswers;
@@ -4517,6 +4527,16 @@
                 this.pausedTime = 0;
                 this.pauseStartTime = null;
                 this.pauseCount = 0;
+                
+                // 隐藏loading界面
+                const loadingOverlay = document.getElementById('loading-overlay');
+                const authModal = document.getElementById('auth-modal');
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+                if (authModal) {
+                    authModal.style.display = 'none';
+                }
                 
                 // 显示考试界面
                 document.getElementById('library-section').classList.add('hidden');
@@ -7488,7 +7508,7 @@
                     <h3>正在加载考试...</h3>
                     <p>系统正在为您准备考试内容，请稍候</p>
                     <div class="loading-steps">
-                        <div class="step active" id="step-login">🔐 自动登录中...</div>
+                        <div class="step active" id="step-login">🚀 正在初始化...</div>
                         <div class="step" id="step-load">📚 加载题库中...</div>
                         <div class="step" id="step-start">🎯 准备考试中...</div>
                     </div>
@@ -7728,9 +7748,14 @@
                 const autoStart = urlParams.get('auto');
                 
                 if (autoStart === '1') {
-                    console.log('检测到自动考试链接，跳过登录直接开始');
-                    // 不再显示loading界面和触发登录
-                    // 认证逻辑已在auth.js的initializeAuthState中处理
+                    console.log('检测到自动考试链接，显示loading界面');
+                    // 显示loading界面
+                    showLoadingInterface();
+                    
+                    // 直接开始加载流程，跳过登录步骤
+                    setTimeout(() => {
+                        updateLoadingStep('load');
+                    }, 500);
                 }
             }
             
