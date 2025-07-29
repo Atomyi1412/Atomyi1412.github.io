@@ -13,6 +13,26 @@ COPY . /usr/share/nginx/html/
 # 创建生产环境配置脚本
 RUN echo '#!/bin/sh' > /docker-entrypoint.d/30-setup-config.sh && \
     echo 'echo "Setting up production configuration..."' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '# 创建环境变量注入脚本' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'cat > /usr/share/nginx/html/env-config.js << EOF' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '// 环境变量注入脚本' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FIREBASE_API_KEY = "${FIREBASE_API_KEY}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FIREBASE_AUTH_DOMAIN = "${FIREBASE_AUTH_DOMAIN}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FIREBASE_PROJECT_ID = "${FIREBASE_PROJECT_ID}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FIREBASE_STORAGE_BUCKET = "${FIREBASE_STORAGE_BUCKET}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FIREBASE_MESSAGING_SENDER_ID = "${FIREBASE_MESSAGING_SENDER_ID}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FIREBASE_APP_ID = "${FIREBASE_APP_ID}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FIREBASE_MEASUREMENT_ID = "${FIREBASE_MEASUREMENT_ID}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FEISHU_TABLE_URL = "${FEISHU_TABLE_URL}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.FEISHU_WEBHOOK_URL = "${FEISHU_WEBHOOK_URL}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.PROXY_URL = "${PROXY_URL}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.API_BASE_URL = "${API_BASE_URL}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.DEBUG = "${DEBUG}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'window.APP_VERSION = "${APP_VERSION}";' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'EOF' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '# 使用生产环境配置文件' >> /docker-entrypoint.d/30-setup-config.sh && \
     echo 'if [ -n "$FIREBASE_API_KEY" ]; then' >> /docker-entrypoint.d/30-setup-config.sh && \
     echo '  echo "Using production Firebase config"' >> /docker-entrypoint.d/30-setup-config.sh && \
     echo '  cp /usr/share/nginx/html/firebase-config.production.js /usr/share/nginx/html/firebase-config.js' >> /docker-entrypoint.d/30-setup-config.sh && \

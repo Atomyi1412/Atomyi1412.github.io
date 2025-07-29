@@ -19,6 +19,8 @@
             }
         };
     </script>
+    <!-- 环境变量注入脚本（生产环境） -->
+    <script src="env-config.js" onerror="console.log('env-config.js not found, using default config')"></script>
     <script src="config.js" onerror="console.log('config.js not found, using default config')"></script>
     <style>
         * {

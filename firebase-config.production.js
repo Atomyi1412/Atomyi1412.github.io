@@ -8,16 +8,26 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// 浏览器环境兼容的环境变量获取函数
+function getFirebaseEnvVar(name, defaultValue = '') {
+    // 从 window 对象获取（容器运行时注入）
+    if (typeof window !== 'undefined' && window[name]) {
+        return window[name];
+    }
+    // 返回默认值
+    return defaultValue;
+}
+
 // 生产环境 Firebase 配置
 // 从环境变量获取敏感信息，确保安全性
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || window.FIREBASE_API_KEY || "",
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN || window.FIREBASE_AUTH_DOMAIN || "",
-  projectId: process.env.FIREBASE_PROJECT_ID || window.FIREBASE_PROJECT_ID || "",
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || window.FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || window.FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: process.env.FIREBASE_APP_ID || window.FIREBASE_APP_ID || "",
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID || window.FIREBASE_MEASUREMENT_ID || ""
+  apiKey: getFirebaseEnvVar('FIREBASE_API_KEY', ''),
+  authDomain: getFirebaseEnvVar('FIREBASE_AUTH_DOMAIN', ''),
+  projectId: getFirebaseEnvVar('FIREBASE_PROJECT_ID', ''),
+  storageBucket: getFirebaseEnvVar('FIREBASE_STORAGE_BUCKET', ''),
+  messagingSenderId: getFirebaseEnvVar('FIREBASE_MESSAGING_SENDER_ID', ''),
+  appId: getFirebaseEnvVar('FIREBASE_APP_ID', ''),
+  measurementId: getFirebaseEnvVar('FIREBASE_MEASUREMENT_ID', '')
 };
 
 // 配置验证函数
