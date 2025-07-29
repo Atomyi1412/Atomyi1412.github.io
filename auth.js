@@ -530,20 +530,27 @@ async function updateUIForAuthState(user) {
     const autoStart = urlParams.get('auto');
     
     if (autoStart === '1') {
-      // 自动考试模式，不强制登录
-      console.log('自动考试模式，跳过强制登录界面');
-      if (loginSection) loginSection.style.display = 'none';
-      if (userSection) userSection.style.display = 'none';
-      if (mainContent) mainContent.style.display = 'block';
-      if (authModal) {
-        authModal.style.display = 'none';
-        authModal.classList.remove('force-login');
-      }
-      
-      // 初始化题库应用
-      if (typeof window.initializeApp === 'function') {
-        window.initializeApp();
-      }
+       // 自动考试模式，不强制登录
+       console.log('自动考试模式，跳过强制登录界面');
+       if (loginSection) loginSection.style.display = 'none';
+       if (userSection) userSection.style.display = 'none';
+       if (mainContent) mainContent.style.display = 'block';
+       
+       // 在自动考试模式下，保持loading界面显示，不隐藏authModal
+       if (authModal) {
+         authModal.classList.remove('force-login');
+         // 检查是否有loading界面正在显示
+         const loadingOverlay = document.getElementById('loading-overlay');
+         if (!loadingOverlay || loadingOverlay.style.display === 'none') {
+           // 如果没有loading界面，则隐藏authModal
+           authModal.style.display = 'none';
+         }
+       }
+       
+       // 初始化题库应用
+       if (typeof window.initializeApp === 'function') {
+         window.initializeApp();
+       }
     } else {
       // 用户未登录 - 强制显示登录界面
       if (loginSection) loginSection.style.display = 'block';
