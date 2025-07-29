@@ -4299,7 +4299,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.1.1"; // 可手动修改版本号
+                this.version = "v4.2.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -6412,6 +6412,14 @@
                         restartBtn.style.display = 'none';
                     }
                 }
+                
+                // 5秒后自动弹出保存到多维表的界面
+                setTimeout(() => {
+                    if (!this.resultSaved) { // 只有在未保存时才弹出
+                        console.log('5秒倒计时结束，自动弹出保存界面');
+                        this.showSaveToTableModal();
+                    }
+                }, 5000);
             }
 
 
