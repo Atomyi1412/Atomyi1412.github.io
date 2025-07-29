@@ -1,8 +1,8 @@
 # Firebase configuration with sensitive data
-firebase-config.js
+# firebase-config.js (commented out for deployment)
 
 # Application configuration (contains sensitive URLs)
-config.js
+# config.js (commented out for deployment)
 
 # Environment variables
 .env
