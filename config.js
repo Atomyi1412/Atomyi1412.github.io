@@ -4,11 +4,11 @@
 const AppConfig = {
     // 飞书多维表相关配置
     feishu: {
-        // 飞书多维表查看链接（请在部署时通过环境变量设置真实URL）
-        tableUrl: window.FEISHU_TABLE_URL || 'https://your-feishu-table-url-here',
+        // 飞书多维表查看链接
+        tableUrl: window.FEISHU_TABLE_URL || 'https://more2.feishu.cn/wiki/NEXXw0M6Micnfikr6MEcvZe1nXr?table=tbljG2LmtiCazz1W&view=vewAKqlLr5',
         
-        // 飞书webhook URL（请在部署时通过环境变量设置真实URL）
-        webhookUrl: window.FEISHU_WEBHOOK_URL || 'https://your-feishu-webhook-url-here'
+        // 飞书webhook URL（用于数据提交）
+        webhookUrl: window.FEISHU_WEBHOOK_URL || 'https://more2.feishu.cn/base/automation/webhook/event/XVQuaSLWZw3cAKhOUULcAnpHnJh'
     },
     
     // CORS代理服务器配置
