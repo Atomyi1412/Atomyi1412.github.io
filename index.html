@@ -4299,7 +4299,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.3.0"; // 可手动修改版本号
+                this.version = "v4.3.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5869,17 +5869,6 @@
                                 const currentAnswer = this.userAnswers[this.currentQuestionIndex];
                                 if (currentAnswer && currentAnswer.trim() && !this.answeredQuestions.has(this.currentQuestionIndex)) {
                                     confirmBtn.style.display = 'inline-block';
-                                    
-                                    // 如果隐藏答案模式且是单选题，自动确认并跳转下一题
-                                    if (!this.showAnswers && question.type === '单选题') {
-                                        setTimeout(() => {
-                                            this.confirmAnswer(this.currentQuestionIndex, currentAnswer);
-                                            // 延迟跳转到下一题，给用户看到选择效果
-                                            setTimeout(() => {
-                                                this.nextQuestion();
-                                            }, 300);
-                                        }, 100);
-                                    }
                                 } else {
                                     confirmBtn.style.display = 'none';
                                 }
@@ -5916,6 +5905,13 @@
                     confirmBtn.addEventListener('click', () => {
                         const currentAnswer = this.userAnswers[this.currentQuestionIndex];
                         this.confirmAnswer(this.currentQuestionIndex, currentAnswer);
+                        
+                        // 如果隐藏答案模式，确认后自动跳转到下一题
+                        if (!this.showAnswers) {
+                            setTimeout(() => {
+                                this.nextQuestion();
+                            }, 300);
+                        }
                     });
                     
                     container.appendChild(confirmBtn);
@@ -5961,6 +5957,13 @@
                         const selectedValue = this.userAnswers[this.currentQuestionIndex];
                         if (selectedValue) {
                             this.confirmAnswer(this.currentQuestionIndex, selectedValue);
+                            
+                            // 如果隐藏答案模式，确认后自动跳转到下一题
+                            if (!this.showAnswers) {
+                                setTimeout(() => {
+                                    this.nextQuestion();
+                                }, 300);
+                            }
                         }
                     });
                     
@@ -5981,6 +5984,33 @@
                     textarea.value = this.userAnswers[this.currentQuestionIndex] || '';
                     
                     let saveTimeout;
+                    
+                    container.appendChild(textarea);
+                    
+                    // 添加确定按钮
+                    const confirmBtn = document.createElement('button');
+                    confirmBtn.className = 'btn btn-primary confirm-answer-btn';
+                    confirmBtn.textContent = '✓ 确定';
+                    confirmBtn.style.display = textarea.value.trim() ? 'inline-block' : 'none';
+                    confirmBtn.style.marginTop = '15px';
+                    
+                    confirmBtn.addEventListener('click', () => {
+                        const currentAnswer = this.userAnswers[this.currentQuestionIndex];
+                        if (currentAnswer && currentAnswer.trim()) {
+                            this.confirmAnswer(this.currentQuestionIndex, currentAnswer);
+                            
+                            // 如果隐藏答案模式，确认后自动跳转到下一题
+                            if (!this.showAnswers) {
+                                setTimeout(() => {
+                                    this.nextQuestion();
+                                }, 300);
+                            }
+                        }
+                    });
+                    
+                    container.appendChild(confirmBtn);
+                    
+                    // 更新确认按钮显示状态
                     textarea.addEventListener('input', () => {
                         this.userAnswers[this.currentQuestionIndex] = textarea.value;
                         // 防抖保存提示
@@ -5990,9 +6020,21 @@
                                 this.showAnswerSaved();
                             }
                         }, 1000);
+                        
+                        // 更新确认按钮显示
+                        if (textarea.value.trim() && !this.answeredQuestions.has(this.currentQuestionIndex)) {
+                            confirmBtn.style.display = 'inline-block';
+                        } else {
+                            confirmBtn.style.display = 'none';
+                        }
                     });
                     
-                    container.appendChild(textarea);
+                    // 如果已经回答过，隐藏确认按钮并禁用输入
+                    if (this.answeredQuestions.has(this.currentQuestionIndex)) {
+                        textarea.disabled = true;
+                        textarea.style.opacity = '0.6';
+                        confirmBtn.style.display = 'none';
+                    }
                 }
             }
 
@@ -6026,17 +6068,6 @@
                     const confirmBtn = document.querySelector('.confirm-answer-btn');
                     if (confirmBtn) {
                         confirmBtn.style.display = 'inline-block';
-                        
-                        // 如果隐藏答案模式，自动确认并跳转下一题
-                        if (!this.showAnswers) {
-                            setTimeout(() => {
-                                this.confirmAnswer(this.currentQuestionIndex, value);
-                                // 延迟跳转到下一题，给用户看到选择效果
-                                setTimeout(() => {
-                                    this.nextQuestion();
-                                }, 300);
-                            }, 100);
-                        }
                     }
                 });
                 
