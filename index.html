@@ -3086,6 +3086,77 @@
              }
          }
          
+         /* Loading 界面样式 */
+         .loading-overlay {
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+             border-radius: 12px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             z-index: 1001;
+         }
+         
+         .loading-content {
+             text-align: center;
+             color: white;
+             padding: 40px 20px;
+         }
+         
+         .loading-spinner {
+             width: 60px;
+             height: 60px;
+             border: 4px solid rgba(255, 255, 255, 0.3);
+             border-top: 4px solid white;
+             border-radius: 50%;
+             animation: spin 1s linear infinite;
+             margin: 0 auto 20px;
+         }
+         
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
+         
+         .loading-content h3 {
+             margin: 0 0 10px 0;
+             font-size: 1.5em;
+             font-weight: 600;
+         }
+         
+         .loading-content p {
+             margin: 0 0 30px 0;
+             opacity: 0.9;
+             font-size: 1em;
+         }
+         
+         .loading-steps {
+             text-align: left;
+             max-width: 280px;
+             margin: 0 auto;
+         }
+         
+         .loading-steps .step {
+             padding: 8px 0;
+             opacity: 0.5;
+             transition: opacity 0.3s ease;
+             font-size: 0.95em;
+         }
+         
+         .loading-steps .step.active {
+             opacity: 1;
+             font-weight: 500;
+         }
+         
+         .loading-steps .step.completed {
+             opacity: 0.8;
+             text-decoration: line-through;
+         }
+         
          .modal-header {
              display: flex;
              justify-content: space-between;
@@ -4297,6 +4368,11 @@
             
             async autoLoadQuestionBank() {
                 try {
+                    // 更新loading步骤到加载题库
+                    if (window.updateLoadingStep) {
+                        window.updateLoadingStep('load');
+                    }
+                    
                     // 检测可用的题库文件（优先使用英文文件名）
                     const knownFiles = [
                         'ai-tutor-questions.csv',
@@ -4351,6 +4427,11 @@
             
             async startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit, showAnswers = true) {
                 try {
+                    // 更新loading步骤到准备考试
+                    if (window.updateLoadingStep) {
+                        window.updateLoadingStep('start');
+                    }
+                    
                     // 首先尝试匿名登录
                     if (typeof window.authModule !== 'undefined' && window.authModule.signInAnonymouslyUser) {
                         const result = await window.authModule.signInAnonymouslyUser();
@@ -4450,6 +4531,16 @@
                 this.pausedTime = 0;
                 this.pauseStartTime = null;
                 this.pauseCount = 0;
+                
+                // 隐藏loading界面
+                const loadingOverlay = document.getElementById('loading-overlay');
+                const authModal = document.getElementById('auth-modal');
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+                if (authModal) {
+                    authModal.style.display = 'none';
+                }
                 
                 // 显示考试界面
                 document.getElementById('library-section').classList.add('hidden');
@@ -7414,6 +7505,20 @@
     <!-- 登录模态框 -->
     <div id="auth-modal" class="modal" style="display: none;">
         <div class="modal-content">
+            <!-- Loading 界面 -->
+            <div id="loading-overlay" class="loading-overlay" style="display: none;">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <h3>正在加载考试...</h3>
+                    <p>系统正在为您准备考试内容，请稍候</p>
+                    <div class="loading-steps">
+                        <div class="step active" id="step-login">🔐 自动登录中...</div>
+                        <div class="step" id="step-load">📚 加载题库中...</div>
+                        <div class="step" id="step-start">🎯 准备考试中...</div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="modal-header">
                 <h2 id="modal-title">用户登录</h2>
                 <span class="close" id="close-modal">&times;</span>
@@ -7622,6 +7727,9 @@
         
         // 初始化认证UI
         document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否为自动考试链接
+            checkAutoExamLink();
+            
             initAuthUI();
             
             // 模态框控制
@@ -7637,6 +7745,76 @@
             const loginFormContainer = document.getElementById('login-form-container');
             const registerFormContainer = document.getElementById('register-form-container');
             const forgotPasswordContainer = document.getElementById('forgot-password-container');
+            
+            // 检查自动考试链接的函数
+            function checkAutoExamLink() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const autoStart = urlParams.get('auto');
+                
+                if (autoStart === '1') {
+                    // 显示loading界面
+                    showLoadingInterface();
+                    
+                    // 自动触发匿名登录
+                    setTimeout(() => {
+                        const anonymousBtn = document.getElementById('anonymous-login-btn');
+                        if (anonymousBtn) {
+                            anonymousBtn.click();
+                        }
+                    }, 500);
+                }
+            }
+            
+            // 显示loading界面
+            function showLoadingInterface() {
+                const modal = document.getElementById('auth-modal');
+                const loadingOverlay = document.getElementById('loading-overlay');
+                
+                if (modal && loadingOverlay) {
+                    modal.style.display = 'block';
+                    loadingOverlay.style.display = 'flex';
+                    
+                    // 设置步骤状态
+                    updateLoadingStep('login');
+                }
+            }
+            
+            // 更新loading步骤
+            function updateLoadingStep(step) {
+                const steps = {
+                    'login': 'step-login',
+                    'load': 'step-load', 
+                    'start': 'step-start'
+                };
+                
+                // 重置所有步骤
+                Object.values(steps).forEach(stepId => {
+                    const stepEl = document.getElementById(stepId);
+                    if (stepEl) {
+                        stepEl.classList.remove('active', 'completed');
+                    }
+                });
+                
+                // 设置当前步骤为活跃
+                const currentStepEl = document.getElementById(steps[step]);
+                if (currentStepEl) {
+                    currentStepEl.classList.add('active');
+                }
+                
+                // 设置之前的步骤为完成
+                const stepOrder = ['login', 'load', 'start'];
+                const currentIndex = stepOrder.indexOf(step);
+                for (let i = 0; i < currentIndex; i++) {
+                    const prevStepEl = document.getElementById(steps[stepOrder[i]]);
+                    if (prevStepEl) {
+                        prevStepEl.classList.add('completed');
+                        prevStepEl.classList.remove('active');
+                    }
+                }
+            }
+            
+            // 将函数暴露到全局，供其他模块调用
+            window.updateLoadingStep = updateLoadingStep;
             
             // 显示登录模态框
             function showLoginModal() {

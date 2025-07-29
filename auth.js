@@ -448,6 +448,18 @@ async function updateUIForAuthState(user) {
       if (notice) notice.remove();
     }
     
+    // 如果是自动考试模式且用户是匿名用户，更新loading步骤
+    if (user && user.isAnonymous && window.updateLoadingStep) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoStart = urlParams.get('auto');
+      if (autoStart === '1') {
+        // 延迟一下让用户看到登录完成的状态
+        setTimeout(() => {
+          window.updateLoadingStep('load');
+        }, 500);
+      }
+    }
+    
     // 初始化题库应用
     if (typeof window.initializeApp === 'function') {
       window.initializeApp();
