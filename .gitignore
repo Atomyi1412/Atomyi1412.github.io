@@ -4,6 +4,9 @@
 # Application configuration (contains sensitive URLs)
 # config.js (commented out for deployment)
 
+# 本地配置文件（包含敏感信息）
+config.local.js
+
 # Environment variables
 .env
 .env.local
