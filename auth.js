@@ -61,8 +61,10 @@ function initializeAuthState() {
       // 隐藏登录相关UI
       const loginSection = document.getElementById('login-section');
       const userSection = document.getElementById('user-section');
+      const authSection = document.querySelector('.auth-section');
       if (loginSection) loginSection.style.display = 'none';
       if (userSection) userSection.style.display = 'none';
+      if (authSection) authSection.style.display = 'none';
       
       // 确保认证模态框隐藏
       const authModal = document.getElementById('auth-modal');
