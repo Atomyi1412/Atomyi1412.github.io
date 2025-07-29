@@ -4299,7 +4299,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.2.1"; // 可手动修改版本号
+                this.version = "v4.3.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5869,6 +5869,17 @@
                                 const currentAnswer = this.userAnswers[this.currentQuestionIndex];
                                 if (currentAnswer && currentAnswer.trim() && !this.answeredQuestions.has(this.currentQuestionIndex)) {
                                     confirmBtn.style.display = 'inline-block';
+                                    
+                                    // 如果隐藏答案模式且是单选题，自动确认并跳转下一题
+                                    if (!this.showAnswers && question.type === '单选题') {
+                                        setTimeout(() => {
+                                            this.confirmAnswer(this.currentQuestionIndex, currentAnswer);
+                                            // 延迟跳转到下一题，给用户看到选择效果
+                                            setTimeout(() => {
+                                                this.nextQuestion();
+                                            }, 300);
+                                        }, 100);
+                                    }
                                 } else {
                                     confirmBtn.style.display = 'none';
                                 }
@@ -6015,6 +6026,17 @@
                     const confirmBtn = document.querySelector('.confirm-answer-btn');
                     if (confirmBtn) {
                         confirmBtn.style.display = 'inline-block';
+                        
+                        // 如果隐藏答案模式，自动确认并跳转下一题
+                        if (!this.showAnswers) {
+                            setTimeout(() => {
+                                this.confirmAnswer(this.currentQuestionIndex, value);
+                                // 延迟跳转到下一题，给用户看到选择效果
+                                setTimeout(() => {
+                                    this.nextQuestion();
+                                }, 300);
+                            }, 100);
+                        }
                     }
                 });
                 
