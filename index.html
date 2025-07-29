@@ -4368,10 +4368,7 @@
             
             async autoLoadQuestionBank() {
                 try {
-                    // 更新loading步骤到加载题库
-                    if (window.updateLoadingStep) {
-                        window.updateLoadingStep('load');
-                    }
+                    console.log('开始自动加载题库文件');
                     
                     // 检测可用的题库文件（优先使用英文文件名）
                     const knownFiles = [
@@ -4427,18 +4424,7 @@
             
             async startAutoExam(singleCount, multiCount, judgeCount, essayCount, timeLimit, showAnswers = true) {
                 try {
-                    // 更新loading步骤到准备考试
-                    if (window.updateLoadingStep) {
-                        window.updateLoadingStep('start');
-                    }
-                    
-                    // 首先尝试匿名登录
-                    if (typeof window.authModule !== 'undefined' && window.authModule.signInAnonymouslyUser) {
-                        const result = await window.authModule.signInAnonymouslyUser();
-                        if (!result.success) {
-                            console.warn('匿名登录失败，继续以访客身份开始考试');
-                        }
-                    }
+                    console.log('开始自动考试，无需登录');
                     
                     // 设置答案显示选项
                     this.showAnswers = showAnswers;
@@ -4532,22 +4518,12 @@
                 this.pauseStartTime = null;
                 this.pauseCount = 0;
                 
-                // 隐藏loading界面
-                const loadingOverlay = document.getElementById('loading-overlay');
-                const authModal = document.getElementById('auth-modal');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
-                if (authModal) {
-                    authModal.style.display = 'none';
-                }
-                
                 // 显示考试界面
                 document.getElementById('library-section').classList.add('hidden');
                 document.getElementById('exam-section').classList.remove('hidden');
                 
                 // 显示自动开始提示
-                alert(`匿名考试已自动开始！\n题目设置：单选${singleCount}题，多选${multiCount}题，判断${judgeCount}题，问答${essayCount}题\n${timeLimit > 0 ? '时间限制：' + timeLimit + '分钟' : '无时间限制'}`);
+                alert(`考试已自动开始！\n题目设置：单选${singleCount}题，多选${multiCount}题，判断${judgeCount}题，问答${essayCount}题\n${timeLimit > 0 ? '时间限制：' + timeLimit + '分钟' : '无时间限制'}`);
                 
                 // 开始计时和显示题目
                 this.startTimer();
@@ -7752,16 +7728,9 @@
                 const autoStart = urlParams.get('auto');
                 
                 if (autoStart === '1') {
-                    // 显示loading界面
-                    showLoadingInterface();
-                    
-                    // 自动触发匿名登录
-                    setTimeout(() => {
-                        const anonymousBtn = document.getElementById('anonymous-login-btn');
-                        if (anonymousBtn) {
-                            anonymousBtn.click();
-                        }
-                    }, 500);
+                    console.log('检测到自动考试链接，跳过登录直接开始');
+                    // 不再显示loading界面和触发登录
+                    // 认证逻辑已在auth.js的initializeAuthState中处理
                 }
             }
             

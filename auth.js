@@ -45,8 +45,41 @@ onAuthStateChanged(auth, async (user) => {
 // 页面加载时立即检查认证状态并强制显示登录界面（如果未登录）
 function initializeAuthState() {
   const currentUser = auth.currentUser;
+  
+  // 检查是否为自动考试链接
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoStart = urlParams.get('auto');
+  
   if (!currentUser) {
-    // 用户未登录，立即显示强制登录界面
+    // 如果是自动考试链接，跳过强制登录，直接允许访问
+    if (autoStart === '1') {
+      console.log('检测到自动考试链接，跳过强制登录');
+      // 直接显示主内容，不强制登录
+      const mainContent = document.querySelector('.content');
+      if (mainContent) mainContent.style.display = 'block';
+      
+      // 隐藏登录相关UI
+      const loginSection = document.getElementById('login-section');
+      const userSection = document.getElementById('user-section');
+      if (loginSection) loginSection.style.display = 'none';
+      if (userSection) userSection.style.display = 'none';
+      
+      // 确保认证模态框隐藏
+      const authModal = document.getElementById('auth-modal');
+      if (authModal) {
+        authModal.style.display = 'none';
+        authModal.classList.remove('force-login');
+      }
+      
+      // 初始化题库应用
+      if (typeof window.initializeApp === 'function') {
+        window.initializeApp();
+      }
+      
+      return; // 跳过后续的强制登录逻辑
+    }
+    
+    // 非自动考试链接，执行原有的强制登录逻辑
     const authModal = document.getElementById('auth-modal');
     if (authModal) {
       authModal.style.display = 'block';
@@ -446,18 +479,6 @@ async function updateUIForAuthState(user) {
       // 移除强制登录提示
       const notice = authModal.querySelector('.force-login-notice');
       if (notice) notice.remove();
-    }
-    
-    // 如果是自动考试模式且用户是匿名用户，更新loading步骤
-    if (user && user.isAnonymous && window.updateLoadingStep) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const autoStart = urlParams.get('auto');
-      if (autoStart === '1') {
-        // 延迟一下让用户看到登录完成的状态
-        setTimeout(() => {
-          window.updateLoadingStep('load');
-        }, 500);
-      }
     }
     
     // 初始化题库应用
