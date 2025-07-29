@@ -10,6 +10,19 @@ RUN rm -rf /usr/share/nginx/html/*
 # 复制项目文件到 nginx 默认目录
 COPY . /usr/share/nginx/html/
 
+# 创建生产环境配置脚本
+RUN echo '#!/bin/sh' > /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'echo "Setting up production configuration..."' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'if [ -n "$FIREBASE_API_KEY" ]; then' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '  echo "Using production Firebase config"' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '  cp /usr/share/nginx/html/firebase-config.production.js /usr/share/nginx/html/firebase-config.js' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'fi' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'if [ -n "$FEISHU_WEBHOOK_URL" ]; then' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '  echo "Using production app config"' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo '  cp /usr/share/nginx/html/config.production.js /usr/share/nginx/html/config.js' >> /docker-entrypoint.d/30-setup-config.sh && \
+    echo 'fi' >> /docker-entrypoint.d/30-setup-config.sh && \
+    chmod +x /docker-entrypoint.d/30-setup-config.sh
+
 # 创建自定义 nginx 配置
 RUN echo 'server {' > /etc/nginx/conf.d/default.conf && \
     echo '    listen 80;' >> /etc/nginx/conf.d/default.conf && \

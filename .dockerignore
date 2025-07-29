@@ -5,7 +5,8 @@
 # 文档文件
 README.md
 SECURITY.md
-*.md
+# 保留部署指南
+!DEPLOYMENT_GUIDE.md
 
 # Node.js 相关
 node_modules
