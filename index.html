@@ -4299,7 +4299,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.1.0"; // 可手动修改版本号
+                this.version = "v4.1.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -4331,6 +4331,9 @@
                 
                 // 答案显示设置
                 this.showAnswers = true; // 是否显示正确答案，默认为显示
+                
+                // 结果保存状态
+                this.resultSaved = false; // 是否已保存结果到飞书多维表
                 
                 this.initEventListeners();
                 this.detectCSVFiles(); // 自动检测CSV文件
@@ -4788,6 +4791,12 @@
             }
             
             async saveToFeishuTable() {
+                // 检查是否已经保存过结果
+                if (this.resultSaved) {
+                    alert('本次考试结果已经保存过了，无法重复保存！');
+                    return;
+                }
+                
                 const userNameInput = document.getElementById('userName');
                 const userName = userNameInput.value.trim();
                 
@@ -4850,7 +4859,8 @@
                         });
                         
                         // no-cors模式下无法获取响应状态，假设成功
-                         alert('数据已发送！');
+                        alert('数据已发送！');
+                        this.resultSaved = true; // 标记已保存
                         this.hideSaveToTableModal();
                         
                     } catch (error) {
@@ -4867,6 +4877,7 @@
                         
                         if (response.ok) {
                             alert('数据保存成功！');
+                            this.resultSaved = true; // 标记已保存
                             this.hideSaveToTableModal();
                         } else {
                             throw new Error(`保存失败: ${response.status}`);
@@ -4882,6 +4893,7 @@
                     try {
                         await navigator.clipboard.writeText(dataText);
                         alert('由于网络限制，数据已复制到剪贴板，请手动粘贴到飞书多维表中。');
+                        this.resultSaved = true; // 标记已保存（即使是手动方式）
                         this.hideSaveToTableModal();
                     } catch (clipboardError) {
                         alert(`保存失败: ${error.message}\n\n请手动记录以下数据：\n${dataText}`);
@@ -5506,6 +5518,9 @@
                 this.isPaused = false;
                 this.pausedTime = 0;
                 this.pauseStartTime = null;
+                
+                // 重置结果保存状态
+                this.resultSaved = false;
                 this.pauseCount = 0; // 重置暂停次数
                 this.stopPauseOverlayTimer(); // 清除暂停覆盖层定时器
                 
