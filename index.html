@@ -4299,7 +4299,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.3.2"; // 可手动修改版本号
+                this.version = "v4.3.3"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5824,8 +5824,8 @@
                             
                             // 添加点击事件
                             optionDiv.addEventListener('click', () => {
-                                // 如果已经回答过，不允许再次选择
-                                if (this.answeredQuestions.has(this.currentQuestionIndex)) {
+                                // 如果已经回答过且在显示答案模式下，不允许再次选择
+                                if (this.answeredQuestions.has(this.currentQuestionIndex) && this.showAnswers) {
                                     return;
                                 }
                                 
@@ -5867,8 +5867,13 @@
                                 // 显示或隐藏确定按钮
                                 const confirmBtn = container.querySelector('.confirm-answer-btn');
                                 const currentAnswer = this.userAnswers[this.currentQuestionIndex];
-                                if (currentAnswer && currentAnswer.trim() && !this.answeredQuestions.has(this.currentQuestionIndex)) {
-                                    confirmBtn.style.display = 'inline-block';
+                                if (currentAnswer && currentAnswer.trim()) {
+                                    // 在隐藏答案模式下，即使已答过也允许修改
+                                    if (!this.answeredQuestions.has(this.currentQuestionIndex) || !this.showAnswers) {
+                                        confirmBtn.style.display = 'inline-block';
+                                    } else {
+                                        confirmBtn.style.display = 'none';
+                                    }
                                 } else {
                                     confirmBtn.style.display = 'none';
                                 }
@@ -5876,7 +5881,7 @@
                             
                             // 添加悬停效果
                             optionDiv.addEventListener('mouseenter', () => {
-                                if (!optionDiv.classList.contains('selected') && !this.answeredQuestions.has(this.currentQuestionIndex)) {
+                                if (!optionDiv.classList.contains('selected') && (!this.answeredQuestions.has(this.currentQuestionIndex) || !this.showAnswers)) {
                                     optionDiv.style.backgroundColor = 'var(--hover-background)';
                                     optionDiv.style.borderColor = 'var(--primary-color)';
                                 }
@@ -6079,8 +6084,8 @@
                 optionDiv.appendChild(label);
                 
                 optionDiv.addEventListener('click', () => {
-                    // 如果已经回答过，不允许再次选择
-                    if (this.answeredQuestions.has(this.currentQuestionIndex)) {
+                    // 如果已经回答过且在显示答案模式下，不允许再次选择
+                    if (this.answeredQuestions.has(this.currentQuestionIndex) && this.showAnswers) {
                         return;
                     }
                     
