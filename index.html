@@ -4303,7 +4303,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.3.8"; // 可手动修改版本号
+                this.version = "v4.3.9"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -4841,14 +4841,24 @@
                     confirmBtn.textContent = '保存中...';
                     confirmBtn.disabled = true;
                     
-                    // 从配置文件获取URL，如果配置文件不存在则使用默认值
-                    const proxyUrl = window.AppConfig?.proxy?.url || 'https://cors-anywhere.herokuapp.com/';
-                    const webhookUrl = window.AppConfig?.feishu?.webhookUrl || 'https://more2.feishu.cn/base/automation/webhook/event/XVQuaSLWZw3cAKhOUULcAnpHnJh';
-                    
-                    // 检查配置是否正确加载
+                    // 安全检查和配置验证
                     if (!window.AppConfig) {
-                        console.warn('配置文件未加载，使用默认配置。请确保 config.js 文件存在并正确配置。');
+                        throw new Error('配置文件未加载，请确保 config.js 文件存在并正确配置。');
                     }
+                    
+                    // 验证配置完整性
+                    if (!window.AppConfig.security?.validateConfig()) {
+                        throw new Error('配置验证失败，请检查飞书配置是否正确。');
+                    }
+                    
+                    const proxyUrl = window.AppConfig.proxy.url;
+                    const webhookUrl = window.AppConfig.feishu.webhookUrl;
+                    
+                    // 添加时间戳防重放
+                    data.timestamp = window.AppConfig.security.getTimestamp();
+                    data.requestId = Math.random().toString(36).substr(2, 9);
+                    
+                    console.log('开始发送数据到飞书多维表...');
                     
                     // 尝试直接发送，如果失败则使用备用方案
                     let response;
@@ -4863,28 +4873,36 @@
                         });
                         
                         // no-cors模式下无法获取响应状态，假设成功
-                        alert('数据已发送！');
+                        console.log('数据发送完成（直接模式）');
+                        alert('✅ 数据已成功发送到飞书多维表！');
                         this.resultSaved = true; // 标记已保存
                         this.hideSaveToTableModal();
                         
                     } catch (error) {
                         // 如果直接发送失败，尝试使用代理
-                        console.log('直接发送失败，尝试使用代理服务器...');
-                        response = await fetch(proxyUrl + webhookUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            body: JSON.stringify(data)
-                        });
+                        console.log('直接发送失败，尝试使用代理服务器...', error.message);
                         
-                        if (response.ok) {
-                            alert('数据保存成功！');
-                            this.resultSaved = true; // 标记已保存
-                            this.hideSaveToTableModal();
-                        } else {
-                            throw new Error(`保存失败: ${response.status}`);
+                        try {
+                            response = await fetch(proxyUrl + webhookUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify(data)
+                            });
+                            
+                            if (response.ok) {
+                                console.log('数据发送完成（代理模式）');
+                                alert('✅ 数据已成功保存到飞书多维表！');
+                                this.resultSaved = true; // 标记已保存
+                                this.hideSaveToTableModal();
+                            } else {
+                                throw new Error(`代理发送失败: HTTP ${response.status}`);
+                            }
+                        } catch (proxyError) {
+                            console.error('代理发送也失败了:', proxyError);
+                            throw new Error(`所有发送方式都失败了: ${proxyError.message}`);
                         }
                     }
                     
