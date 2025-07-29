@@ -525,16 +525,37 @@ async function updateUIForAuthState(user) {
       }
     }
   } else {
-    // 用户未登录 - 强制显示登录界面
-    if (loginSection) loginSection.style.display = 'block';
-    if (userSection) userSection.style.display = 'none';
-    if (mainContent) mainContent.style.display = 'none';
+    // 检查是否为自动考试链接
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoStart = urlParams.get('auto');
     
-    // 强制显示登录模态框
-    if (authModal) {
-      authModal.style.display = 'block';
-      // 确保显示登录表单
-      showLoginForm();
+    if (autoStart === '1') {
+      // 自动考试模式，不强制登录
+      console.log('自动考试模式，跳过强制登录界面');
+      if (loginSection) loginSection.style.display = 'none';
+      if (userSection) userSection.style.display = 'none';
+      if (mainContent) mainContent.style.display = 'block';
+      if (authModal) {
+        authModal.style.display = 'none';
+        authModal.classList.remove('force-login');
+      }
+      
+      // 初始化题库应用
+      if (typeof window.initializeApp === 'function') {
+        window.initializeApp();
+      }
+    } else {
+      // 用户未登录 - 强制显示登录界面
+      if (loginSection) loginSection.style.display = 'block';
+      if (userSection) userSection.style.display = 'none';
+      if (mainContent) mainContent.style.display = 'none';
+      
+      // 强制显示登录模态框
+      if (authModal) {
+        authModal.style.display = 'block';
+        // 确保显示登录表单
+        showLoginForm();
+      }
     }
   }
 }
