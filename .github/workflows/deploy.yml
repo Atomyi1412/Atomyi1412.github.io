@@ -1,0 +1,47 @@
+name: Auto Deploy to Vercel
+
+# 触发条件：当推送到 main 分支时
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Trigger Vercel Deployment
+        run: |
+          echo "触发 Vercel 部署..."
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "author": "${{ github.actor }}",
+              "message": "${{ github.event.head_commit.message }}"
+            }'
+          echo "部署请求已发送"
+          
+      - name: Wait for deployment
+        run: |
+          echo "等待部署完成..."
+          sleep 30
+          echo "部署应该已完成，请检查 Vercel Dashboard"
+          
+      - name: Deployment Summary
+        run: |
+          echo "🚀 部署信息："
+          echo "- 分支: ${{ github.ref_name }}"
+          echo "- 提交: ${{ github.sha }}"
+          echo "- 作者: ${{ github.actor }}"
+          echo "- 消息: ${{ github.event.head_commit.message }}"
+          echo "- 时间: $(date)"
+          echo "📱 请访问 Vercel Dashboard 查看部署状态"
