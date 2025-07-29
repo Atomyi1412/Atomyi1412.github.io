@@ -4299,7 +4299,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.3.1"; // 可手动修改版本号
+                this.version = "v4.3.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5916,14 +5916,20 @@
                     
                     container.appendChild(confirmBtn);
                     
-                    // 如果已经回答过，显示结果并禁用选项
+                    // 如果已经回答过，根据答案显示模式决定是否禁用
                     if (this.answeredQuestions.has(this.currentQuestionIndex)) {
-                        this.showAnswerResult(this.currentQuestionIndex, container);
-                        optionsContainer.querySelectorAll('.option-item').forEach(item => {
-                            item.style.pointerEvents = 'none';
-                            item.style.opacity = '0.6';
-                        });
-                        confirmBtn.style.display = 'none';
+                        if (this.showAnswers) {
+                            // 显示答案模式：显示结果并禁用选项
+                            this.showAnswerResult(this.currentQuestionIndex, container);
+                            optionsContainer.querySelectorAll('.option-item').forEach(item => {
+                                item.style.pointerEvents = 'none';
+                                item.style.opacity = '0.6';
+                            });
+                            confirmBtn.style.display = 'none';
+                        } else {
+                            // 隐藏答案模式：允许修改答案
+                            confirmBtn.style.display = 'inline-block';
+                        }
                     } else if (savedAnswer && savedAnswer.trim()) {
                         confirmBtn.style.display = 'inline-block';
                     }
@@ -5970,12 +5976,18 @@
                     confirmBtnDiv.appendChild(confirmBtn);
                     container.appendChild(confirmBtnDiv);
                     
-                    // 如果已经回答过，显示结果并禁用选项
+                    // 如果已经回答过，根据答案显示模式决定是否禁用
                     if (this.answeredQuestions.has(this.currentQuestionIndex)) {
-                        this.showAnswerResult(this.currentQuestionIndex, container);
-                        trueOption.style.pointerEvents = 'none';
-                        falseOption.style.pointerEvents = 'none';
-                        confirmBtn.style.display = 'none';
+                        if (this.showAnswers) {
+                            // 显示答案模式：显示结果并禁用选项
+                            this.showAnswerResult(this.currentQuestionIndex, container);
+                            trueOption.style.pointerEvents = 'none';
+                            falseOption.style.pointerEvents = 'none';
+                            confirmBtn.style.display = 'none';
+                        } else {
+                            // 隐藏答案模式：允许修改答案
+                            confirmBtn.style.display = 'inline-block';
+                        }
                     }
                 } else if (question.type === '问答题') {
                     const textarea = document.createElement('textarea');
@@ -6022,18 +6034,31 @@
                         }, 1000);
                         
                         // 更新确认按钮显示
-                        if (textarea.value.trim() && !this.answeredQuestions.has(this.currentQuestionIndex)) {
-                            confirmBtn.style.display = 'inline-block';
+                        if (textarea.value.trim()) {
+                            // 在隐藏答案模式下，即使已答过也允许修改
+                            if (!this.answeredQuestions.has(this.currentQuestionIndex) || !this.showAnswers) {
+                                confirmBtn.style.display = 'inline-block';
+                            } else {
+                                confirmBtn.style.display = 'none';
+                            }
                         } else {
                             confirmBtn.style.display = 'none';
                         }
                     });
                     
-                    // 如果已经回答过，隐藏确认按钮并禁用输入
+                    // 如果已经回答过，根据答案显示模式决定是否禁用
                     if (this.answeredQuestions.has(this.currentQuestionIndex)) {
-                        textarea.disabled = true;
-                        textarea.style.opacity = '0.6';
-                        confirmBtn.style.display = 'none';
+                        if (this.showAnswers) {
+                            // 显示答案模式：禁用输入和隐藏按钮
+                            textarea.disabled = true;
+                            textarea.style.opacity = '0.6';
+                            confirmBtn.style.display = 'none';
+                        } else {
+                            // 隐藏答案模式：允许修改答案
+                            if (textarea.value.trim()) {
+                                confirmBtn.style.display = 'inline-block';
+                            }
+                        }
                     }
                 }
             }
