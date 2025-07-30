@@ -473,6 +473,12 @@ async function updateUIForAuthState(user) {
   const mainContent = document.querySelector('.content');
   const authModal = document.getElementById('auth-modal');
   
+  // 预加载优化：立即显示用户信息容器
+  if (userInfo) {
+    userInfo.style.display = 'flex';
+    userInfo.style.opacity = '1';
+  }
+  
   if (user) {
     // 用户已登录
     if (mainContent) mainContent.style.display = 'block';
@@ -572,6 +578,13 @@ function showLoginForm() {
   const loginFormContainer = document.getElementById('login-form-container');
   const registerFormContainer = document.getElementById('register-form-container');
   const forgotPasswordContainer = document.getElementById('forgot-password-container');
+  const userInfo = document.getElementById('user-info');
+  
+  // 隐藏用户信息按钮
+  if (userInfo) {
+    userInfo.style.opacity = '0.3';
+    userInfo.style.pointerEvents = 'none';
+  }
   
   // 不再使用强制登录模式
   if (modalTitle) modalTitle.textContent = '用户登录';
@@ -617,8 +630,16 @@ function showNotification(message, type = 'info') {
 // 关闭登录模态框
 function closeAuthModal() {
   const modal = document.getElementById('auth-modal');
+  const userInfo = document.getElementById('user-info');
+  
   if (modal) {
     modal.style.display = 'none';
+  }
+  
+  // 恢复用户信息按钮的显示
+  if (userInfo) {
+    userInfo.style.opacity = '1';
+    userInfo.style.pointerEvents = 'auto';
   }
 }
 
@@ -905,7 +926,15 @@ async function saveUserProfile(profile) {
 // 显示用户中心模态框
 async function showUserCenterModal() {
   const modal = document.getElementById('user-center-modal');
+  const userInfo = document.getElementById('user-info');
+  
   if (modal) {
+    // 隐藏用户信息按钮
+    if (userInfo) {
+      userInfo.style.opacity = '0.3';
+      userInfo.style.pointerEvents = 'none';
+    }
+    
     // 异步加载当前用户配置
     const userProfile = await getUserProfile();
     const nicknameInput = document.getElementById('user-nickname');
@@ -951,8 +980,16 @@ async function showUserCenterModal() {
 // 隐藏用户中心模态框
 function hideUserCenterModal() {
   const modal = document.getElementById('user-center-modal');
+  const userInfo = document.getElementById('user-info');
+  
   if (modal) {
     modal.style.display = 'none';
+  }
+  
+  // 恢复用户信息按钮的显示
+  if (userInfo) {
+    userInfo.style.opacity = '1';
+    userInfo.style.pointerEvents = 'auto';
   }
 }
 

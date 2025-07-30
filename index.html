@@ -3591,23 +3591,50 @@
                  padding: 4px 8px;
                  font-size: 12px;
                  max-width: calc(100vw - 20px);
+                 /* 移动端性能优化 */
+                 will-change: opacity, transform;
+                 transform: translateZ(0);
+                 backface-visibility: hidden;
              }
              
              .theme-switcher {
                  top: 50px;
                  right: 10px;
                  gap: 4px;
+                 /* 移动端性能优化 */
+                 will-change: transform;
+                 transform: translateZ(0);
              }
              
              .theme-btn, .mode-btn {
                  width: 35px;
                  height: 35px;
                  font-size: 14px;
+                 /* 移动端性能优化 */
+                 will-change: transform;
+                 transform: translateZ(0);
              }
              
              .title-left {
                  font-size: 1.8em;
                  margin-top: 60px;
+             }
+             
+             /* 移动端加载优化 */
+             .user-info-top-right,
+             .theme-switcher {
+                 animation: fadeInMobile 0.3s ease-out;
+             }
+             
+             @keyframes fadeInMobile {
+                 from {
+                     opacity: 0;
+                     transform: translateY(-10px) translateZ(0);
+                 }
+                 to {
+                     opacity: 1;
+                     transform: translateY(0) translateZ(0);
+                 }
              }
              
              /* 确保滚动容器可以正常滚动 */
@@ -4366,7 +4393,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.6"; // 可手动修改版本号
+                this.version = "v4.5.7"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
