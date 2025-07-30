@@ -530,44 +530,46 @@ async function updateUIForAuthState(user) {
       }
     }
   } else {
-    // 检查是否为自动考试链接
-    const urlParams = new URLSearchParams(window.location.search);
-    const autoStart = urlParams.get('auto');
+    // 用户未登录 - 直接允许使用应用
+    console.log('用户未登录，直接进入应用');
     
-    if (autoStart === '1') {
-       // 自动考试模式，不强制登录
-       console.log('自动考试模式，跳过强制登录界面');
-       if (loginSection) loginSection.style.display = 'none';
-       if (userSection) userSection.style.display = 'none';
-       if (mainContent) mainContent.style.display = 'block';
-       
-       // 在自动考试模式下，保持loading界面显示，不隐藏authModal
-       if (authModal) {
-         authModal.classList.remove('force-login');
-         // 检查是否有loading界面正在显示
-         const loadingOverlay = document.getElementById('loading-overlay');
-         if (!loadingOverlay || loadingOverlay.style.display === 'none') {
-           // 如果没有loading界面，则隐藏authModal
-           authModal.style.display = 'none';
-         }
-       }
-       
-       // 初始化题库应用
-       if (typeof window.initializeApp === 'function') {
-         window.initializeApp();
-       }
-    } else {
-      // 用户未登录 - 强制显示登录界面
-      if (loginSection) loginSection.style.display = 'block';
-      if (userSection) userSection.style.display = 'none';
-      if (mainContent) mainContent.style.display = 'none';
+    if (loginSection) loginSection.style.display = 'none';
+    if (userSection) userSection.style.display = 'block';
+    if (mainContent) mainContent.style.display = 'block';
+    
+    // 隐藏登录模态框
+    if (authModal) {
+      authModal.style.display = 'none';
+      authModal.classList.remove('force-login');
+    }
+    
+    // 显示未登录状态和登录选项
+    if (userInfo) {
+      userInfo.innerHTML = `
+        <span id="user-display" class="user-display">
+          <span class="user-avatar">👤</span>
+          <span class="user-name">未登录</span>
+        </span>
+        <div class="user-actions">
+          <button id="show-login-btn" class="btn btn-primary btn-sm">登录</button>
+        </div>
+      `;
       
-      // 强制显示登录模态框
-      if (authModal) {
-        authModal.style.display = 'block';
-        // 确保显示登录表单
-        showLoginForm();
+      // 添加登录按钮事件
+      const showLoginBtn = document.getElementById('show-login-btn');
+      if (showLoginBtn) {
+        showLoginBtn.addEventListener('click', () => {
+          if (authModal) {
+            authModal.style.display = 'block';
+            showLoginForm();
+          }
+        });
       }
+    }
+    
+    // 初始化题库应用
+    if (typeof window.initializeApp === 'function') {
+      window.initializeApp();
     }
   }
 }
