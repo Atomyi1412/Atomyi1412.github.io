@@ -451,11 +451,11 @@
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            width: 50px;
-            height: 50px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -4393,7 +4393,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.12"; // 可手动修改版本号
+                this.version = "v4.5.13"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -4430,9 +4430,13 @@
                 this.resultSaved = false; // 是否已保存结果到飞书多维表
                 
                 this.initEventListeners();
-                this.detectCSVFiles(); // 自动检测CSV文件
                 this.checkAutoStartExam(); // 检查是否需要自动开始考试
                 this.displayVersion(); // 显示版本号
+                
+                // 延迟检测CSV文件，避免阻塞页面初始化
+                setTimeout(() => {
+                    this.detectCSVFiles();
+                }, 100);
             }
             
             async checkAutoStartExam() {
@@ -5038,17 +5042,33 @@
                     ];
                     const availableFiles = [];
                     
-                    for (const fileName of knownFiles) {
+                    // 使用Promise.allSettled并发检测，但限制超时时间
+                    const fileChecks = knownFiles.map(async (fileName) => {
                         try {
-                            // 使用HEAD请求检测文件是否存在
-                            const response = await fetch(fileName, { method: 'HEAD' });
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 2000); // 2秒超时
+                            
+                            const response = await fetch(fileName, { 
+                                method: 'HEAD',
+                                signal: controller.signal
+                            });
+                            clearTimeout(timeoutId);
+                            
                             if (response.ok) {
-                                availableFiles.push(fileName);
+                                return fileName;
                             }
                         } catch (error) {
                             console.log(`文件 ${fileName} 不可访问:`, error.message);
                         }
-                    }
+                        return null;
+                    });
+                    
+                    const results = await Promise.allSettled(fileChecks);
+                    results.forEach(result => {
+                        if (result.status === 'fulfilled' && result.value) {
+                            availableFiles.push(result.value);
+                        }
+                    });
                     
                     fileList.innerHTML = '';
                     
