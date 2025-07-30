@@ -3030,26 +3030,58 @@
          }
          
          .btn-anonymous {
-             background: #6b7280;
-             color: white;
-             border: none;
-             padding: 12px 20px;
-             border-radius: 6px;
-             cursor: pointer;
-             font-size: 14px;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             gap: 8px;
-             width: 100%;
-             transition: all 0.3s ease;
-         }
-         
-         .btn-anonymous:hover {
-             background: #4b5563;
-             transform: translateY(-1px);
-             box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
-         }
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+            /* 移动端优化 */
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(107, 114, 128, 0.3);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .btn-anonymous:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+        }
+        
+        /* 移动端触摸优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-anonymous {
+                min-height: 48px;
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+            
+            .btn-anonymous:active {
+                background: #4b5563;
+                transform: scale(0.98);
+            }
+            
+            /* 所有按钮的移动端优化 */
+            .btn, .btn-primary, .btn-secondary {
+                min-height: 48px;
+                padding: 14px 20px;
+                font-size: 16px;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: rgba(0, 123, 255, 0.3);
+            }
+            
+            .btn:active, .btn-primary:active, .btn-secondary:active {
+                transform: scale(0.98);
+            }
+        }
          
          /* 模态框样式 */
          .modal {
@@ -4303,7 +4335,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.4.1"; // 可手动修改版本号
+                this.version = "v4.4.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表

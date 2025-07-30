@@ -641,6 +641,18 @@ function closeAuthModal() {
 }
 
 // 初始化认证UI事件
+// 移动端按钮事件绑定辅助函数
+function addMobileButtonSupport(button, handler) {
+  if (!button) return;
+  
+  // 添加点击和触摸事件支持
+  button.addEventListener('click', handler);
+  button.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    handler(e);
+  });
+}
+
 export function initAuthUI() {
   // 登录表单事件
   const loginForm = document.getElementById('login-form');
@@ -706,21 +718,22 @@ export function initAuthUI() {
   
   // 游客登录按钮事件
   const anonymousLoginBtn = document.getElementById('anonymous-login-btn');
-  if (anonymousLoginBtn) {
-    anonymousLoginBtn.addEventListener('click', async () => {
-      try {
-        const result = await signInAnonymouslyUser();
-        if (result.success) {
-          // 游客登录成功
-          showNotification('游客登录成功！欢迎使用！', 'success');
-          closeAuthModal();
-        }
-      } catch (error) {
-        // 错误已在 signInAnonymouslyUser 函数中处理
-        console.log('游客登录失败，错误已处理');
+  const handleGuestLogin = async () => {
+    try {
+      const result = await signInAnonymouslyUser();
+      if (result.success) {
+        // 游客登录成功
+        showNotification('游客登录成功！欢迎使用！', 'success');
+        closeAuthModal();
       }
-    });
-  }
+    } catch (error) {
+      // 错误已在 signInAnonymouslyUser 函数中处理
+      console.log('游客登录失败，错误已处理');
+    }
+  };
+  
+  // 使用移动端优化的事件绑定
+  addMobileButtonSupport(anonymousLoginBtn, handleGuestLogin);
   
   // 忘记密码表单事件
   const forgotPasswordForm = document.getElementById('forgot-password-form');
