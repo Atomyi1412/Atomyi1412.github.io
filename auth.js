@@ -455,11 +455,14 @@ async function updateUIForAuthState(user) {
   const mainContent = document.querySelector('.content');
   const authModal = document.getElementById('auth-modal');
   
-  // 获取预设的DOM元素，保持HTML结构不变
+  // 预加载优化：用户信息容器已在HTML中预设，无需重复设置
+  // 立即更新用户显示状态，避免"加载中..."状态过长
   const userDisplay = document.getElementById('user-display');
   const userNameSpan = userDisplay?.querySelector('.user-name');
-  const userAvatarSpan = userDisplay?.querySelector('.user-avatar');
-  let logoutBtn = document.getElementById('logout-btn');
+  
+  if (userNameSpan) {
+    userNameSpan.textContent = user ? '加载用户信息...' : '未登录';
+  }
   
   if (user) {
     // 用户已登录
@@ -477,39 +480,28 @@ async function updateUIForAuthState(user) {
       window.initializeApp();
     }
     
-    if (userDisplay && userNameSpan && userAvatarSpan) {
+    if (userInfo) {
       // 先显示基本用户信息，避免长时间等待
       const basicDisplayName = user.isAnonymous ? '游客用户' : (user.displayName || user.email || '用户');
       
-      // 更新现有元素内容，保持DOM结构
-      userAvatarSpan.textContent = '👤';
-      userNameSpan.textContent = `欢迎, ${basicDisplayName}`;
-      userDisplay.className = 'user-display';
-      
-      // 移除未登录时的点击事件
-      userDisplay.removeAttribute('data-event-bound');
-      userDisplay.replaceWith(userDisplay.cloneNode(true));
-      const newUserDisplay = document.getElementById('user-display');
+      userInfo.innerHTML = `
+        <span id="user-display" class="user-display">
+          <span class="user-avatar">👤</span>
+          <span class="user-name">欢迎, ${basicDisplayName}</span>
+        </span>
+        <button id="logout-btn" class="btn btn-secondary btn-sm">登出</button>
+      `;
       
       // 添加用户信息点击事件（打开用户中心）
-      if (newUserDisplay) {
-        newUserDisplay.addEventListener('click', async () => {
+      const userDisplay = document.getElementById('user-display');
+      if (userDisplay) {
+        userDisplay.addEventListener('click', async () => {
           await showUserCenterModal();
         });
       }
       
-      // 确保登出按钮存在
-      if (!logoutBtn) {
-        logoutBtn = document.createElement('button');
-        logoutBtn.id = 'logout-btn';
-        logoutBtn.className = 'btn btn-secondary btn-sm';
-        logoutBtn.textContent = '登出';
-        userInfo.appendChild(logoutBtn);
-      }
-      
       // 添加登出按钮事件
-      logoutBtn.replaceWith(logoutBtn.cloneNode(true));
-      logoutBtn = document.getElementById('logout-btn');
+      const logoutBtn = document.getElementById('logout-btn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
           const result = await signOutUser();
@@ -525,10 +517,10 @@ async function updateUIForAuthState(user) {
         const avatar = userProfile.avatar || '👤';
         
         // 更新头像和昵称
-        const currentAvatarSpan = document.querySelector('#user-display .user-avatar');
-        const currentNameSpan = document.querySelector('#user-display .user-name');
-        if (currentAvatarSpan) currentAvatarSpan.textContent = avatar;
-        if (currentNameSpan) currentNameSpan.textContent = `欢迎, ${displayName}`;
+        const avatarSpan = userDisplay?.querySelector('.user-avatar');
+        const nameSpan = userDisplay?.querySelector('.user-name');
+        if (avatarSpan) avatarSpan.textContent = avatar;
+        if (nameSpan) nameSpan.textContent = `欢迎, ${displayName}`;
       }).catch(error => {
         console.log('加载用户详细信息失败:', error);
         // 保持基本显示，不影响用户体验
@@ -546,27 +538,47 @@ async function updateUIForAuthState(user) {
       authModal.classList.remove('force-login');
     }
     
-    // 更新现有的用户显示元素，保持DOM结构
-    if (userDisplay && userNameSpan && userAvatarSpan) {
-      // 更新现有元素
-      userNameSpan.textContent = '未登录';
-      userAvatarSpan.textContent = '👤';
-      userDisplay.className = 'user-display clickable-login';
+    // 更新现有的用户显示元素，避免重新创建DOM
+    if (userInfo) {
+      const userDisplay = document.getElementById('user-display');
+      const userNameSpan = userDisplay?.querySelector('.user-name');
+      const userAvatarSpan = userDisplay?.querySelector('.user-avatar');
       
-      // 移除登出按钮
-      if (logoutBtn) {
-        logoutBtn.remove();
-      }
-      
-      // 添加点击事件（防止重复绑定）
-      if (!userDisplay.hasAttribute('data-event-bound')) {
-        userDisplay.setAttribute('data-event-bound', 'true');
-        userDisplay.addEventListener('click', () => {
-          if (authModal) {
-            authModal.style.display = 'block';
-            showLoginForm();
-          }
-        });
+      if (userDisplay && userNameSpan && userAvatarSpan) {
+        // 更新现有元素
+        userNameSpan.textContent = '未登录';
+        userAvatarSpan.textContent = '👤';
+        userDisplay.className = 'user-display clickable-login';
+        
+        // 添加点击事件（防止重复绑定）
+        if (!userDisplay.hasAttribute('data-event-bound')) {
+          userDisplay.setAttribute('data-event-bound', 'true');
+          userDisplay.addEventListener('click', () => {
+            if (authModal) {
+              authModal.style.display = 'block';
+              showLoginForm();
+            }
+          });
+        }
+      } else {
+        // 如果元素不存在，则创建（兜底方案）
+        userInfo.innerHTML = `
+          <span id="user-display" class="user-display clickable-login">
+            <span class="user-avatar">👤</span>
+            <span class="user-name">未登录</span>
+          </span>
+        `;
+        
+        const newUserDisplay = document.getElementById('user-display');
+        if (newUserDisplay) {
+          newUserDisplay.setAttribute('data-event-bound', 'true');
+          newUserDisplay.addEventListener('click', () => {
+            if (authModal) {
+              authModal.style.display = 'block';
+              showLoginForm();
+            }
+          });
+        }
       }
     }
     
