@@ -375,18 +375,55 @@
             align-items: center;
             gap: 10px;
             color: white;
-            z-index: 1000;
+            z-index: 1001;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .user-info-top-right .user-name {
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 4px 8px;
             border-radius: 6px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 500;
         }
         
         .user-info-top-right .user-name:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        /* 用户信息区域按钮样式 */
+        .user-info-top-right .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .user-info-top-right .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-info-top-right .btn-secondary {
+            background: rgba(220, 53, 69, 0.8);
+            border-color: rgba(220, 53, 69, 0.9);
+        }
+        
+        .user-info-top-right .btn-secondary:hover {
+            background: rgba(220, 53, 69, 0.9);
+            border-color: rgba(220, 53, 69, 1);
         }
         
         /* 可点击登录样式 */
@@ -398,23 +435,15 @@
         .clickable-login:hover {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 6px;
-            padding: 4px 8px;
         }
         
         /* 主题切换器样式 - 调整位置避免与用户信息冲突 */
         .theme-switcher {
             position: absolute;
-            top: 20px;
-            right: 200px;
-            z-index: 1000;
-        }
-        
-        .theme-switcher {
-            position: absolute;
-            top: 20px;
+            top: 80px;
             right: 20px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             z-index: 1000;
         }
         
@@ -3510,15 +3539,23 @@
          
          /* 响应式设计 - 认证部分 */
          @media (max-width: 768px) {
-             .auth-section {
-                 margin-top: 10px;
-                 margin-left: 0;
-                 gap: 8px;
+             .user-info-top-right {
+                 top: 15px;
+                 right: 15px;
+                 padding: 6px 10px;
+                 font-size: 14px;
              }
              
-             .auth-section .btn {
-                 padding: 8px 14px;
-                 font-size: 13px;
+             .theme-switcher {
+                 top: 60px;
+                 right: 15px;
+                 gap: 6px;
+             }
+             
+             .theme-btn, .mode-btn {
+                 width: 40px;
+                 height: 40px;
+                 font-size: 16px;
              }
              
              .modal-content {
@@ -3545,6 +3582,32 @@
                  touch-action: pan-y;
                  -webkit-overflow-scrolling: touch;
                  overflow: auto;
+             }
+             
+             /* 小屏幕设备优化 */
+             .user-info-top-right {
+                 top: 10px;
+                 right: 10px;
+                 padding: 4px 8px;
+                 font-size: 12px;
+                 max-width: calc(100vw - 20px);
+             }
+             
+             .theme-switcher {
+                 top: 50px;
+                 right: 10px;
+                 gap: 4px;
+             }
+             
+             .theme-btn, .mode-btn {
+                 width: 35px;
+                 height: 35px;
+                 font-size: 14px;
+             }
+             
+             .title-left {
+                 font-size: 1.8em;
+                 margin-top: 60px;
              }
              
              /* 确保滚动容器可以正常滚动 */
@@ -4303,7 +4366,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.5"; // 可手动修改版本号
+                this.version = "v4.5.6"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
