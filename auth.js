@@ -27,7 +27,7 @@ let currentUser = null;
 
 // 监听用户认证状态变化
 onAuthStateChanged(auth, async (user) => {
-  // 如果用户已登录但邮箱未验证（且不是匿名用户），强制登出
+  // 如果用户已登录但邮箱未验证（且不是游客用户），强制登出
   if (user && !user.isAnonymous && !user.emailVerified) {
     console.log('用户邮箱未验证，强制登出');
     await signOut(auth);
@@ -42,62 +42,67 @@ onAuthStateChanged(auth, async (user) => {
   updateUIForAuthState(user);
 });
 
-// 页面加载时立即检查认证状态并强制显示登录界面（如果未登录）
+// 页面加载时初始化游客模式
 function initializeAuthState() {
   const currentUser = auth.currentUser;
   
-  // 检查是否为自动考试链接
-  const urlParams = new URLSearchParams(window.location.search);
-  const autoStart = urlParams.get('auto');
-  
   if (!currentUser) {
-    // 如果是自动考试链接，跳过强制登录，直接允许访问
-    if (autoStart === '1') {
-      console.log('检测到自动考试链接，跳过强制登录');
-      // 直接显示主内容，不强制登录
-      const mainContent = document.querySelector('.content');
-      if (mainContent) mainContent.style.display = 'block';
-      
-      // 隐藏登录相关UI
-      const loginSection = document.getElementById('login-section');
-      const userSection = document.getElementById('user-section');
-      const authSection = document.querySelector('.auth-section');
-      if (loginSection) loginSection.style.display = 'none';
-      if (userSection) userSection.style.display = 'none';
-      if (authSection) authSection.style.display = 'none';
-      
-      // 确保认证模态框隐藏
-      const authModal = document.getElementById('auth-modal');
-      if (authModal) {
-        authModal.style.display = 'none';
-        authModal.classList.remove('force-login');
-      }
-      
-      // 初始化题库应用
-      if (typeof window.initializeApp === 'function') {
-        window.initializeApp();
-      }
-      
-      return; // 跳过后续的强制登录逻辑
-    }
+    // 游客模式：无需登录直接允许访问
+    console.log('启动游客模式，无需登录');
     
-    // 非自动考试链接，执行原有的强制登录逻辑
-    const authModal = document.getElementById('auth-modal');
-    if (authModal) {
-      authModal.style.display = 'block';
-      authModal.classList.add('force-login');
-      showLoginForm();
-    }
-    
-    // 确保主内容隐藏
+    // 直接显示主内容
     const mainContent = document.querySelector('.content');
-    if (mainContent) mainContent.style.display = 'none';
+    if (mainContent) mainContent.style.display = 'block';
     
-    // 确保登录区域显示
+    // 显示游客登录状态
     const loginSection = document.getElementById('login-section');
     const userSection = document.getElementById('user-section');
-    if (loginSection) loginSection.style.display = 'block';
-    if (userSection) userSection.style.display = 'none';
+    const authSection = document.querySelector('.auth-section');
+    
+    if (loginSection) loginSection.style.display = 'none';
+    if (userSection) {
+      userSection.style.display = 'block';
+      // 显示游客状态
+      const userInfo = document.getElementById('user-info');
+      if (userInfo) {
+        userInfo.innerHTML = `
+          <span id="user-display" class="user-display">
+            <span class="user-avatar">🎯</span>
+            <span class="user-name">游客模式</span>
+          </span>
+          <div class="user-actions">
+            <button id="guest-login-btn" class="btn btn-secondary btn-sm">登录账号</button>
+          </div>
+        `;
+      }
+    }
+    if (authSection) authSection.style.display = 'block';
+    
+    // 确保认证模态框隐藏
+    const authModal = document.getElementById('auth-modal');
+    if (authModal) {
+      authModal.style.display = 'none';
+      authModal.classList.remove('force-login');
+    }
+    
+    // 初始化题库应用
+    if (typeof window.initializeApp === 'function') {
+      window.initializeApp();
+    }
+    
+    // 添加游客登录按钮事件
+    setTimeout(() => {
+      const guestLoginBtn = document.getElementById('guest-login-btn');
+      if (guestLoginBtn) {
+        guestLoginBtn.addEventListener('click', () => {
+          const authModal = document.getElementById('auth-modal');
+          if (authModal) {
+            authModal.style.display = 'block';
+            showLoginForm();
+          }
+        });
+      }
+    }, 100);
   }
 }
 
@@ -374,31 +379,31 @@ export async function signUpWithEmail(email, password, nickname) {
    }
 }
 
-// 匿名登录
+// 游客登录
 export async function signInAnonymouslyUser() {
   try {
     const result = await signInAnonymously(auth);
-    console.log('匿名登录成功:', result.user);
+    console.log('游客登录成功:', result.user);
     
-    // 清理localStorage中的用户配置，确保匿名用户不显示之前用户的信息
+    // 清理localStorage中的用户配置，确保游客用户不显示之前用户的信息
     localStorage.removeItem('userProfile');
     
     return { success: true, user: result.user };
   } catch (error) {
-    console.error('匿名登录失败:', error);
+    console.error('游客登录失败:', error);
     
-    // 处理匿名登录错误
-    let errorMessage = '匿名登录失败，请稍后重试';
+    // 处理游客登录错误
+    let errorMessage = '游客登录失败，请稍后重试';
     
     switch (error.code) {
       case 'auth/operation-not-allowed':
-        errorMessage = '匿名登录功能未启用，请联系管理员';
+        errorMessage = '游客登录功能未启用，请联系管理员';
         break;
       case 'auth/too-many-requests':
         errorMessage = '请求过于频繁，请稍后再试';
         break;
       default:
-        errorMessage = `匿名登录失败: ${error.message}`;
+        errorMessage = `游客登录失败: ${error.message}`;
     }
     
     showNotification(errorMessage, 'error');
@@ -491,7 +496,7 @@ async function updateUIForAuthState(user) {
     if (userInfo) {
       // 异步获取用户设置的昵称和头像
       const userProfile = await getUserProfile();
-      const displayName = userProfile.nickname || (user.isAnonymous ? '匿名用户' : (user.displayName || user.email));
+      const displayName = userProfile.nickname || (user.isAnonymous ? '游客用户' : (user.displayName || user.email));
       const avatar = userProfile.avatar || '👤';
       
       // 显示表情头像
@@ -699,20 +704,20 @@ export function initAuthUI() {
     });
   }
   
-  // 匿名登录按钮事件
+  // 游客登录按钮事件
   const anonymousLoginBtn = document.getElementById('anonymous-login-btn');
   if (anonymousLoginBtn) {
     anonymousLoginBtn.addEventListener('click', async () => {
       try {
         const result = await signInAnonymouslyUser();
         if (result.success) {
-          // 匿名登录成功
-          showNotification('匿名登录成功！欢迎使用！', 'success');
+          // 游客登录成功
+          showNotification('游客登录成功！欢迎使用！', 'success');
           closeAuthModal();
         }
       } catch (error) {
         // 错误已在 signInAnonymouslyUser 函数中处理
-        console.log('匿名登录失败，错误已处理');
+        console.log('游客登录失败，错误已处理');
       }
     });
   }
@@ -754,7 +759,7 @@ export function initAuthUI() {
 async function getUserProfile() {
   const currentUser = getCurrentUser();
   if (!currentUser || currentUser.isAnonymous) {
-    // 匿名用户或未登录用户使用本地存储
+    // 游客用户或未登录用户使用本地存储
     const profile = localStorage.getItem('userProfile');
     return profile ? JSON.parse(profile) : { nickname: '', avatar: '👤', isAdmin: false };
   }
@@ -892,7 +897,7 @@ async function resetUserPassword(email) {
 async function saveUserProfile(profile) {
   const currentUser = getCurrentUser();
   if (!currentUser || currentUser.isAnonymous) {
-    // 匿名用户或未登录用户使用本地存储
+    // 游客用户或未登录用户使用本地存储
     localStorage.setItem('userProfile', JSON.stringify(profile));
     return { success: true };
   }
