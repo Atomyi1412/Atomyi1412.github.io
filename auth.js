@@ -42,19 +42,19 @@ onAuthStateChanged(auth, async (user) => {
   updateUIForAuthState(user);
 });
 
-// 页面加载时初始化游客模式
+// 页面加载时直接进入应用，无需登录
 function initializeAuthState() {
   const currentUser = auth.currentUser;
   
   if (!currentUser) {
-    // 游客模式：无需登录直接允许访问
-    console.log('启动游客模式，无需登录');
+    // 直接进入应用，无需任何登录步骤
+    console.log('直接进入应用，无需登录');
     
     // 直接显示主内容
     const mainContent = document.querySelector('.content');
     if (mainContent) mainContent.style.display = 'block';
     
-    // 显示游客登录状态
+    // 显示未登录状态，提供登录选项
     const loginSection = document.getElementById('login-section');
     const userSection = document.getElementById('user-section');
     const authSection = document.querySelector('.auth-section');
@@ -62,16 +62,16 @@ function initializeAuthState() {
     if (loginSection) loginSection.style.display = 'none';
     if (userSection) {
       userSection.style.display = 'block';
-      // 显示游客状态
+      // 显示未登录状态和登录选项
       const userInfo = document.getElementById('user-info');
       if (userInfo) {
         userInfo.innerHTML = `
           <span id="user-display" class="user-display">
-            <span class="user-avatar">🎯</span>
-            <span class="user-name">游客模式</span>
+            <span class="user-avatar">👤</span>
+            <span class="user-name">未登录</span>
           </span>
           <div class="user-actions">
-            <button id="guest-login-btn" class="btn btn-secondary btn-sm">登录账号</button>
+            <button id="show-login-btn" class="btn btn-primary btn-sm">登录</button>
           </div>
         `;
       }
@@ -90,11 +90,11 @@ function initializeAuthState() {
       window.initializeApp();
     }
     
-    // 添加游客登录按钮事件
+    // 添加登录按钮事件
     setTimeout(() => {
-      const guestLoginBtn = document.getElementById('guest-login-btn');
-      if (guestLoginBtn) {
-        guestLoginBtn.addEventListener('click', () => {
+      const showLoginBtn = document.getElementById('show-login-btn');
+      if (showLoginBtn) {
+        showLoginBtn.addEventListener('click', () => {
           const authModal = document.getElementById('auth-modal');
           if (authModal) {
             authModal.style.display = 'block';
@@ -716,24 +716,7 @@ export function initAuthUI() {
     });
   }
   
-  // 游客登录按钮事件
-  const anonymousLoginBtn = document.getElementById('anonymous-login-btn');
-  const handleGuestLogin = async () => {
-    try {
-      const result = await signInAnonymouslyUser();
-      if (result.success) {
-        // 游客登录成功
-        showNotification('游客登录成功！欢迎使用！', 'success');
-        closeAuthModal();
-      }
-    } catch (error) {
-      // 错误已在 signInAnonymouslyUser 函数中处理
-      console.log('游客登录失败，错误已处理');
-    }
-  };
-  
-  // 使用移动端优化的事件绑定
-  addMobileButtonSupport(anonymousLoginBtn, handleGuestLogin);
+  // 游客登录功能已移除，用户可直接使用应用
   
   // 忘记密码表单事件
   const forgotPasswordForm = document.getElementById('forgot-password-form');
