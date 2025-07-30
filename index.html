@@ -3623,13 +3623,15 @@
              
              /* 小屏幕设备优化 */
              .user-info-top-right {
-                 top: 10px;
-                 right: 10px;
-                 padding: 4px 8px;
-                 font-size: 12px;
-                 max-width: calc(100vw - 20px);
-                 border-radius: 6px;
-                 gap: 8px;
+                 top: 10px !important;
+                 right: 10px !important;
+                 padding: 4px 8px !important;
+                 font-size: 12px !important;
+                 max-width: calc(100vw - 20px) !important;
+                 border-radius: 6px !important;
+                 gap: 6px !important;
+                 background: rgba(0, 0, 0, 0.4) !important;
+                 border: 1px solid rgba(255, 255, 255, 0.3) !important;
                  /* 移动端性能优化 */
                  will-change: opacity, transform;
                  transform: translateZ(0);
@@ -3637,23 +3639,23 @@
              }
              
              .user-info-top-right .user-avatar {
-                 font-size: 16px;
-                 margin-right: 6px;
+                 font-size: 16px !important;
+                 margin-right: 6px !important;
              }
              
              .user-info-top-right .user-name {
-                 font-size: 12px;
-                 white-space: nowrap;
-                 overflow: hidden;
-                 text-overflow: ellipsis;
-                 max-width: 120px;
+                 font-size: 12px !important;
+                 white-space: nowrap !important;
+                 overflow: hidden !important;
+                 text-overflow: ellipsis !important;
+                 max-width: 120px !important;
              }
              
              .user-info-top-right .btn {
-                 padding: 3px 8px;
-                 font-size: 11px;
-                 border-radius: 4px;
-                 min-width: auto;
+                 padding: 3px 8px !important;
+                 font-size: 11px !important;
+                 border-radius: 4px !important;
+                 min-width: auto !important;
              }
              
              .theme-switcher {
@@ -3923,35 +3925,37 @@
              }
              
              /* 超小屏幕用户信息区域优化 */
-             .user-info-top-right {
-                 top: 8px;
-                 right: 8px;
-                 padding: 3px 6px;
-                 font-size: 11px;
-                 max-width: calc(100vw - 16px);
-                 border-radius: 6px;
-                 gap: 6px;
-             }
-             
-             .user-info-top-right .user-avatar {
-                 font-size: 14px;
-                 margin-right: 4px;
-             }
-             
-             .user-info-top-right .user-name {
-                 font-size: 11px;
-                 white-space: nowrap;
-                 overflow: hidden;
-                 text-overflow: ellipsis;
-                 max-width: 80px;
-             }
-             
-             .user-info-top-right .btn {
-                 padding: 2px 6px;
-                 font-size: 10px;
-                 border-radius: 4px;
-                 min-width: auto;
-             }
+              .user-info-top-right {
+                   top: 8px !important;
+                   right: 8px !important;
+                   padding: 3px 6px !important;
+                   font-size: 11px !important;
+                   max-width: calc(100vw - 16px) !important;
+                   border-radius: 4px !important;
+                   gap: 4px !important;
+                   background: rgba(0, 0, 0, 0.5) !important;
+                   border: 1px solid rgba(255, 255, 255, 0.4) !important;
+               }
+              
+              .user-info-top-right .user-avatar {
+                  font-size: 14px !important;
+                  margin-right: 4px !important;
+              }
+              
+              .user-info-top-right .user-name {
+                  font-size: 11px !important;
+                  white-space: nowrap !important;
+                  overflow: hidden !important;
+                  text-overflow: ellipsis !important;
+                  max-width: 80px !important;
+              }
+              
+              .user-info-top-right .btn {
+                  padding: 2px 6px !important;
+                  font-size: 10px !important;
+                  border-radius: 4px !important;
+                  min-width: auto !important;
+              }
              
              /* 超小屏幕按钮优化 */
              .theme-switcher {
@@ -4503,7 +4507,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.2"; // 可手动修改版本号
+                this.version = "v4.6.3"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
