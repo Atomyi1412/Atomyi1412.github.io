@@ -552,9 +552,10 @@ async function updateUIForAuthState(user) {
         </span>
       `;
       
-      // 添加点击"未登录"弹出登录框的事件
+      // 添加点击"未登录"弹出登录框的事件（防止重复绑定）
       const userDisplay = document.getElementById('user-display');
-      if (userDisplay) {
+      if (userDisplay && !userDisplay.hasAttribute('data-event-bound')) {
+        userDisplay.setAttribute('data-event-bound', 'true');
         userDisplay.addEventListener('click', () => {
           if (authModal) {
             authModal.style.display = 'block';
@@ -636,10 +637,30 @@ function closeAuthModal() {
     modal.style.display = 'none';
   }
   
-  // 恢复用户信息按钮的显示
+  // 根据当前用户状态恢复用户信息按钮的显示
   if (userInfo) {
-    userInfo.style.opacity = '1';
-    userInfo.style.pointerEvents = 'auto';
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      // 已登录用户：完全可见
+      userInfo.style.opacity = '1';
+      userInfo.style.pointerEvents = 'auto';
+    } else {
+      // 未登录用户：恢复正常的可点击状态
+      userInfo.style.opacity = '1';
+      userInfo.style.pointerEvents = 'auto';
+      // 确保重新绑定点击事件
+      const userDisplay = document.getElementById('user-display');
+      if (userDisplay && !userDisplay.hasAttribute('data-event-bound')) {
+        userDisplay.setAttribute('data-event-bound', 'true');
+        userDisplay.addEventListener('click', () => {
+          const authModal = document.getElementById('auth-modal');
+          if (authModal) {
+            authModal.style.display = 'block';
+            showLoginForm();
+          }
+        });
+      }
+    }
   }
 }
 
@@ -986,7 +1007,7 @@ function hideUserCenterModal() {
     modal.style.display = 'none';
   }
   
-  // 恢复用户信息按钮的显示
+  // 恢复用户信息按钮的显示（用户中心只有已登录用户可以访问）
   if (userInfo) {
     userInfo.style.opacity = '1';
     userInfo.style.pointerEvents = 'auto';
