@@ -26,13 +26,13 @@
             box-sizing: border-box;
         }
         
-        /* CSS变量定义 - 默认主题（海洋蓝色）浅色模式 */
+        /* CSS变量定义 - 默认主题（绿色）浅色模式 */
         :root {
-            --primary-color: #2196F3;
-            --primary-dark: #1976D2;
-            --primary-light: #64B5F6;
-            --secondary-color: #03A9F4;
-            --secondary-dark: #0288D1;
+            --primary-color: #4CAF50;
+            --primary-dark: #45a049;
+            --primary-light: #81C784;
+            --secondary-color: #2196F3;
+            --secondary-dark: #1976D2;
             --accent-color: #FF9800;
             --background-gradient-start: #667eea;
             --background-gradient-end: #764ba2;
@@ -40,8 +40,8 @@
             --text-light: #666;
             --card-background: white;
             --border-color: #ddd;
-            --hover-background: #e3f2fd;
-            --selected-background: #bbdefb;
+            --hover-background: #f0f8f0;
+            --selected-background: #e8f5e8;
             --shadow-color: rgba(0,0,0,0.1);
             --success-color: #4CAF50;
             --success-dark: #388e3c;
@@ -58,13 +58,13 @@
             --info-dark: #1976d2;
         }
         
-        /* 默认主题（海洋蓝色）深色模式 */
+        /* 默认主题（绿色）深色模式 */
         [data-mode="dark"] {
-            --primary-color: #42A5F5;
-            --primary-dark: #2196F3;
-            --primary-light: #64B5F6;
-            --secondary-color: #03A9F4;
-            --secondary-dark: #0288D1;
+            --primary-color: #66BB6A;
+            --primary-dark: #4CAF50;
+            --primary-light: #81C784;
+            --secondary-color: #42A5F5;
+            --secondary-dark: #2196F3;
             --accent-color: #FFB74D;
             --background-gradient-start: #424242;
             --background-gradient-end: #616161;
@@ -72,8 +72,8 @@
             --text-light: #BDBDBD;
             --card-background: #2E2E2E;
             --border-color: #555;
-            --hover-background: #1e3a8a;
-            --selected-background: #1565c0;
+            --hover-background: #3E3E3E;
+            --selected-background: #4E4E4E;
             --shadow-color: rgba(0,0,0,0.3);
             --success-color: #66BB6A;
             --success-dark: #4CAF50;
@@ -92,16 +92,16 @@
         
         /* 蓝色主题浅色模式 */
         [data-theme="blue"] {
-            --primary-color: #4CAF50;
-            --primary-dark: #45a049;
-            --primary-light: #81C784;
-            --secondary-color: #66BB6A;
-            --secondary-dark: #4CAF50;
-            --accent-color: #FF9800;
-            --background-gradient-start: #667eea;
-            --background-gradient-end: #764ba2;
-            --hover-background: #f0f8f0;
-            --selected-background: #e8f5e8;
+            --primary-color: #2196F3;
+            --primary-dark: #1976D2;
+            --primary-light: #64B5F6;
+            --secondary-color: #03A9F4;
+            --secondary-dark: #0288D1;
+            --accent-color: #FF5722;
+            --background-gradient-start: #74b9ff;
+            --background-gradient-end: #fd79a8;
+            --hover-background: #e3f2fd;
+            --selected-background: #bbdefb;
             --success-color: #4caf50;
             --success-dark: #388e3c;
             --success-background: #d4edda;
@@ -113,23 +113,23 @@
             --error-dark: #d32f2f;
             --error-background: #f8d7da;
             --error-border: #f5c6cb;
-            --info-color: #4CAF50;
-            --info-dark: #388e3c;
+            --info-color: #00bcd4;
+            --info-dark: #0097a7;
             --card-background: #ffffff;
             --text-color: #333333;
             --text-light: #666666;
             --border-color: #e0e0e0;
-            --shadow-color: rgba(76, 175, 80, 0.1);
+            --shadow-color: rgba(33, 150, 243, 0.1);
         }
         
         /* 蓝色主题深色模式 */
         [data-theme="blue"][data-mode="dark"] {
-            --primary-color: #66BB6A;
-            --primary-dark: #4CAF50;
-            --primary-light: #81C784;
-            --secondary-color: #81C784;
-            --secondary-dark: #66BB6A;
-            --accent-color: #FFB74D;
+            --primary-color: #64B5F6;
+            --primary-dark: #42A5F5;
+            --primary-light: #90CAF9;
+            --secondary-color: #29B6F6;
+            --secondary-dark: #0288D1;
+            --accent-color: #FF7043;
             --background-gradient-start: #424242;
             --background-gradient-end: #616161;
             --text-color: #E0E0E0;
@@ -150,8 +150,8 @@
             --error-dark: #F44336;
             --error-background: #B71C1C;
             --error-border: #D32F2F;
-            --info-color: #66BB6A;
-            --info-dark: #4CAF50;
+            --info-color: #29B6F6;
+            --info-dark: #0288D1;
         }
         
         /* 紫色主题浅色模式 */
@@ -520,9 +520,9 @@
         
         /* 深色模式下各主题的选中效果优化 */
         [data-theme="blue"][data-mode="dark"] .theme-option.active {
-            background: rgba(102, 187, 106, 0.2);
-            border-left: 4px solid #66BB6A;
-            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.3);
+            background: rgba(100, 181, 246, 0.2);
+            border-left: 4px solid #64B5F6;
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.3);
         }
         
         [data-theme="purple"][data-mode="dark"] .theme-option.active {
@@ -662,26 +662,26 @@
         
         /* 各主题文件上传按钮优化 */
         [data-theme="blue"] .file-upload label {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
         }
         
         [data-theme="blue"] .file-upload label:hover {
-            background: linear-gradient(135deg, #45a049 0%, #388e3c 100%);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
         }
         
         [data-theme="blue"] .file-upload:hover {
-            border-color: #4CAF50;
+            border-color: #2196F3;
         }
         
         [data-theme="blue"][data-mode="dark"] .file-upload label {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
         }
         
         [data-theme="blue"][data-mode="dark"] .file-upload label:hover {
-            background: linear-gradient(135deg, #4CAF50 0%, #388e3c 100%);
+            background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
         }
         
         [data-theme="purple"] .file-upload label {
@@ -802,12 +802,12 @@
         }
         
         [data-theme="blue"] .view-table-btn {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%) !important;
-            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.3);
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%) !important;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
         }
         
         [data-theme="blue"] .view-table-btn:hover {
-            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%) !important;
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
         }
         
         [data-theme="blue"] .retake-wrong-btn {
@@ -880,8 +880,8 @@
         }
         
         [data-theme="blue"][data-mode="dark"] .view-table-btn {
-            background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%) !important;
-            box-shadow: 0 2px 8px rgba(129, 199, 132, 0.4);
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%) !important;
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
         }
         
         [data-theme="blue"][data-mode="dark"] .retake-wrong-btn {
@@ -926,8 +926,8 @@
         }
         
         [data-mode="dark"] .view-table-btn {
-            background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%) !important;
-            box-shadow: 0 2px 8px rgba(66, 165, 245, 0.4);
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%) !important;
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
         }
         
         [data-mode="dark"] .retake-wrong-btn {
@@ -968,32 +968,32 @@
         
         /* 蓝色主题按钮优化 */
         [data-theme="blue"] .btn {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
         }
         
         [data-theme="blue"] .btn:hover {
-            background: linear-gradient(135deg, #45a049 0%, #388e3c 100%);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
         }
         
         [data-theme="blue"] .btn-secondary {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.3);
+            background: linear-gradient(135deg, #03A9F4 0%, #0288D1 100%);
+            box-shadow: 0 2px 8px rgba(3, 169, 244, 0.3);
         }
         
         [data-theme="blue"] .btn-secondary:hover {
-            background: linear-gradient(135deg, #4CAF50 0%, #388e3c 100%);
+            background: linear-gradient(135deg, #0288D1 0%, #0277BD 100%);
         }
         
         [data-theme="blue"][data-mode="dark"] .btn {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+            box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
         }
         
         [data-theme="blue"][data-mode="dark"] .btn:hover {
-            background: linear-gradient(135deg, #4CAF50 0%, #388e3c 100%);
-            box-shadow: 0 4px 12px rgba(102, 187, 106, 0.5);
+            background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
+            box-shadow: 0 4px 12px rgba(100, 181, 246, 0.5);
         }
         
         /* 紫色主题按钮优化 */
@@ -1108,21 +1108,21 @@
         
         /* 各主题问题编号和类型标签优化 */
         [data-theme="blue"] .question-number {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
         }
         
         [data-theme="blue"] .question-type {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-            box-shadow: 0 2px 6px rgba(102, 187, 106, 0.3);
+            background: linear-gradient(135deg, #03A9F4 0%, #0288D1 100%);
+            box-shadow: 0 2px 6px rgba(3, 169, 244, 0.3);
         }
         
         [data-theme="blue"][data-mode="dark"] .question-number {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
         }
         
         [data-theme="blue"][data-mode="dark"] .question-type {
-            background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%);
+            background: linear-gradient(135deg, #29B6F6 0%, #03A9F4 100%);
         }
         
         [data-theme="purple"] .question-number {
@@ -1701,7 +1701,7 @@
         }
         
         [data-theme="blue"] .exam-duration {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
         }
         
         [data-theme="blue"][data-mode="dark"] .exam-timer {
@@ -1709,7 +1709,7 @@
         }
         
         [data-theme="blue"][data-mode="dark"] .exam-duration {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
         }
         
         [data-theme="purple"] .exam-timer {
@@ -1881,9 +1881,9 @@
         
         /* 各主题题目状态指示器优化 */
         [data-theme="blue"] .status-item.current {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-            border-color: #66BB6A;
-            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            border-color: #2196F3;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
         }
         
         [data-theme="blue"] .status-item.answered {
@@ -1893,8 +1893,8 @@
         }
         
         [data-theme="blue"][data-mode="dark"] .status-item.current {
-            background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%);
-            border-color: #81C784;
+            background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+            border-color: #64B5F6;
         }
         
         [data-theme="blue"][data-mode="dark"] .status-item.answered {
@@ -2074,16 +2074,16 @@
         
         /* 各主题导出按钮优化 */
         [data-theme="blue"] .export-buttons .btn {
-            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-            box-shadow: 0 2px 6px rgba(102, 187, 106, 0.3);
+            background: linear-gradient(135deg, #03A9F4 0%, #0288D1 100%);
+            box-shadow: 0 2px 6px rgba(3, 169, 244, 0.3);
         }
         
         [data-theme="blue"] .export-buttons .btn:hover {
-            background: linear-gradient(135deg, #4CAF50 0%, #388e3c 100%);
+            background: linear-gradient(135deg, #0288D1 0%, #0277BD 100%);
         }
         
         [data-theme="blue"][data-mode="dark"] .export-buttons .btn {
-            background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%);
+            background: linear-gradient(135deg, #29B6F6 0%, #03A9F4 100%);
         }
         
         [data-theme="purple"] .export-buttons .btn {
@@ -2996,22 +2996,22 @@
          
          /* 各主题下的登录注册按钮优化 */
          [data-theme="blue"] .auth-section .btn-secondary {
-             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-             box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+             background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+             box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
          }
          
          [data-theme="blue"] .auth-section .btn-secondary:hover {
-             background: linear-gradient(135deg, #45a049 0%, #388e3c 100%);
-             box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+             background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+             box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
          }
          
          [data-theme="blue"] .btn-outline {
-             color: #4CAF50;
-             border-color: #4CAF50;
+             color: #2196F3;
+             border-color: #2196F3;
          }
          
          [data-theme="blue"] .btn-outline::before {
-             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+             background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
          }
          
          [data-theme="purple"] .auth-section .btn-secondary {
@@ -3064,13 +3064,13 @@
          }
          
          [data-theme="blue"][data-mode="dark"] .auth-section .btn-secondary {
-             background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
-             box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
+             background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+             box-shadow: 0 2px 8px rgba(100, 181, 246, 0.4);
          }
          
          [data-theme="blue"][data-mode="dark"] .auth-section .btn-secondary:hover {
-             background: linear-gradient(135deg, #4CAF50 0%, #388e3c 100%);
-             box-shadow: 0 4px 12px rgba(102, 187, 106, 0.5);
+             background: linear-gradient(135deg, #42A5F5 0%, #2196F3 100%);
+             box-shadow: 0 4px 12px rgba(100, 181, 246, 0.5);
          }
          
          [data-theme="purple"][data-mode="dark"] .auth-section .btn-secondary {
@@ -4029,19 +4029,19 @@
                 <div id="themeMenu" class="theme-menu hidden">
                     <div class="theme-option" data-theme="default">
                         <div class="theme-preview">
-                            <div class="color-dot" style="background: #2196F3;"></div>
+                            <div class="color-dot" style="background: #4CAF50;"></div>
                             <div class="color-dot" style="background: #667eea;"></div>
                             <div class="color-dot" style="background: #764ba2;"></div>
                         </div>
-                        <span>海洋蓝色</span>
+                        <span>默认绿色</span>
                     </div>
                     <div class="theme-option" data-theme="blue">
                         <div class="theme-preview">
-                            <div class="color-dot" style="background: #4CAF50;"></div>
-                            <div class="color-dot" style="background: #81C784;"></div>
-                            <div class="color-dot" style="background: #4CAF50;"></div>
+                            <div class="color-dot" style="background: #2196F3;"></div>
+                            <div class="color-dot" style="background: #1976D2;"></div>
+                            <div class="color-dot" style="background: #0D47A1;"></div>
                         </div>
-                        <span>生机绿色</span>
+                        <span>海洋蓝色</span>
                     </div>
                     <div class="theme-option" data-theme="purple">
                         <div class="theme-preview">
@@ -4406,7 +4406,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.17"; // 可手动修改版本号
+                this.version = "v4.6.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
