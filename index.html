@@ -428,8 +428,46 @@
         /* 可点击登录样式 */
         .clickable-login {
             cursor: pointer;
-            transition: all 0.3s ease;
         }
+        
+        /* 登录按钮加载优化 */
+        .user-info-top-right {
+            /* 预设最小高度，避免布局跳动 */
+            min-height: 40px;
+            /* 添加加载动画 */
+            animation: fadeInUser 0.3s ease-out;
+        }
+        
+        @keyframes fadeInUser {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 加载状态样式 */
+        .user-name {
+            transition: all 0.2s ease;
+        }
+        
+        .user-name:empty::after {
+            content: "加载中...";
+            color: rgba(255, 255, 255, 0.7);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+             0%, 100% {
+                 opacity: 0.7;
+             }
+             50% {
+                 opacity: 1;
+             }
+         }
         
         .clickable-login:hover {
             background-color: rgba(255, 255, 255, 0.1);
@@ -4062,7 +4100,13 @@
                 </div>
             </div>
             <!-- 用户信息区域 - 移到右上角 -->
-            <div id="user-info" class="user-info-top-right"></div>
+            <div id="user-info" class="user-info-top-right" style="display: flex; opacity: 1;">
+                <!-- 预加载占位符，避免加载时的空白 -->
+                <span id="user-display" class="user-display clickable-login">
+                    <span class="user-avatar">👤</span>
+                    <span class="user-name">加载中...</span>
+                </span>
+            </div>
             
             <h1 class="title-left">📚 题库复习系统 <span id="version-display" class="version-tag"></span></h1>
         </div>
@@ -4406,7 +4450,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.0"; // 可手动修改版本号
+                this.version = "v4.6.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表

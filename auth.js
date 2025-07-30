@@ -54,30 +54,6 @@ function initializeAuthState() {
     const mainContent = document.querySelector('.content');
     if (mainContent) mainContent.style.display = 'block';
     
-    // 显示未登录状态，提供登录选项
-    const loginSection = document.getElementById('login-section');
-    const userSection = document.getElementById('user-section');
-    const authSection = document.querySelector('.auth-section');
-    
-    if (loginSection) loginSection.style.display = 'none';
-    if (userSection) {
-      userSection.style.display = 'block';
-      // 显示未登录状态和登录选项
-      const userInfo = document.getElementById('user-info');
-      if (userInfo) {
-        userInfo.innerHTML = `
-          <span id="user-display" class="user-display">
-            <span class="user-avatar">👤</span>
-            <span class="user-name">未登录</span>
-          </span>
-          <div class="user-actions">
-            <button id="show-login-btn" class="btn btn-primary btn-sm">登录</button>
-          </div>
-        `;
-      }
-    }
-    if (authSection) authSection.style.display = 'block';
-    
     // 确保认证模态框隐藏
     const authModal = document.getElementById('auth-modal');
     if (authModal) {
@@ -85,24 +61,30 @@ function initializeAuthState() {
       authModal.classList.remove('force-login');
     }
     
-    // 初始化题库应用
-    if (typeof window.initializeApp === 'function') {
-      window.initializeApp();
-    }
+    // 用户信息已在HTML中预设，只需更新状态
+    const userDisplay = document.getElementById('user-display');
+    const userNameSpan = userDisplay?.querySelector('.user-name');
     
-    // 添加登录按钮事件
-    setTimeout(() => {
-      const showLoginBtn = document.getElementById('show-login-btn');
-      if (showLoginBtn) {
-        showLoginBtn.addEventListener('click', () => {
-          const authModal = document.getElementById('auth-modal');
+    if (userDisplay && userNameSpan) {
+      userNameSpan.textContent = '未登录';
+      userDisplay.className = 'user-display clickable-login';
+      
+      // 添加点击事件（防止重复绑定）
+      if (!userDisplay.hasAttribute('data-event-bound')) {
+        userDisplay.setAttribute('data-event-bound', 'true');
+        userDisplay.addEventListener('click', () => {
           if (authModal) {
             authModal.style.display = 'block';
             showLoginForm();
           }
         });
       }
-    }, 100);
+    }
+    
+    // 初始化题库应用
+    if (typeof window.initializeApp === 'function') {
+      window.initializeApp();
+    }
   }
 }
 
@@ -473,10 +455,13 @@ async function updateUIForAuthState(user) {
   const mainContent = document.querySelector('.content');
   const authModal = document.getElementById('auth-modal');
   
-  // 预加载优化：立即显示用户信息容器
-  if (userInfo) {
-    userInfo.style.display = 'flex';
-    userInfo.style.opacity = '1';
+  // 预加载优化：用户信息容器已在HTML中预设，无需重复设置
+  // 立即更新用户显示状态，避免"加载中..."状态过长
+  const userDisplay = document.getElementById('user-display');
+  const userNameSpan = userDisplay?.querySelector('.user-name');
+  
+  if (userNameSpan) {
+    userNameSpan.textContent = user ? '加载用户信息...' : '未登录';
   }
   
   if (user) {
@@ -496,18 +481,13 @@ async function updateUIForAuthState(user) {
     }
     
     if (userInfo) {
-      // 异步获取用户设置的昵称和头像
-      const userProfile = await getUserProfile();
-      const displayName = userProfile.nickname || (user.isAnonymous ? '游客用户' : (user.displayName || user.email));
-      const avatar = userProfile.avatar || '👤';
-      
-      // 显示表情头像
-      const avatarDisplay = `<span class="user-avatar">${avatar}</span>`;
+      // 先显示基本用户信息，避免长时间等待
+      const basicDisplayName = user.isAnonymous ? '游客用户' : (user.displayName || user.email || '用户');
       
       userInfo.innerHTML = `
         <span id="user-display" class="user-display">
-          ${avatarDisplay}
-          <span class="user-name">欢迎, ${displayName}</span>
+          <span class="user-avatar">👤</span>
+          <span class="user-name">欢迎, ${basicDisplayName}</span>
         </span>
         <button id="logout-btn" class="btn btn-secondary btn-sm">登出</button>
       `;
@@ -530,6 +510,21 @@ async function updateUIForAuthState(user) {
           }
         });
       }
+      
+      // 异步加载用户详细信息，不阻塞UI显示
+      getUserProfile().then(userProfile => {
+        const displayName = userProfile.nickname || basicDisplayName;
+        const avatar = userProfile.avatar || '👤';
+        
+        // 更新头像和昵称
+        const avatarSpan = userDisplay?.querySelector('.user-avatar');
+        const nameSpan = userDisplay?.querySelector('.user-name');
+        if (avatarSpan) avatarSpan.textContent = avatar;
+        if (nameSpan) nameSpan.textContent = `欢迎, ${displayName}`;
+      }).catch(error => {
+        console.log('加载用户详细信息失败:', error);
+        // 保持基本显示，不影响用户体验
+      });
     }
   } else {
     // 用户未登录 - 直接允许使用应用
@@ -543,25 +538,47 @@ async function updateUIForAuthState(user) {
       authModal.classList.remove('force-login');
     }
     
-    // 显示未登录状态，点击可弹出登录框
+    // 更新现有的用户显示元素，避免重新创建DOM
     if (userInfo) {
-      userInfo.innerHTML = `
-        <span id="user-display" class="user-display clickable-login">
-          <span class="user-avatar">👤</span>
-          <span class="user-name">未登录</span>
-        </span>
-      `;
-      
-      // 添加点击"未登录"弹出登录框的事件（防止重复绑定）
       const userDisplay = document.getElementById('user-display');
-      if (userDisplay && !userDisplay.hasAttribute('data-event-bound')) {
-        userDisplay.setAttribute('data-event-bound', 'true');
-        userDisplay.addEventListener('click', () => {
-          if (authModal) {
-            authModal.style.display = 'block';
-            showLoginForm();
-          }
-        });
+      const userNameSpan = userDisplay?.querySelector('.user-name');
+      const userAvatarSpan = userDisplay?.querySelector('.user-avatar');
+      
+      if (userDisplay && userNameSpan && userAvatarSpan) {
+        // 更新现有元素
+        userNameSpan.textContent = '未登录';
+        userAvatarSpan.textContent = '👤';
+        userDisplay.className = 'user-display clickable-login';
+        
+        // 添加点击事件（防止重复绑定）
+        if (!userDisplay.hasAttribute('data-event-bound')) {
+          userDisplay.setAttribute('data-event-bound', 'true');
+          userDisplay.addEventListener('click', () => {
+            if (authModal) {
+              authModal.style.display = 'block';
+              showLoginForm();
+            }
+          });
+        }
+      } else {
+        // 如果元素不存在，则创建（兜底方案）
+        userInfo.innerHTML = `
+          <span id="user-display" class="user-display clickable-login">
+            <span class="user-avatar">👤</span>
+            <span class="user-name">未登录</span>
+          </span>
+        `;
+        
+        const newUserDisplay = document.getElementById('user-display');
+        if (newUserDisplay) {
+          newUserDisplay.setAttribute('data-event-bound', 'true');
+          newUserDisplay.addEventListener('click', () => {
+            if (authModal) {
+              authModal.style.display = 'block';
+              showLoginForm();
+            }
+          });
+        }
       }
     }
     
