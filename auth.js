@@ -628,23 +628,21 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
-// 关闭登录模态框
-function closeAuthModal() {
-  const modal = document.getElementById('auth-modal');
+// 确保用户信息按钮正确显示的通用函数
+function ensureUserInfoButtonVisible() {
   const userInfo = document.getElementById('user-info');
+  if (!userInfo) return;
   
-  if (modal) {
-    modal.style.display = 'none';
-  }
+  // 恢复按钮显示
+  userInfo.style.opacity = '1';
+  userInfo.style.pointerEvents = 'auto';
   
-  // 恢复用户信息按钮的显示
-  if (userInfo) {
-    userInfo.style.opacity = '1';
-    userInfo.style.pointerEvents = 'auto';
-    
-    // 对于未登录用户，重新设置HTML内容和事件绑定
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
+  // 检查当前用户状态
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    // 未登录用户：确保有正确的HTML内容
+    const userDisplay = document.getElementById('user-display');
+    if (!userDisplay || !userDisplay.textContent.includes('未登录')) {
       // 重新设置未登录状态的HTML内容
       userInfo.innerHTML = `
         <span id="user-display" class="user-display clickable-login">
@@ -653,11 +651,11 @@ function closeAuthModal() {
         </span>
       `;
       
-      // 延迟一点时间确保DOM更新完成后绑定事件
+      // 延迟绑定事件确保DOM更新完成
       setTimeout(() => {
-        const userDisplay = document.getElementById('user-display');
-        if (userDisplay) {
-          userDisplay.addEventListener('click', () => {
+        const newUserDisplay = document.getElementById('user-display');
+        if (newUserDisplay) {
+          newUserDisplay.addEventListener('click', () => {
             const authModal = document.getElementById('auth-modal');
             if (authModal) {
               authModal.style.display = 'block';
@@ -668,6 +666,18 @@ function closeAuthModal() {
       }, 50);
     }
   }
+}
+
+// 关闭登录模态框
+function closeAuthModal() {
+  const modal = document.getElementById('auth-modal');
+  
+  if (modal) {
+    modal.style.display = 'none';
+  }
+  
+  // 确保用户信息按钮正确显示
+  ensureUserInfoButtonVisible();
 }
 
 // 初始化认证UI事件
@@ -1007,22 +1017,19 @@ async function showUserCenterModal() {
 // 隐藏用户中心模态框
 function hideUserCenterModal() {
   const modal = document.getElementById('user-center-modal');
-  const userInfo = document.getElementById('user-info');
   
   if (modal) {
     modal.style.display = 'none';
   }
   
-  // 恢复用户信息按钮的显示（用户中心只有已登录用户可以访问）
-  if (userInfo) {
-    userInfo.style.opacity = '1';
-    userInfo.style.pointerEvents = 'auto';
-  }
+  // 确保用户信息按钮正确显示
+  ensureUserInfoButtonVisible();
 }
 
 // 显示用户管理模态框
 async function showUserManagementModal() {
   const modal = document.getElementById('user-management-modal');
+  const userInfo = document.getElementById('user-info');
   if (!modal) return;
   
   // 检查是否为管理员
@@ -1030,6 +1037,12 @@ async function showUserManagementModal() {
   if (!isAdmin) {
     showNotification('您没有管理员权限', 'error');
     return;
+  }
+  
+  // 完全隐藏用户信息按钮
+  if (userInfo) {
+    userInfo.style.opacity = '0';
+    userInfo.style.pointerEvents = 'none';
   }
   
   // 显示模态框
@@ -1042,9 +1055,13 @@ async function showUserManagementModal() {
 // 隐藏用户管理模态框
 function hideUserManagementModal() {
   const modal = document.getElementById('user-management-modal');
+  
   if (modal) {
     modal.style.display = 'none';
   }
+  
+  // 确保用户信息按钮正确显示
+  ensureUserInfoButtonVisible();
 }
 
 // 加载用户列表
