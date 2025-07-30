@@ -3156,14 +3156,15 @@
          }
          
          .modal-header {
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             padding: 20px 24px;
-             border-bottom: 1px solid var(--border-color);
-             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-             border-radius: 8px 8px 0 0;
-         }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px 8px 0 0;
+            position: relative;
+        }
          
          .modal-header h2 {
              margin: 0;
@@ -3174,15 +3175,20 @@
          }
          
          .close {
-             color: var(--text-light);
-             font-size: 28px;
-             font-weight: bold;
-             cursor: pointer;
-             transition: color 0.3s ease;
-         }
-         
-         .close:hover {
-             color: var(--text-color);
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        
+        .close:hover {
+            color: #f0f0f0;
          }
          
          .modal-body {
@@ -3303,17 +3309,6 @@
              background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
              color: white;
              border-radius: 8px 8px 0 0;
-         }
-         
-         .force-login-notice {
-             background: linear-gradient(135deg, #fef3c7, #fde68a);
-             border: 1px solid #f59e0b;
-             border-radius: 6px;
-             padding: 12px;
-             margin-bottom: 20px;
-             text-align: center;
-             font-size: 14px;
-             color: #92400e;
          }
          
          /* 用户中心样式 */
@@ -4297,7 +4292,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.2"; // 可手动修改版本号
+                this.version = "v4.5.3"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -7946,16 +7941,7 @@
                 forgotPasswordContainer.style.display = 'none';
                 modal.style.display = 'block';
                 
-                // 如果是强制登录模式，添加提示
-                if (modal.classList.contains('force-login')) {
-                    let notice = loginFormContainer.querySelector('.force-login-notice');
-                    if (!notice) {
-                        notice = document.createElement('div');
-                        notice.className = 'force-login-notice';
-                        notice.innerHTML = '🔒 您需要登录后才能使用题库复习系统';
-                        loginFormContainer.insertBefore(notice, loginFormContainer.firstChild);
-                    }
-                }
+                // 强制登录提示已移除
             }
             
             // 显示注册模态框
@@ -7966,16 +7952,7 @@
                 forgotPasswordContainer.style.display = 'none';
                 modal.style.display = 'block';
                 
-                // 如果是强制登录模式，添加提示
-                if (modal.classList.contains('force-login')) {
-                    let notice = registerFormContainer.querySelector('.force-login-notice');
-                    if (!notice) {
-                        notice = document.createElement('div');
-                        notice.className = 'force-login-notice';
-                        notice.innerHTML = '🔒 请注册账号后登录使用题库复习系统';
-                        registerFormContainer.insertBefore(notice, registerFormContainer.firstChild);
-                    }
-                }
+                // 强制登录提示已移除
             }
             
             // 显示忘记密码模态框

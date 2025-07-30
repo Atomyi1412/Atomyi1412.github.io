@@ -588,15 +588,6 @@ function showLoginForm() {
   if (modalTitle) modalTitle.textContent = '请先登录';
   if (loginFormContainer) {
     loginFormContainer.style.display = 'block';
-    
-    // 添加强制登录提示
-    let notice = loginFormContainer.querySelector('.force-login-notice');
-    if (!notice) {
-      notice = document.createElement('div');
-      notice.className = 'force-login-notice';
-      notice.innerHTML = '🔒 您需要登录后才能使用题库复习系统';
-      loginFormContainer.insertBefore(notice, loginFormContainer.firstChild);
-    }
   }
   if (registerFormContainer) registerFormContainer.style.display = 'none';
   if (forgotPasswordContainer) forgotPasswordContainer.style.display = 'none';
