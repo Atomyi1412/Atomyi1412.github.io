@@ -642,18 +642,28 @@ function closeAuthModal() {
     userInfo.style.opacity = '1';
     userInfo.style.pointerEvents = 'auto';
     
-    // 对于未登录用户，确保点击事件正常工作
+    // 对于未登录用户，重新设置HTML内容和事件绑定
     const currentUser = getCurrentUser();
     if (!currentUser) {
-      // 延迟一点时间确保DOM更新完成
+      // 重新设置未登录状态的HTML内容
+      userInfo.innerHTML = `
+        <span id="user-display" class="user-display clickable-login">
+          <span class="user-avatar">👤</span>
+          <span class="user-name">未登录</span>
+        </span>
+      `;
+      
+      // 延迟一点时间确保DOM更新完成后绑定事件
       setTimeout(() => {
         const userDisplay = document.getElementById('user-display');
         if (userDisplay) {
-          // 移除旧的事件绑定标记，重新绑定
-          userDisplay.removeAttribute('data-event-bound');
-          // 确保事件能正常触发
-          userDisplay.style.cursor = 'pointer';
-          userDisplay.style.opacity = '1';
+          userDisplay.addEventListener('click', () => {
+            const authModal = document.getElementById('auth-modal');
+            if (authModal) {
+              authModal.style.display = 'block';
+              showLoginForm();
+            }
+          });
         }
       }, 50);
     }
