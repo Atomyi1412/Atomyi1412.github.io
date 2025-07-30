@@ -581,9 +581,9 @@ function showLoginForm() {
   const forgotPasswordContainer = document.getElementById('forgot-password-container');
   const userInfo = document.getElementById('user-info');
   
-  // 隐藏用户信息按钮
+  // 完全隐藏用户信息按钮
   if (userInfo) {
-    userInfo.style.opacity = '0.3';
+    userInfo.style.opacity = '0';
     userInfo.style.pointerEvents = 'none';
   }
   
@@ -637,29 +637,25 @@ function closeAuthModal() {
     modal.style.display = 'none';
   }
   
-  // 根据当前用户状态恢复用户信息按钮的显示
+  // 恢复用户信息按钮的显示
   if (userInfo) {
+    userInfo.style.opacity = '1';
+    userInfo.style.pointerEvents = 'auto';
+    
+    // 对于未登录用户，确保点击事件正常工作
     const currentUser = getCurrentUser();
-    if (currentUser) {
-      // 已登录用户：完全可见
-      userInfo.style.opacity = '1';
-      userInfo.style.pointerEvents = 'auto';
-    } else {
-      // 未登录用户：恢复正常的可点击状态
-      userInfo.style.opacity = '1';
-      userInfo.style.pointerEvents = 'auto';
-      // 确保重新绑定点击事件
-      const userDisplay = document.getElementById('user-display');
-      if (userDisplay && !userDisplay.hasAttribute('data-event-bound')) {
-        userDisplay.setAttribute('data-event-bound', 'true');
-        userDisplay.addEventListener('click', () => {
-          const authModal = document.getElementById('auth-modal');
-          if (authModal) {
-            authModal.style.display = 'block';
-            showLoginForm();
-          }
-        });
-      }
+    if (!currentUser) {
+      // 延迟一点时间确保DOM更新完成
+      setTimeout(() => {
+        const userDisplay = document.getElementById('user-display');
+        if (userDisplay) {
+          // 移除旧的事件绑定标记，重新绑定
+          userDisplay.removeAttribute('data-event-bound');
+          // 确保事件能正常触发
+          userDisplay.style.cursor = 'pointer';
+          userDisplay.style.opacity = '1';
+        }
+      }, 50);
     }
   }
 }
@@ -950,9 +946,9 @@ async function showUserCenterModal() {
   const userInfo = document.getElementById('user-info');
   
   if (modal) {
-    // 隐藏用户信息按钮
+    // 完全隐藏用户信息按钮
     if (userInfo) {
-      userInfo.style.opacity = '0.3';
+      userInfo.style.opacity = '0';
       userInfo.style.pointerEvents = 'none';
     }
     
