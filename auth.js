@@ -582,10 +582,8 @@ function showLoginForm() {
   const registerFormContainer = document.getElementById('register-form-container');
   const forgotPasswordContainer = document.getElementById('forgot-password-container');
   
-  // 添加强制登录样式
-  if (modal) modal.classList.add('force-login');
-  
-  if (modalTitle) modalTitle.textContent = '请先登录';
+  // 不再使用强制登录模式
+  if (modalTitle) modalTitle.textContent = '用户登录';
   if (loginFormContainer) {
     loginFormContainer.style.display = 'block';
   }

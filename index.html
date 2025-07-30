@@ -547,13 +547,7 @@
         }
         
         /* 强制登录模态框样式 */
-        #auth-modal.force-login {
-            display: block !important;
-        }
-        
-        #auth-modal.force-login .modal-content {
-            pointer-events: all;
-        }
+        /* force-login 相关样式已移除 */
 
         .section {
             margin-bottom: 30px;
@@ -3292,24 +3286,7 @@
          }
          
          /* 强制登录模式样式 */
-         .modal.force-login {
-             pointer-events: auto;
-         }
-         
-         .modal.force-login .close {
-             display: none;
-         }
-         
-         .modal.force-login .modal-content {
-             border: 2px solid var(--primary-color);
-             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-         }
-         
-         .modal.force-login .modal-header {
-             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-             color: white;
-             border-radius: 8px 8px 0 0;
-         }
+         /* force-login 相关样式已移除，因为不再使用强制登录模式 */
          
          /* 用户中心样式 */
          .user-center-form {
@@ -4292,7 +4269,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.3"; // 可手动修改版本号
+                this.version = "v4.5.4"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -7935,7 +7912,7 @@
             
             // 显示登录模态框
             function showLoginModal() {
-                modalTitle.textContent = modal.classList.contains('force-login') ? '请先登录' : '用户登录';
+                modalTitle.textContent = '用户登录';
                 loginFormContainer.style.display = 'block';
                 registerFormContainer.style.display = 'none';
                 forgotPasswordContainer.style.display = 'none';
