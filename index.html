@@ -3606,9 +3606,9 @@
              }
              
              .theme-btn, .mode-btn {
-                 width: 35px;
-                 height: 35px;
-                 font-size: 14px;
+                 width: 20px;
+                 height: 20px;
+                 font-size: 8px;
                  /* 移动端性能优化 */
                  will-change: transform;
                  transform: translateZ(0);
@@ -3860,6 +3860,20 @@
              
              .login-section {
                  gap: 8px;
+             }
+             
+             /* 超小屏幕按钮优化 */
+             .theme-switcher {
+                 top: 45px;
+                 right: 8px;
+                 gap: 2px;
+             }
+             
+             .theme-btn, .mode-btn {
+                 width: 18px;
+                 height: 18px;
+                 font-size: 7px;
+                 border-width: 1px;
              }
              
              /* 超小屏幕用户中心优化 */
@@ -4392,7 +4406,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.14"; // 可手动修改版本号
+                this.version = "v4.5.15"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
