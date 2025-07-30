@@ -469,16 +469,12 @@ export function isUserLoggedIn() {
 
 // 更新UI以反映认证状态
 async function updateUIForAuthState(user) {
-  const loginSection = document.getElementById('login-section');
-  const userSection = document.getElementById('user-section');
   const userInfo = document.getElementById('user-info');
   const mainContent = document.querySelector('.content');
   const authModal = document.getElementById('auth-modal');
   
   if (user) {
     // 用户已登录
-    if (loginSection) loginSection.style.display = 'none';
-    if (userSection) userSection.style.display = 'block';
     if (mainContent) mainContent.style.display = 'block';
     if (authModal) {
       authModal.style.display = 'none';
@@ -507,7 +503,7 @@ async function updateUIForAuthState(user) {
           ${avatarDisplay}
           <span class="user-name">欢迎, ${displayName}</span>
         </span>
-        <button id="logout-btn" class="btn btn-secondary">登出</button>
+        <button id="logout-btn" class="btn btn-secondary btn-sm">登出</button>
       `;
       
       // 添加用户信息点击事件（打开用户中心）
@@ -533,8 +529,6 @@ async function updateUIForAuthState(user) {
     // 用户未登录 - 直接允许使用应用
     console.log('用户未登录，直接进入应用');
     
-    if (loginSection) loginSection.style.display = 'none';
-    if (userSection) userSection.style.display = 'block';
     if (mainContent) mainContent.style.display = 'block';
     
     // 隐藏登录模态框
@@ -543,22 +537,19 @@ async function updateUIForAuthState(user) {
       authModal.classList.remove('force-login');
     }
     
-    // 显示未登录状态和登录选项
+    // 显示未登录状态，点击可弹出登录框
     if (userInfo) {
       userInfo.innerHTML = `
-        <span id="user-display" class="user-display">
+        <span id="user-display" class="user-display clickable-login">
           <span class="user-avatar">👤</span>
           <span class="user-name">未登录</span>
         </span>
-        <div class="user-actions">
-          <button id="show-login-btn" class="btn btn-primary btn-sm">登录</button>
-        </div>
       `;
       
-      // 添加登录按钮事件
-      const showLoginBtn = document.getElementById('show-login-btn');
-      if (showLoginBtn) {
-        showLoginBtn.addEventListener('click', () => {
+      // 添加点击"未登录"弹出登录框的事件
+      const userDisplay = document.getElementById('user-display');
+      if (userDisplay) {
+        userDisplay.addEventListener('click', () => {
           if (authModal) {
             authModal.style.display = 'block';
             showLoginForm();

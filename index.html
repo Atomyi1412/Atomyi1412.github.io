@@ -355,15 +355,57 @@
             background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
             color: white;
             padding: 30px;
-            text-align: center;
             position: relative;
         }
         
-        /* 主题切换器样式 */
-        .theme-switcher {
+        /* 标题左对齐样式 */
+        .title-left {
+            text-align: left;
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        /* 用户信息右上角样式 */
+        .user-info-top-right {
             position: absolute;
             top: 20px;
             right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            z-index: 1000;
+        }
+        
+        .user-info-top-right .user-name {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .user-info-top-right .user-name:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 可点击登录样式 */
+        .clickable-login {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clickable-login:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 4px 8px;
+        }
+        
+        /* 主题切换器样式 - 调整位置避免与用户信息冲突 */
+        .theme-switcher {
+            position: absolute;
+            top: 20px;
+            right: 200px;
             z-index: 1000;
         }
         
@@ -3916,18 +3958,10 @@
                     </div>
                 </div>
             </div>
-            <h1>📚 题库复习系统 <span id="version-display" class="version-tag"></span></h1>
+            <!-- 用户信息区域 - 移到右上角 -->
+            <div id="user-info" class="user-info-top-right"></div>
             
-            <!-- 用户认证区域 -->
-            <div class="auth-section">
-                <div id="login-section" class="login-section">
-                    <button id="login-btn" class="btn btn-secondary">登录</button>
-                    <button id="register-btn" class="btn btn-outline">注册</button>
-                </div>
-                <div id="user-section" class="user-section" style="display: none;">
-                    <div id="user-info" class="user-info"></div>
-                </div>
-            </div>
+            <h1 class="title-left">📚 题库复习系统 <span id="version-display" class="version-tag"></span></h1>
         </div>
         
         <div class="content">
@@ -4269,7 +4303,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.4"; // 可手动修改版本号
+                this.version = "v4.5.5"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -7830,8 +7864,6 @@
             
             // 模态框控制
             const modal = document.getElementById('auth-modal');
-            const loginBtn = document.getElementById('login-btn');
-            const registerBtn = document.getElementById('register-btn');
             const closeModal = document.getElementById('close-modal');
             const showRegister = document.getElementById('show-register');
             const showLogin = document.getElementById('show-login');
@@ -7950,8 +7982,7 @@
             }
             
             // 事件监听
-            if (loginBtn) loginBtn.addEventListener('click', showLoginModal);
-            if (registerBtn) registerBtn.addEventListener('click', showRegisterModal);
+            // 登录和注册按钮已移除，现在通过点击"未登录"来弹出登录框
             if (closeModal) closeModal.addEventListener('click', closeAuthModal);
             if (showRegister) showRegister.addEventListener('click', (e) => {
                 e.preventDefault();
