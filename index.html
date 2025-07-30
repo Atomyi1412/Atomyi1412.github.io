@@ -4297,7 +4297,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.5.1"; // 可手动修改版本号
+                this.version = "v4.5.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -7989,9 +7989,8 @@
             
             // 关闭模态框
             function closeAuthModal() {
-                // 检查用户是否已登录，只有已登录才能关闭模态框
-                const currentUser = window.auth?.currentUser;
-                if (currentUser) {
+                // 用户可以随时关闭登录模态框
+                if (modal) {
                     modal.style.display = 'none';
                 }
             }
