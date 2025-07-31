@@ -2640,11 +2640,19 @@
             
             /* 移动端标题容器适配 */
             .title-container {
+                display: flex;
                 flex-direction: row;
                 align-items: center;
-                justify-content: flex-start;
+                justify-content: space-between;
                 width: 100%;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
+            }
+            
+            .title-controls {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-shrink: 0;
             }
             
             .title-left {
@@ -2656,39 +2664,17 @@
                 min-width: 0;
                 display: flex;
                 align-items: center;
-                gap: 3px;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                width: 100%;
-                max-width: calc(100vw - 40px);
+                gap: 6px;
+                flex-wrap: nowrap;
             }
             
             .title-left .version-tag {
                 flex-shrink: 0;
-                margin-right: 1px;
-                font-size: 12px;
-                padding: 2px 6px;
+                font-size: 14px;
+                padding: 4px 8px;
             }
             
-            /* 极小屏幕优化 */
-            @media (max-width: 360px) {
-                .title-left {
-                    font-size: 14px;
-                    gap: 2px;
-                }
-                
-                .title-left .version-tag {
-                    font-size: 10px;
-                    padding: 1px 4px;
-                }
-                
-                .theme-btn, .mode-btn {
-                    width: 28px;
-                    height: 28px;
-                    font-size: 10px;
-                    margin-left: 1px;
-                }
-            }
+
             
             .header h1 {
                 font-size: 20px;
@@ -2725,12 +2711,11 @@
             }
             
             .theme-btn, .mode-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 12px;
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
                 border-width: 1px;
                 flex-shrink: 0;
-                margin-left: 2px;
             }
             
             .theme-menu {
@@ -4219,6 +4204,7 @@
         body.auto-exam-mode .header { display: flex !important; }
         body.auto-exam-mode .title-container { display: flex !important; }
         body.auto-exam-mode .title-left { display: flex !important; }
+        body.auto-exam-mode .title-controls { display: flex !important; }
         body.auto-exam-mode #themeSwitcherBtn,
         body.auto-exam-mode #modeSwitcherBtn { display: flex !important; }
     </style>
@@ -4292,6 +4278,8 @@
                 <h1 class="title-left">
                     📚 考题通
                     <span id="version-display" class="version-tag"></span>
+                </h1>
+                <div class="title-controls">
                     <button id="modeSwitcherBtn" class="mode-btn" title="切换深浅模式">
                         🌙
                     </button>
@@ -4332,7 +4320,7 @@
                             <span>活力橙色</span>
                         </div>
                     </div>
-                </h1>
+                </div>
             </div>
         </div>
         
@@ -4655,7 +4643,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.8.8"; // 可手动修改版本号
+                this.version = "v4.8.9"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
