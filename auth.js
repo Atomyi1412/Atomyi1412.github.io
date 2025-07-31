@@ -8,7 +8,7 @@ import {
   signInAnonymously,
   sendPasswordResetEmail,
   sendEmailVerification
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import {
   doc,
   getDoc,
@@ -19,7 +19,7 @@ import {
   deleteDoc,
   query,
   orderBy
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 
 // 当前用户状态
@@ -126,12 +126,12 @@ if (document.readyState === 'loading') {
 }
 
 // 网络连接检测和重试机制
-async function checkNetworkAndRetry(operation, maxRetries = 2) {
+async function checkNetworkAndRetry(operation, maxRetries = 3) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       // 检查网络连接
       if (!navigator.onLine) {
-        throw new Error('网络连接已断开');
+        throw new Error('网络连接已断开，请检查网络设置');
       }
       
       // 尝试执行操作
@@ -140,9 +140,11 @@ async function checkNetworkAndRetry(operation, maxRetries = 2) {
       console.log(`尝试 ${attempt}/${maxRetries} 失败:`, error.message);
       
       // 如果是网络错误且还有重试次数
-      if (error.code === 'auth/network-request-failed' && attempt < maxRetries) {
-        console.log(`等待 ${attempt * 1000}ms 后重试...`);
-        await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+      if ((error.code === 'auth/network-request-failed' || error.message.includes('网络')) && attempt < maxRetries) {
+        const delay = Math.min(attempt * 2000, 5000); // 递增延迟，最大5秒
+        console.log(`等待 ${delay/1000} 秒后重试...`);
+        showNotification(`网络连接失败，${delay/1000}秒后自动重试 (${attempt}/${maxRetries})`, 'warning');
+        await new Promise(resolve => setTimeout(resolve, delay));
         continue;
       }
       
@@ -1606,13 +1608,55 @@ function initUserCenterEvents() {
 // Firebase连接测试
 async function testFirebaseConnection() {
   try {
-    // 尝试获取当前用户状态来测试Firebase连接
+    console.log('开始Firebase连接测试...');
+    
+    // 检查Firebase配置
+    if (!auth || !auth.app) {
+      throw new Error('Firebase Auth未正确初始化');
+    }
+    
+    // 检查项目配置
+    const config = auth.app.options;
+    console.log('Firebase项目配置:', {
+      projectId: config.projectId,
+      authDomain: config.authDomain,
+      apiKey: config.apiKey ? '已配置' : '未配置'
+    });
+    
+    // 测试网络连接到Firebase服务器
+    const testPromise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Firebase连接超时（10秒）'));
+      }, 10000);
+      
+      // 监听认证状态变化来测试连接
+      const unsubscribe = auth.onAuthStateChanged(() => {
+        clearTimeout(timeout);
+        unsubscribe();
+        resolve(true);
+      }, (error) => {
+        clearTimeout(timeout);
+        unsubscribe();
+        reject(error);
+      });
+    });
+    
+    await testPromise;
+    
     const currentUser = auth.currentUser;
-    console.log('Firebase连接正常，当前用户:', currentUser ? '已登录' : '未登录');
-    return true;
+    console.log('Firebase连接测试成功，当前用户:', currentUser ? '已登录' : '未登录');
+    return {
+      success: true,
+      user: currentUser ? '已登录' : '未登录',
+      projectId: config.projectId,
+      authDomain: config.authDomain
+    };
   } catch (error) {
     console.error('Firebase连接测试失败:', error);
-    return false;
+    return {
+      success: false,
+      error: error.message
+    };
   }
 }
 
