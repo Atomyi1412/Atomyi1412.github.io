@@ -364,7 +364,6 @@
             justify-content: flex-start;
             width: 100%;
             flex-wrap: nowrap;
-            gap: 15px;
         }
         
         /* 标题左对齐样式 */
@@ -377,15 +376,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        
-        /* 标题右侧控制区域 */
-        .title-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-            margin-left: auto;
+            flex-wrap: nowrap;
         }
         
         /* 用户信息右上角样式 */
@@ -2651,7 +2642,6 @@
                 flex-direction: row;
                 align-items: center;
                 justify-content: flex-start;
-                gap: 8px;
                 width: 100%;
                 flex-wrap: nowrap;
             }
@@ -2666,13 +2656,7 @@
                 display: flex;
                 align-items: center;
                 gap: 6px;
-            }
-            
-            .title-controls {
-                gap: 4px;
-                justify-content: flex-end;
-                flex-shrink: 0;
-                margin-left: auto;
+                flex-wrap: nowrap;
             }
             
             .header h1 {
@@ -4307,15 +4291,13 @@
                 <h1 class="title-left">
                     📚 考题通
                     <span id="version-display" class="version-tag"></span>
-                </h1>
-                <div class="title-controls">
                     <button id="modeSwitcherBtn" class="mode-btn" title="切换深浅模式">
                         🌙
                     </button>
                     <button id="themeSwitcherBtn" class="theme-btn" title="切换主题">
                         🎨
                     </button>
-                </div>
+                </h1>
             </div>
         </div>
         
@@ -4638,7 +4620,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.8.1"; // 可手动修改版本号
+                this.version = "v4.8.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
