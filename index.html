@@ -4236,27 +4236,7 @@
                 <div id="exam-settings" class="exam-settings" style="display: none;">
                     <h3>📝 考试设置</h3>
                     
-                    <div class="setting-group">
-                        <label>题库统计：</label>
-                        <div class="question-type-selection">
-                            <div class="type-info">
-                                <span>单选题</span>
-                                <span class="available-count" id="singleAvailable">(0题)</span>
-                            </div>
-                            <div class="type-info">
-                                <span>多选题</span>
-                                <span class="available-count" id="multiAvailable">(0题)</span>
-                            </div>
-                            <div class="type-info">
-                                <span>判断题</span>
-                                <span class="available-count" id="trueOrFalseAvailable">(0题)</span>
-                            </div>
-                            <div class="type-info">
-                                <span>问答题</span>
-                                <span class="available-count" id="essayAvailable">(0题)</span>
-                            </div>
-                        </div>
-                    </div>
+
                     
                     <div class="setting-group">
                         <label>各题型数量设置：</label>
@@ -4514,7 +4494,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.5"; // 可手动修改版本号
+                this.version = "v4.6.6"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5612,11 +5592,7 @@
                     essay: availableQuestions.filter(q => q.type === '问答题').length
                 };
                 
-                // 更新可用题目数量显示
-                document.getElementById('singleAvailable').textContent = `(${availableStats.single}题)`;
-                document.getElementById('multiAvailable').textContent = `(${availableStats.multi}题)`;
-                document.getElementById('trueOrFalseAvailable').textContent = `(${availableStats.trueOrFalse}题)`;
-                document.getElementById('essayAvailable').textContent = `(${availableStats.essay}题)`;
+
                 
                 // 更新各题型的最大数量提示
                 document.getElementById('singleMaxHint').textContent = `最多 ${availableStats.single} 题`;
@@ -7176,11 +7152,7 @@
                     essay: this.retakeQuestions.filter(q => q.type === '问答题').length
                 };
                 
-                // 更新可用题目数量显示
-                document.getElementById('singleAvailable').textContent = `(${availableStats.single}题)`;
-                document.getElementById('multiAvailable').textContent = `(${availableStats.multi}题)`;
-                document.getElementById('trueOrFalseAvailable').textContent = `(${availableStats.trueOrFalse}题)`;
-                document.getElementById('essayAvailable').textContent = `(${availableStats.essay}题)`;
+
                 
                 // 更新各题型的最大数量提示
                 document.getElementById('singleMaxHint').textContent = `最多 ${availableStats.single} 题`;
