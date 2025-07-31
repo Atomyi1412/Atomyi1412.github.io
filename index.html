@@ -2690,28 +2690,66 @@
                 gap: 2px;
             }
             
+            /* 移动端题目头部优化 */
+            .question-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                flex-wrap: nowrap;
+            }
+            
+            .question-number {
+                padding: 6px 12px;
+                font-size: 14px;
+                border-radius: 15px;
+                flex-shrink: 0;
+            }
+            
+            .question-type {
+                padding: 4px 10px;
+                font-size: 12px;
+                border-radius: 12px;
+                margin-left: auto;
+                flex-shrink: 0;
+            }
+            
+            /* 移动端导航按钮优化 */
             .navigation {
-                 gap: 8px;
-                 padding: 0 5px;
-             }
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                padding: 0;
+                margin-top: 20px;
+            }
              
              .btn {
-                 padding: 14px 20px;
-                 font-size: 16px;
-                 border-radius: 8px;
-                 flex: 1;
+                 padding: 10px 16px;
+                 font-size: 14px;
+                 border-radius: 6px;
+                 flex: 0 0 auto;
                  max-width: none;
              }
              
              .btn-secondary {
-                 flex: 0 0 auto;
-                 min-width: 80px;
+                 min-width: 70px;
+                 padding: 8px 12px;
+                 font-size: 13px;
              }
              
              #questionProgress {
-                 flex: 0 0 auto;
+                 flex: 1;
+                 text-align: center;
                  white-space: nowrap;
                  font-weight: bold;
+                 font-size: 14px;
+             }
+             
+             #submitBtn {
+                 position: absolute;
+                 right: 0;
+                 top: 0;
              }
             
             .question-text {
@@ -4494,7 +4532,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.9"; // 可手动修改版本号
+                this.version = "v4.7.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
