@@ -558,9 +558,9 @@
         }
         
         .theme-menu {
-            position: absolute;
-            top: 60px;
-            right: 0;
+            position: fixed;
+            top: 80px;
+            right: 20px;
             background: var(--card-background);
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
@@ -570,6 +570,7 @@
             transform: translateY(-10px);
             transition: all 0.3s ease;
             pointer-events: none;
+            z-index: 1000;
         }
         
         .theme-menu:not(.hidden) {
@@ -2701,8 +2702,6 @@
             }
             
             .theme-menu {
-                top: 50px;
-                right: -10px;
                 min-width: 180px;
                 padding: 12px;
             }
@@ -4620,7 +4619,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.8.2"; // 可手动修改版本号
+                this.version = "v4.8.3"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -8114,6 +8113,12 @@
             // 切换菜单显示/隐藏
             themeBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
+                
+                // 动态定位主题菜单
+                const btnRect = themeBtn.getBoundingClientRect();
+                themeMenu.style.top = (btnRect.bottom + 10) + 'px';
+                themeMenu.style.right = (window.innerWidth - btnRect.right) + 'px';
+                
                 themeMenu.classList.toggle('hidden');
             });
             
