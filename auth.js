@@ -66,7 +66,8 @@ function initializeAuthState() {
     const userNameSpan = userDisplay?.querySelector('.user-name');
     
     if (userDisplay && userNameSpan) {
-      userNameSpan.textContent = '未登录';
+      userNameSpan.style.display = 'none';
+      userNameSpan.textContent = '';
       userDisplay.className = 'user-display clickable-login';
       
       // 添加点击事件（防止重复绑定）
@@ -665,12 +666,11 @@ function ensureUserInfoButtonVisible() {
   if (!currentUser) {
     // 未登录用户：确保有正确的HTML内容
     const userDisplay = document.getElementById('user-display');
-    if (!userDisplay || !userDisplay.textContent.includes('未登录')) {
+    if (!userDisplay || userDisplay.querySelector('.user-avatar')?.textContent !== '👤') {
       // 重新设置未登录状态的HTML内容
       userInfo.innerHTML = `
         <span id="user-display" class="user-display clickable-login">
           <span class="user-avatar">👤</span>
-          <span class="user-name">未登录</span>
         </span>
       `;
       
