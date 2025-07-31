@@ -2041,31 +2041,31 @@
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
             margin: 20px 0;
         }
         
         @media (max-width: 768px) {
             .stats {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
             }
         }
         
         @media (max-width: 480px) {
             .stats {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
             }
         }
 
         .stat-card {
             background: var(--card-background);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 15px 10px;
+            border-radius: 8px;
             text-align: center;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            box-shadow: 0 2px 8px var(--shadow-color);
             border: 1px solid var(--border-color);
             transition: all 0.3s ease;
         }
@@ -4494,7 +4494,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.6"; // 可手动修改版本号
+                this.version = "v4.6.7"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
