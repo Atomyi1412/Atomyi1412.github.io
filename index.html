@@ -4520,7 +4520,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.7.1"; // 可手动修改版本号
+                this.version = "v4.7.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -4557,13 +4557,22 @@
                 this.resultSaved = false; // 是否已保存结果到飞书多维表
                 
                 this.initEventListeners();
-                this.checkAutoStartExam(); // 检查是否需要自动开始考试
                 this.displayVersion(); // 显示版本号
                 
-                // 延迟检测CSV文件，避免阻塞页面初始化
-                setTimeout(() => {
-                    this.detectCSVFiles();
-                }, 100);
+                // 检查是否为自动考试模式
+                const urlParams = new URLSearchParams(window.location.search);
+                const autoStart = urlParams.get('auto');
+                
+                if (autoStart === '1') {
+                    // 自动考试模式：隐藏导入题库界面，不检测CSV文件
+                    document.getElementById('import-section').classList.add('hidden');
+                    this.checkAutoStartExam(); // 检查是否需要自动开始考试
+                } else {
+                    // 正常模式：延迟检测CSV文件，避免阻塞页面初始化
+                    setTimeout(() => {
+                        this.detectCSVFiles();
+                    }, 100);
+                }
             }
             
             // 智能格式化分数显示
@@ -4796,22 +4805,27 @@
                 this.pauseStartTime = null;
                 this.pauseCount = 0;
                 
-                // 隐藏loading界面
-                const loadingOverlay = document.getElementById('loading-overlay');
+                // 保持loading界面作为背景，只隐藏auth-modal的内容
                 const authModal = document.getElementById('auth-modal');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                const loadingOverlay = document.getElementById('loading-overlay');
+                
                 if (authModal) {
-                    authModal.style.display = 'none';
+                    // 不完全隐藏auth-modal，保持作为背景
+                    authModal.style.display = 'block';
                 }
                 
-                // 显示考试界面
+                if (loadingOverlay) {
+                    // 保持loading界面显示作为背景
+                    loadingOverlay.style.display = 'flex';
+                }
+                
+                // 直接显示考试界面，不显示导入题库界面
+                document.getElementById('import-section').classList.add('hidden');
                 document.getElementById('library-section').classList.add('hidden');
                 document.getElementById('exam-section').classList.remove('hidden');
                 
-                // 显示自动开始提示
-                alert(`考试已自动开始！\n题目设置：单选${singleCount}题，多选${multiCount}题，判断${judgeCount}题，问答${essayCount}题\n${timeLimit > 0 ? '时间限制：' + timeLimit + '分钟' : '无时间限制'}`);
+                // 显示自动开始提示（使用模态框而不是alert）
+                this.showExamStartModal(singleCount, multiCount, judgeCount, essayCount, timeLimit);
                 
                 // 开始计时和显示题目
                 this.startTimer();
@@ -4822,6 +4836,87 @@
             showLibrarySection() {
                 document.getElementById('library-section').classList.remove('hidden');
                 document.getElementById('exam-section').classList.add('hidden');
+            }
+            
+            // 显示考试开始模态框
+            showExamStartModal(singleCount, multiCount, judgeCount, essayCount, timeLimit) {
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.7);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                    backdrop-filter: blur(5px);
+                `;
+                
+                const content = document.createElement('div');
+                content.style.cssText = `
+                    background: var(--card-background);
+                    padding: 30px;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                    max-width: 400px;
+                    width: 90%;
+                    text-align: center;
+                    color: var(--text-color);
+                `;
+                
+                content.innerHTML = `
+                    <h3 style="margin-top: 0; color: var(--primary-color); font-size: 24px;">🎯 考试已准备就绪</h3>
+                    <div style="margin: 20px 0; line-height: 1.6; font-size: 16px;">
+                        <p><strong>题目设置：</strong></p>
+                        <p>单选题：${singleCount} 题</p>
+                        <p>多选题：${multiCount} 题</p>
+                        <p>判断题：${judgeCount} 题</p>
+                        <p>问答题：${essayCount} 题</p>
+                        <p><strong>时间限制：</strong>${timeLimit > 0 ? timeLimit + ' 分钟' : '无时间限制'}</p>
+                    </div>
+                    <button id="startExamBtn" style="
+                        background: var(--primary-color);
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 8px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    ">开始考试</button>
+                `;
+                
+                modal.appendChild(content);
+                document.body.appendChild(modal);
+                
+                // 添加开始考试按钮事件
+                const startBtn = content.querySelector('#startExamBtn');
+                startBtn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                    // 隐藏loading界面，开始正式考试
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    const authModal = document.getElementById('auth-modal');
+                    if (loadingOverlay) {
+                        loadingOverlay.style.display = 'none';
+                    }
+                    if (authModal) {
+                        authModal.style.display = 'none';
+                    }
+                });
+                
+                // 添加悬停效果
+                startBtn.addEventListener('mouseenter', () => {
+                    startBtn.style.background = 'var(--primary-dark)';
+                    startBtn.style.transform = 'translateY(-2px)';
+                });
+                
+                startBtn.addEventListener('mouseleave', () => {
+                    startBtn.style.background = 'var(--primary-color)';
+                    startBtn.style.transform = 'translateY(0)';
+                });
             }
 
             initEventListeners() {
