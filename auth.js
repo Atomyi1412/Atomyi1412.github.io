@@ -69,6 +69,22 @@ function initializeAuthState() {
       userNameSpan.textContent = '未登录';
       userDisplay.className = 'user-display clickable-login';
       
+      // 检查是否已有圆形头像，如果没有则创建
+      let avatarCircle = userDisplay.querySelector('.user-avatar-circle');
+      if (!avatarCircle) {
+        // 移除旧的头像元素
+        const oldAvatar = userDisplay.querySelector('.user-avatar');
+        if (oldAvatar) oldAvatar.remove();
+        
+        // 创建圆形头像
+        avatarCircle = document.createElement('span');
+        avatarCircle.className = 'user-avatar-circle';
+        avatarCircle.textContent = '登';
+        userDisplay.insertBefore(avatarCircle, userNameSpan);
+      } else {
+        avatarCircle.textContent = '登';
+      }
+      
       // 添加点击事件（防止重复绑定）
       if (!userDisplay.hasAttribute('data-event-bound')) {
         userDisplay.setAttribute('data-event-bound', 'true');
@@ -484,12 +500,24 @@ async function updateUIForAuthState(user) {
       // 先显示基本用户信息，避免长时间等待
       const basicDisplayName = user.isAnonymous ? '游客用户' : (user.displayName || user.email || '用户');
       
+      // 获取用户昵称的首字或首字母
+      const getInitial = (name) => {
+        if (!name) return '用';
+        // 如果是中文，取第一个字符
+        if (/[\u4e00-\u9fa5]/.test(name)) {
+          return name.charAt(0);
+        }
+        // 如果是英文，取第一个字母并转为大写
+        return name.charAt(0).toUpperCase();
+      };
+      
+      const initial = getInitial(basicDisplayName);
+      
       userInfo.innerHTML = `
-        <span id="user-display" class="user-display">
-          <span class="user-avatar">👤</span>
-          <span class="user-name">欢迎, ${basicDisplayName}</span>
+        <span id="user-display" class="user-display logged-in">
+          <span class="user-avatar-circle">${initial}</span>
+          <span class="user-name" style="display: none;">欢迎, ${basicDisplayName}</span>
         </span>
-        <button id="logout-btn" class="btn btn-secondary btn-sm">登出</button>
       `;
       
       // 添加用户信息点击事件（打开用户中心）
@@ -500,27 +528,22 @@ async function updateUIForAuthState(user) {
         });
       }
       
-      // 添加登出按钮事件
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-          const result = await signOutUser();
-          if (result.success) {
-            showNotification('已成功登出', 'info');
-          }
-        });
-      }
-      
       // 异步加载用户详细信息，不阻塞UI显示
       getUserProfile().then(userProfile => {
         const displayName = userProfile.nickname || basicDisplayName;
-        const avatar = userProfile.avatar || '👤';
+        const updatedInitial = getInitial(displayName);
         
-        // 更新头像和昵称
-        const avatarSpan = userDisplay?.querySelector('.user-avatar');
+        // 更新头像显示的首字
+        const avatarCircle = userDisplay?.querySelector('.user-avatar-circle');
+        if (avatarCircle) {
+          avatarCircle.textContent = updatedInitial;
+        }
+        
+        // 更新隐藏的用户名（用于用户中心等地方）
         const nameSpan = userDisplay?.querySelector('.user-name');
-        if (avatarSpan) avatarSpan.textContent = avatar;
-        if (nameSpan) nameSpan.textContent = `欢迎, ${displayName}`;
+        if (nameSpan) {
+          nameSpan.textContent = `欢迎, ${displayName}`;
+        }
       }).catch(error => {
         console.log('加载用户详细信息失败:', error);
         // 保持基本显示，不影响用户体验
@@ -544,11 +567,26 @@ async function updateUIForAuthState(user) {
       const userNameSpan = userDisplay?.querySelector('.user-name');
       const userAvatarSpan = userDisplay?.querySelector('.user-avatar');
       
-      if (userDisplay && userNameSpan && userAvatarSpan) {
-        // 更新现有元素
+      if (userDisplay && userNameSpan) {
+        // 更新现有元素为圆形头像样式
         userNameSpan.textContent = '未登录';
-        userAvatarSpan.textContent = '👤';
         userDisplay.className = 'user-display clickable-login';
+        
+        // 检查是否已有圆形头像，如果没有则创建
+        let avatarCircle = userDisplay.querySelector('.user-avatar-circle');
+        if (!avatarCircle) {
+          // 移除旧的头像元素
+          const oldAvatar = userDisplay.querySelector('.user-avatar');
+          if (oldAvatar) oldAvatar.remove();
+          
+          // 创建圆形头像
+          avatarCircle = document.createElement('span');
+          avatarCircle.className = 'user-avatar-circle';
+          avatarCircle.textContent = '登';
+          userDisplay.insertBefore(avatarCircle, userNameSpan);
+        } else {
+          avatarCircle.textContent = '登';
+        }
         
         // 添加点击事件（防止重复绑定）
         if (!userDisplay.hasAttribute('data-event-bound')) {
@@ -564,7 +602,7 @@ async function updateUIForAuthState(user) {
         // 如果元素不存在，则创建（兜底方案）
         userInfo.innerHTML = `
           <span id="user-display" class="user-display clickable-login">
-            <span class="user-avatar">👤</span>
+            <span class="user-avatar-circle">登</span>
             <span class="user-name">未登录</span>
           </span>
         `;
@@ -663,7 +701,7 @@ function ensureUserInfoButtonVisible() {
       // 重新设置未登录状态的HTML内容
       userInfo.innerHTML = `
         <span id="user-display" class="user-display clickable-login">
-          <span class="user-avatar">👤</span>
+          <span class="user-avatar-circle">登</span>
           <span class="user-name">未登录</span>
         </span>
       `;
@@ -1445,6 +1483,20 @@ function initUserCenterEvents() {
   const cancelBtn = document.getElementById('cancel-user-profile');
   if (cancelBtn) {
     cancelBtn.addEventListener('click', hideUserCenterModal);
+  }
+  
+  // 登出按钮事件
+  const logoutBtn = document.getElementById('logout-user');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      const result = await signOutUser();
+      if (result.success) {
+        hideUserCenterModal();
+        showNotification('已成功登出', 'info');
+      } else {
+        showNotification('登出失败，请重试', 'error');
+      }
+    });
   }
   
   // 点击模态框外部关闭
