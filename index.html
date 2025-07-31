@@ -382,7 +382,7 @@
         /* 用户信息右上角样式 */
         .user-info-top-right {
             position: absolute;
-            top: 20px;
+            top: 50px;
             right: 20px;
             display: flex;
             align-items: center;
@@ -2660,6 +2660,13 @@
                 flex-wrap: nowrap;
             }
             
+            /* 移动端用户信息位置调整 */
+            .user-info-top-right {
+                top: 45px;
+                right: 15px;
+                padding: 6px 10px;
+            }
+            
             .header h1 {
                 font-size: 20px;
                 margin: 0;
@@ -3079,6 +3086,7 @@
              border-radius: 8px;
              transition: all 0.3s ease;
              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+             margin-top: 15px;
          }
          
          .auth-section .btn:hover {
@@ -4619,7 +4627,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.8.3"; // 可手动修改版本号
+                this.version = "v4.8.4"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
