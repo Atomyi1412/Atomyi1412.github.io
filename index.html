@@ -474,6 +474,34 @@
             border-radius: 6px;
         }
         
+        /* 正方形用户头像样式 */
+        .user-avatar-square {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-avatar-square:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .avatar-char {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
         /* 主题切换器样式 - 调整位置避免与用户信息冲突 */
         .theme-switcher {
             position: absolute;
@@ -3583,6 +3611,16 @@
                  font-size: 14px;
              }
              
+             .user-avatar-square {
+                 width: 35px;
+                 height: 35px;
+                 border-radius: 6px;
+             }
+             
+             .avatar-char {
+                 font-size: 16px;
+             }
+             
              .theme-switcher {
                  top: 60px;
                  right: 15px;
@@ -3632,6 +3670,17 @@
                  will-change: opacity, transform;
                  transform: translateZ(0);
                  backface-visibility: hidden;
+             }
+             
+             .user-avatar-square {
+                 width: 30px;
+                 height: 30px;
+                 border-radius: 5px;
+                 border-width: 1px;
+             }
+             
+             .avatar-char {
+                 font-size: 14px;
              }
              
              .theme-switcher {
@@ -3912,6 +3961,17 @@
                  height: 18px;
                  font-size: 7px;
                  border-width: 1px;
+             }
+             
+             .user-avatar-square {
+                 width: 28px;
+                 height: 28px;
+                 border-radius: 4px;
+                 border-width: 1px;
+             }
+             
+             .avatar-char {
+                 font-size: 12px;
              }
              
              /* 超小屏幕用户中心优化 */
@@ -4450,7 +4510,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.1"; // 可手动修改版本号
+                this.version = "v4.6.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -7989,6 +8049,7 @@
                     <div class="form-actions">
                         <button id="save-user-profile" class="btn btn-primary">保存设置</button>
                         <button id="cancel-user-profile" class="btn btn-secondary">取消</button>
+                        <button id="logout-btn-center" class="btn btn-danger" style="margin-left: 10px;">登出</button>
                     </div>
                 </div>
             </div>

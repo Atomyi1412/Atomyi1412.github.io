@@ -484,12 +484,20 @@ async function updateUIForAuthState(user) {
       // 先显示基本用户信息，避免长时间等待
       const basicDisplayName = user.isAnonymous ? '游客用户' : (user.displayName || user.email || '用户');
       
+      // 获取用户昵称的首字符
+      const getFirstChar = (name) => {
+        if (!name) return '用';
+        // 移除"欢迎, "前缀
+        const cleanName = name.replace(/^欢迎,\s*/, '');
+        return cleanName.charAt(0).toUpperCase();
+      };
+      
+      const firstChar = getFirstChar(basicDisplayName);
+      
       userInfo.innerHTML = `
-        <span id="user-display" class="user-display">
-          <span class="user-avatar">👤</span>
-          <span class="user-name">欢迎, ${basicDisplayName}</span>
-        </span>
-        <button id="logout-btn" class="btn btn-secondary btn-sm">登出</button>
+        <div id="user-display" class="user-avatar-square" title="点击打开用户中心">
+          <span class="avatar-char">${firstChar}</span>
+        </div>
       `;
       
       // 添加用户信息点击事件（打开用户中心）
@@ -500,27 +508,17 @@ async function updateUIForAuthState(user) {
         });
       }
       
-      // 添加登出按钮事件
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-          const result = await signOutUser();
-          if (result.success) {
-            showNotification('已成功登出', 'info');
-          }
-        });
-      }
-      
       // 异步加载用户详细信息，不阻塞UI显示
       getUserProfile().then(userProfile => {
         const displayName = userProfile.nickname || basicDisplayName;
-        const avatar = userProfile.avatar || '👤';
+        const firstChar = getFirstChar(displayName);
         
-        // 更新头像和昵称
-        const avatarSpan = userDisplay?.querySelector('.user-avatar');
-        const nameSpan = userDisplay?.querySelector('.user-name');
-        if (avatarSpan) avatarSpan.textContent = avatar;
-        if (nameSpan) nameSpan.textContent = `欢迎, ${displayName}`;
+        // 更新头像字符
+        const avatarChar = userDisplay?.querySelector('.avatar-char');
+        if (avatarChar) {
+          avatarChar.textContent = firstChar;
+          userDisplay.title = `${displayName} - 点击打开用户中心`;
+        }
       }).catch(error => {
         console.log('加载用户详细信息失败:', error);
         // 保持基本显示，不影响用户体验
@@ -1445,6 +1443,18 @@ function initUserCenterEvents() {
   const cancelBtn = document.getElementById('cancel-user-profile');
   if (cancelBtn) {
     cancelBtn.addEventListener('click', hideUserCenterModal);
+  }
+  
+  // 登出按钮事件
+  const logoutBtnCenter = document.getElementById('logout-btn-center');
+  if (logoutBtnCenter) {
+    logoutBtnCenter.addEventListener('click', async () => {
+      const result = await signOutUser();
+      if (result.success) {
+        showNotification('已成功登出', 'info');
+        hideUserCenterModal();
+      }
+    });
   }
   
   // 点击模态框外部关闭
