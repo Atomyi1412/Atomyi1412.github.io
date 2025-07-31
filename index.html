@@ -2611,7 +2611,7 @@
             }
             
             .content {
-                padding: 10px;
+                padding: 20px 15px;
             }
             
             .header {
@@ -2690,75 +2690,63 @@
                 gap: 2px;
             }
             
-            /* 移动端题目头部优化 */
+            /* 移动端保持与网页端相同的美观布局 */
             .question-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 15px;
-                flex-wrap: nowrap;
+                /* 继承网页端样式，保持美观的间距和布局 */
+                margin-bottom: 20px;
             }
             
             .question-number {
-                padding: 6px 12px;
-                font-size: 14px;
-                border-radius: 15px;
-                flex-shrink: 0;
+                /* 保持网页端的视觉效果 */
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-weight: bold;
             }
             
             .question-type {
-                padding: 4px 10px;
-                font-size: 12px;
-                border-radius: 12px;
-                margin-left: auto;
-                flex-shrink: 0;
+                /* 保持网页端的视觉效果 */
+                padding: 5px 12px;
+                border-radius: 15px;
+                font-size: 14px;
             }
             
-            /* 移动端导航按钮优化 */
             .navigation {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 10px;
-                padding: 0;
-                margin-top: 20px;
+                /* 保持网页端的布局和间距 */
+                margin-top: 30px;
             }
              
              .btn {
-                 padding: 10px 16px;
-                 font-size: 14px;
-                 border-radius: 6px;
-                 flex: 0 0 auto;
-                 max-width: none;
+                 /* 保持网页端按钮样式，适当调整以适应移动端 */
+                 padding: 12px 20px;
+                 font-size: 15px;
+                 border-radius: 5px;
+                 margin: 5px 2px;
              }
              
              .btn-secondary {
-                 min-width: 70px;
-                 padding: 8px 12px;
-                 font-size: 13px;
+                 /* 保持网页端的视觉一致性 */
+                 min-width: auto;
              }
              
              #questionProgress {
-                 flex: 1;
-                 text-align: center;
+                 /* 保持网页端的样式 */
                  white-space: nowrap;
                  font-weight: bold;
-                 font-size: 14px;
-             }
-             
-             #submitBtn {
-                 position: absolute;
-                 right: 0;
-                 top: 0;
+                 margin: 0 10px;
              }
             
             .question-text {
-                font-size: 14px;
+                /* 保持与网页端相同的字体大小 */
+                font-size: 16px;
+                line-height: 1.6;
             }
             
             .option {
-                padding: 10px;
-                font-size: 14px;
+                /* 完全匹配网页端的选项样式 */
+                margin: 10px 0;
+                padding: 12px;
+                border-radius: 8px;
+                font-size: 16px;
             }
             
             .status-item {
@@ -4532,7 +4520,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.7.0"; // 可手动修改版本号
+                this.version = "v4.7.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
