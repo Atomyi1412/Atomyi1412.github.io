@@ -4494,7 +4494,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.8"; // 可手动修改版本号
+                this.version = "v4.6.9"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -4538,6 +4538,25 @@
                 setTimeout(() => {
                     this.detectCSVFiles();
                 }, 100);
+            }
+            
+            // 智能格式化分数显示
+            formatScore(score) {
+                if (score === null || score === undefined || isNaN(score)) {
+                    return '0';
+                }
+                
+                // 转换为数字并处理精度
+                const numScore = parseFloat(score);
+                
+                // 如果是整数，直接显示整数
+                if (Number.isInteger(numScore)) {
+                    return numScore.toString();
+                }
+                
+                // 如果是小数，最多显示两位小数，去除末尾的0
+                const formatted = numScore.toFixed(2);
+                return parseFloat(formatted).toString();
             }
             
             async checkAutoStartExam() {
@@ -5739,34 +5758,39 @@
                 
                 // 计算分数分配（问答题不计分）
                 const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
-                const scorePerQuestion = scoredQuestions.length > 0 ? Math.round(100 / scoredQuestions.length) : 0;
+                const exactScorePerQuestion = scoredQuestions.length > 0 ? 100 / scoredQuestions.length : 0;
                 
-                console.log(`分数分配: 计分题目${scoredQuestions.length}题，每题${scorePerQuestion}分`);
+                console.log(`分数分配: 计分题目${scoredQuestions.length}题，每题${this.formatScore(exactScorePerQuestion)}分`);
                 
-                // 为每道题分配分数（只分配一次）
-                this.questions.forEach(q => {
-                    q.score = q.type === '问答题' ? 0 : scorePerQuestion;
+                // 为每道题分配精确分数（只分配一次）
+                this.questions.forEach((q, index) => {
+                    if (q.type === '问答题') {
+                        q.score = 0;
+                    } else {
+                        // 使用精确分数，保留足够精度
+                        q.score = parseFloat(exactScorePerQuestion.toFixed(10));
+                    }
                 });
                 
-                // 调整最后一题的分数，确保总分为100
+                // 调整最后一题的分数，确保总分精确为100
                 if (scoredQuestions.length > 0) {
-                    const totalAssigned = scorePerQuestion * scoredQuestions.length;
-                    const adjustment = 100 - totalAssigned;
-                    if (adjustment !== 0) {
+                    const currentTotal = this.questions.reduce((sum, q) => sum + (q.score || 0), 0);
+                    const adjustment = 100 - currentTotal;
+                    if (Math.abs(adjustment) > 0.0001) { // 避免浮点数精度问题
                         const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
                         const originalScore = lastScoredQuestion.score;
-                        lastScoredQuestion.score += adjustment;
+                        lastScoredQuestion.score = parseFloat((lastScoredQuestion.score + adjustment).toFixed(10));
                         // 确保分数不为负数
                         if (lastScoredQuestion.score < 0) {
                             console.warn(`警告: 最后一题分数调整后为负数 (${lastScoredQuestion.score})，已重置为0`);
                             lastScoredQuestion.score = 0;
                         }
-                        console.log(`最后一题分数调整: ${originalScore} + ${adjustment} = ${lastScoredQuestion.score}`);
+                        console.log(`最后一题分数调整: ${this.formatScore(originalScore)} + ${this.formatScore(adjustment)} = ${this.formatScore(lastScoredQuestion.score)}`);
                     }
                     
                     // 验证总分
                     const totalScore = this.questions.reduce((sum, q) => sum + (q.score || 0), 0);
-                    console.log(`分数分配完成，总分: ${totalScore}`);
+                    console.log(`分数分配完成，总分: ${this.formatScore(totalScore)}`);
                 }
                 
                 this.currentQuestionIndex = 0;
@@ -5966,20 +5990,28 @@
                 if (needsScoreAssignment) {
                     // 计算分数分配（问答题不计分）
                     const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
-                    const scorePerQuestion = scoredQuestions.length > 0 ? Math.round(100 / scoredQuestions.length) : 0;
+                    const exactScorePerQuestion = scoredQuestions.length > 0 ? 100 / scoredQuestions.length : 0;
                     
-                    // 为每道题分配分数
+                    // 为每道题分配精确分数
                     this.questions.forEach(q => {
                         if (q.score === undefined) {
-                            q.score = q.type === '问答题' ? 0 : scorePerQuestion;
+                            if (q.type === '问答题') {
+                                q.score = 0;
+                            } else {
+                                // 使用精确分数，保留足够精度
+                                q.score = parseFloat(exactScorePerQuestion.toFixed(10));
+                            }
                         }
                     });
                     
-                    // 调整最后一题的分数，确保总分为100
+                    // 调整最后一题的分数，确保总分精确为100
                     if (scoredQuestions.length > 0) {
-                        const totalAssigned = scorePerQuestion * scoredQuestions.length;
-                        const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
-                        lastScoredQuestion.score += (100 - totalAssigned);
+                        const currentTotal = this.questions.reduce((sum, q) => sum + (q.score || 0), 0);
+                        const adjustment = 100 - currentTotal;
+                        if (Math.abs(adjustment) > 0.0001) { // 避免浮点数精度问题
+                            const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
+                            lastScoredQuestion.score = parseFloat((lastScoredQuestion.score + adjustment).toFixed(10));
+                        }
                     }
                 }
                 
@@ -6014,8 +6046,8 @@
                 document.getElementById('questionNumber').textContent = `第 ${questionNumber} 题`;
                 
                 // 显示题目类型和分数
-                const typeText = question.score !== undefined ? 
-                    `${question.type} (${question.score}分)` : question.type;
+                const typeText = question.score !== undefined ?
+                    `${question.type} (${this.formatScore(question.score)}分)` : question.type;
                 document.getElementById('questionType').textContent = typeText;
                 
                 document.getElementById('questionText').textContent = question.question;
