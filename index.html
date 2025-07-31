@@ -4207,12 +4207,6 @@
     <div class="container">
         <div class="header">
             <div class="theme-switcher">
-                <button id="modeSwitcherBtn" class="mode-btn" title="切换深浅模式">
-                    🌙
-                </button>
-                <button id="themeSwitcherBtn" class="theme-btn" title="切换主题">
-                    🎨
-                </button>
                 <div id="themeMenu" class="theme-menu hidden">
                     <div class="theme-option" data-theme="default">
                         <div class="theme-preview">
@@ -4257,7 +4251,14 @@
                 </span>
             </div>
             
-            <h1 class="title-left">📚 考题通 <span id="version-display" class="version-tag"></span></h1>
+            <h1 class="title-left">📚 考题通 <span id="version-display" class="version-tag"></span>
+                <button id="modeSwitcherBtn" class="mode-btn" title="切换深浅模式">
+                    🌙
+                </button>
+                <button id="themeSwitcherBtn" class="theme-btn" title="切换主题">
+                    🎨
+                </button>
+            </h1>
         </div>
         
         <div class="content">
@@ -4579,7 +4580,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.7.8"; // 可手动修改版本号
+                this.version = "v4.7.9"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
