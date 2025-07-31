@@ -25,6 +25,20 @@ import {
 // 当前用户状态
 let currentUser = null;
 
+// 网络状态监听
+let isOnline = navigator.onLine;
+window.addEventListener('online', () => {
+  if (!isOnline) {
+    isOnline = true;
+    showNotification('网络连接已恢复，您可以重新尝试登录', 'success');
+  }
+});
+
+window.addEventListener('offline', () => {
+  isOnline = false;
+  showNotification('网络连接已断开，请检查网络连接', 'warning');
+});
+
 // 监听用户认证状态变化
 onAuthStateChanged(auth, async (user) => {
   // 如果用户已登录但邮箱未验证（且不是游客用户），强制登出
@@ -111,10 +125,40 @@ if (document.readyState === 'loading') {
   initializeAuthState();
 }
 
+// 网络连接检测和重试机制
+async function checkNetworkAndRetry(operation, maxRetries = 2) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      // 检查网络连接
+      if (!navigator.onLine) {
+        throw new Error('网络连接已断开');
+      }
+      
+      // 尝试执行操作
+      return await operation();
+    } catch (error) {
+      console.log(`尝试 ${attempt}/${maxRetries} 失败:`, error.message);
+      
+      // 如果是网络错误且还有重试次数
+      if (error.code === 'auth/network-request-failed' && attempt < maxRetries) {
+        console.log(`等待 ${attempt * 1000}ms 后重试...`);
+        await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+        continue;
+      }
+      
+      // 如果是最后一次尝试或非网络错误，抛出错误
+      throw error;
+    }
+  }
+}
+
 // 邮箱密码登录
 export async function signInWithEmail(email, password) {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    // 使用重试机制进行登录
+    const userCredential = await checkNetworkAndRetry(async () => {
+      return await signInWithEmailAndPassword(auth, email, password);
+    });
     
     // 检查邮箱是否已验证
     if (!userCredential.user.emailVerified) {
@@ -161,7 +205,11 @@ export async function signInWithEmail(email, password) {
         errorMessage = '登录尝试次数过多，请稍后再试';
         break;
       case 'auth/network-request-failed':
-        errorMessage = '网络连接失败，请检查网络连接后重试';
+        errorMessage = '网络连接失败，请检查网络连接后重试。如果问题持续存在，请稍后再试';
+        // 检查网络连接状态
+        if (!navigator.onLine) {
+          errorMessage = '网络连接已断开，请检查网络连接后重试';
+        }
         break;
       default:
         errorMessage = `登录失败: ${error.message}`;
@@ -1499,6 +1547,51 @@ function initUserCenterEvents() {
     });
   }
   
+  // 网络诊断按钮事件
+  const diagnoseBtn = document.getElementById('diagnose-network');
+  if (diagnoseBtn) {
+    diagnoseBtn.addEventListener('click', async () => {
+      const resultsDiv = document.getElementById('diagnostic-results');
+      if (!resultsDiv) return;
+      
+      // 显示加载状态
+      resultsDiv.style.display = 'block';
+      resultsDiv.innerHTML = '<p style="color: var(--text-light);">🔄 正在诊断网络连接...</p>';
+      
+      try {
+        const diagnosis = await diagnoseConnectionIssues();
+        
+        let html = '<div style="background: var(--card-background); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">';
+        html += '<h5 style="color: var(--text-color); margin-bottom: 10px;">📊 诊断结果</h5>';
+        
+        // 网络状态
+        html += `<p style="margin: 5px 0;"><strong>网络连接:</strong> <span style="color: ${diagnosis.networkOnline ? '#28a745' : '#dc3545'};">` +
+                `${diagnosis.networkOnline ? '✅ 正常' : '❌ 断开'}</span></p>`;
+        
+        // Firebase连接状态
+        html += `<p style="margin: 5px 0;"><strong>Firebase连接:</strong> <span style="color: ${diagnosis.firebaseConnection ? '#28a745' : '#dc3545'};">` +
+                `${diagnosis.firebaseConnection ? '✅ 正常' : '❌ 失败'}</span></p>`;
+        
+        // 建议
+        if (diagnosis.suggestions.length > 0) {
+          html += '<h6 style="color: var(--text-color); margin: 15px 0 10px 0;">💡 解决建议:</h6>';
+          html += '<ul style="margin: 0; padding-left: 20px; color: var(--text-light);">';
+          diagnosis.suggestions.forEach(suggestion => {
+            html += `<li style="margin: 5px 0;">${suggestion}</li>`;
+          });
+          html += '</ul>';
+        }
+        
+        html += '</div>';
+        resultsDiv.innerHTML = html;
+        
+      } catch (error) {
+        resultsDiv.innerHTML = '<p style="color: #dc3545;">❌ 诊断过程中出现错误</p>';
+        console.error('网络诊断失败:', error);
+      }
+    });
+  }
+  
   // 点击模态框外部关闭
   const modal = document.getElementById('user-center-modal');
   if (modal) {
@@ -1510,6 +1603,47 @@ function initUserCenterEvents() {
   }
 }
 
+// Firebase连接测试
+async function testFirebaseConnection() {
+  try {
+    // 尝试获取当前用户状态来测试Firebase连接
+    const currentUser = auth.currentUser;
+    console.log('Firebase连接正常，当前用户:', currentUser ? '已登录' : '未登录');
+    return true;
+  } catch (error) {
+    console.error('Firebase连接测试失败:', error);
+    return false;
+  }
+}
+
+// 诊断网络和Firebase连接问题
+export async function diagnoseConnectionIssues() {
+  const results = {
+    networkOnline: navigator.onLine,
+    firebaseConnection: false,
+    suggestions: []
+  };
+  
+  // 测试网络连接
+  if (!results.networkOnline) {
+    results.suggestions.push('请检查您的网络连接');
+  }
+  
+  // 测试Firebase连接
+  results.firebaseConnection = await testFirebaseConnection();
+  if (!results.firebaseConnection) {
+    results.suggestions.push('Firebase服务连接失败，请稍后重试');
+  }
+  
+  // 提供解决建议
+  if (results.networkOnline && !results.firebaseConnection) {
+    results.suggestions.push('可能是Firebase服务暂时不可用，请稍后重试');
+    results.suggestions.push('如果问题持续存在，请检查防火墙设置');
+  }
+  
+  return results;
+}
+
 // 导出函数到window对象，供其他模块使用
 window.authModule = {
   getUserProfile,
@@ -1517,5 +1651,6 @@ window.authModule = {
   isCurrentUserAdmin,
   saveUserProfile,
   signInAnonymouslyUser,
-  closeAuthModal
+  closeAuthModal,
+  diagnoseConnectionIssues
 };

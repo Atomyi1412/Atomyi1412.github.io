@@ -4546,7 +4546,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.6"; // 可手动修改版本号
+                this.version = "v4.6.7"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -8086,6 +8086,14 @@
                         <button id="save-user-profile" class="btn btn-primary">保存设置</button>
                         <button id="cancel-user-profile" class="btn btn-secondary">取消</button>
                         <button id="logout-user" class="btn btn-danger" style="background: #dc3545; border-color: #dc3545; margin-left: 10px;">登出</button>
+                    </div>
+                    
+                    <!-- 网络诊断区域 -->
+                    <div class="network-diagnostic" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <h4 style="color: var(--text-color); margin-bottom: 10px;">🔧 网络诊断</h4>
+                        <p style="color: var(--text-light); font-size: 14px; margin-bottom: 10px;">如果遇到登录问题，可以使用网络诊断功能</p>
+                        <button id="diagnose-network" class="btn btn-info" style="background: #17a2b8; border-color: #17a2b8;">🔍 诊断网络连接</button>
+                        <div id="diagnostic-results" style="margin-top: 10px; display: none;"></div>
                     </div>
                 </div>
             </div>
