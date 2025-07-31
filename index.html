@@ -4494,7 +4494,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.7"; // 可手动修改版本号
+                this.version = "v4.6.8"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5741,7 +5741,9 @@
                 const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
                 const scorePerQuestion = scoredQuestions.length > 0 ? Math.round(100 / scoredQuestions.length) : 0;
                 
-                // 为每道题分配分数
+                console.log(`分数分配: 计分题目${scoredQuestions.length}题，每题${scorePerQuestion}分`);
+                
+                // 为每道题分配分数（只分配一次）
                 this.questions.forEach(q => {
                     q.score = q.type === '问答题' ? 0 : scorePerQuestion;
                 });
@@ -5749,8 +5751,22 @@
                 // 调整最后一题的分数，确保总分为100
                 if (scoredQuestions.length > 0) {
                     const totalAssigned = scorePerQuestion * scoredQuestions.length;
-                    const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
-                    lastScoredQuestion.score += (100 - totalAssigned);
+                    const adjustment = 100 - totalAssigned;
+                    if (adjustment !== 0) {
+                        const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
+                        const originalScore = lastScoredQuestion.score;
+                        lastScoredQuestion.score += adjustment;
+                        // 确保分数不为负数
+                        if (lastScoredQuestion.score < 0) {
+                            console.warn(`警告: 最后一题分数调整后为负数 (${lastScoredQuestion.score})，已重置为0`);
+                            lastScoredQuestion.score = 0;
+                        }
+                        console.log(`最后一题分数调整: ${originalScore} + ${adjustment} = ${lastScoredQuestion.score}`);
+                    }
+                    
+                    // 验证总分
+                    const totalScore = this.questions.reduce((sum, q) => sum + (q.score || 0), 0);
+                    console.log(`分数分配完成，总分: ${totalScore}`);
                 }
                 
                 this.currentQuestionIndex = 0;
@@ -5945,20 +5961,26 @@
                 // 打乱题目顺序
                 this.questions = this.shuffleArray(this.questions);
                 
-                // 计算分数分配（问答题不计分）
-                const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
-                const scorePerQuestion = scoredQuestions.length > 0 ? Math.round(100 / scoredQuestions.length) : 0;
-                
-                // 为每道题分配分数
-                this.questions.forEach(q => {
-                    q.score = q.type === '问答题' ? 0 : scorePerQuestion;
-                });
-                
-                // 调整最后一题的分数，确保总分为100
-                if (scoredQuestions.length > 0) {
-                    const totalAssigned = scorePerQuestion * scoredQuestions.length;
-                    const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
-                    lastScoredQuestion.score += (100 - totalAssigned);
+                // 只有在题目没有分数属性时才进行分数分配
+                const needsScoreAssignment = this.questions.some(q => q.score === undefined);
+                if (needsScoreAssignment) {
+                    // 计算分数分配（问答题不计分）
+                    const scoredQuestions = this.questions.filter(q => q.type !== '问答题');
+                    const scorePerQuestion = scoredQuestions.length > 0 ? Math.round(100 / scoredQuestions.length) : 0;
+                    
+                    // 为每道题分配分数
+                    this.questions.forEach(q => {
+                        if (q.score === undefined) {
+                            q.score = q.type === '问答题' ? 0 : scorePerQuestion;
+                        }
+                    });
+                    
+                    // 调整最后一题的分数，确保总分为100
+                    if (scoredQuestions.length > 0) {
+                        const totalAssigned = scorePerQuestion * scoredQuestions.length;
+                        const lastScoredQuestion = scoredQuestions[scoredQuestions.length - 1];
+                        lastScoredQuestion.score += (100 - totalAssigned);
+                    }
                 }
                 
                 this.currentQuestionIndex = 0;
