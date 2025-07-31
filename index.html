@@ -4144,34 +4144,27 @@
           }
     </style>
     <!-- 立即检测自动考试模式并显示loading界面 -->
+    <style id="auto-exam-style">
+        /* 默认隐藏所有内容，只在非自动考试模式下显示 */
+        body.auto-exam-mode .container { display: none !important; }
+        body.auto-exam-mode { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+    </style>
     <script>
-        // 在页面加载前立即检测URL参数
+        // 在页面加载前立即检测URL参数并设置body类
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const autoStart = urlParams.get('auto');
             
             if (autoStart === '1') {
-                // 立即添加CSS样式隐藏普通界面内容
-                const style = document.createElement('style');
-                style.textContent = `
-                    .container { display: none !important; }
-                    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-                `;
-                document.head.appendChild(style);
+                // 立即添加body类，触发CSS隐藏
+                document.documentElement.className += ' auto-exam-mode';
+                document.body.className += ' auto-exam-mode';
                 
-                // 立即创建并显示loading界面
+                // DOM加载完成后显示loading界面
                 document.addEventListener('DOMContentLoaded', function() {
-                    // 移除隐藏样式
-                    style.remove();
-                    
                     const modal = document.getElementById('auth-modal');
                     const loadingOverlay = document.getElementById('loading-overlay');
                     const importSection = document.getElementById('import-section');
-                    const container = document.querySelector('.container');
-                    
-                    if (container) {
-                        container.style.display = 'block';
-                    }
                     
                     if (modal && loadingOverlay) {
                         modal.style.display = 'block';
@@ -4564,7 +4557,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.7.4"; // 可手动修改版本号
+                this.version = "v4.7.5"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
