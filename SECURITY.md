@@ -44,7 +44,40 @@ service cloud.firestore {
 }
 ```
 
-#### 5. 如何撤销当前密钥（如果需要）
+#### 5. 飞书 Webhook 安全增强
+
+**动态配置构建**：
+```javascript
+// 将敏感信息分解为基础组件
+const baseConfig = {
+    domain: 'more2.feishu.cn',
+    basePath: '/base/automation/webhook/event/',
+};
+
+// 仅暴露 Webhook ID，而非完整 URL
+const webhookId = window.FEISHU_WEBHOOK_ID || 'your-webhook-id';
+```
+
+**URL 格式验证**：
+```javascript
+validateUrl: function(url) {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.hostname.includes('feishu.cn') || urlObj.hostname.includes('feishu.com');
+    } catch {
+        return false;
+    }
+}
+```
+
+**请求唯一性保护**：
+```javascript
+// 添加时间戳和请求ID
+data.timestamp = Date.now();
+data.requestId = Math.random().toString(36).substr(2, 9);
+```
+
+#### 6. 如何撤销当前密钥（如果需要）
 1. 登录 [Firebase Console](https://console.firebase.google.com/)
 2. 选择你的项目
 3. 进入 "项目设置" > "常规"

@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>考题通</title>
-    <!-- SheetJS库将按需加载，提高首次加载速度 -->
+    <!-- 性能优化：按需加载外部库，减少初始加载时间 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <!-- 应用配置文件 -->
     <script>
         // 默认配置，如果 config.js 不存在则使用此配置
@@ -2664,42 +2666,17 @@
                 flex-shrink: 0;
             }
             
-            /* 移动端按钮优化 - 减小尺寸以避免换行 */
+            /* 移动端响应式优化 */
             @media (max-width: 600px) {
-                .title-left {
-                    font-size: 15px;
-                    gap: 4px;
-                }
-                
-                .theme-btn, .mode-btn {
-                    width: 28px;
-                    height: 28px;
-                    font-size: 11px;
-                }
-                
-                .version-tag {
-                    font-size: 11px !important;
-                    padding: 1px 4px !important;
-                }
+                .title-left { font-size: 15px; gap: 4px; }
+                .theme-btn, .mode-btn { width: 28px; height: 28px; font-size: 11px; }
+                .version-tag { font-size: 11px !important; padding: 1px 4px !important; }
             }
             
-            /* 极小屏幕进一步优化 */
             @media (max-width: 400px) {
-                .title-left {
-                    font-size: 14px;
-                    gap: 3px;
-                }
-                
-                .theme-btn, .mode-btn {
-                    width: 24px;
-                    height: 24px;
-                    font-size: 10px;
-                }
-                
-                .version-tag {
-                    font-size: 10px !important;
-                    padding: 1px 3px !important;
-                }
+                .title-left { font-size: 14px; gap: 3px; }
+                .theme-btn, .mode-btn { width: 24px; height: 24px; font-size: 10px; }
+                .version-tag { font-size: 10px !important; padding: 1px 3px !important; }
             }
             
 
@@ -4262,6 +4239,16 @@
                     
                     console.log('自动考试模式：立即显示loading界面');
                 });
+        
+        // 性能监控（生产环境可移除）
+        window.addEventListener('load', function() {
+            if (performance && performance.timing) {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                if (loadTime > 3000) {
+                    console.warn('页面加载时间较长:', loadTime + 'ms');
+                }
+            }
+        });
             }
         })();
     </script>
@@ -4667,7 +4654,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.9.1"; // 可手动修改版本号
+                this.version = "v4.9.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
