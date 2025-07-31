@@ -3466,45 +3466,6 @@
              font-size: 18px;
          }
          
-         /* 圆形头像样式 */
-         .user-avatar-circle {
-             width: 36px;
-             height: 36px;
-             border-radius: 50%;
-             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-             color: white;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             font-size: 14px;
-             font-weight: bold;
-             cursor: pointer;
-             transition: all 0.3s ease;
-             border: 2px solid rgba(255, 255, 255, 0.3);
-             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-         }
-         
-         .user-avatar-circle:hover {
-             transform: scale(1.1);
-             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-             border-color: rgba(255, 255, 255, 0.5);
-         }
-         
-         /* 登录状态下隐藏用户名文本 */
-         .user-display.logged-in .user-name {
-             display: none;
-         }
-         
-         /* 未登录状态保持原样 */
-         .user-display.clickable-login .user-avatar-circle {
-             background: rgba(255, 255, 255, 0.2);
-             border-color: rgba(255, 255, 255, 0.3);
-         }
-         
-         .user-display.clickable-login .user-avatar-circle:hover {
-             background: rgba(255, 255, 255, 0.3);
-         }
-         
          .user-name {
             color: var(--text-color);
         }
@@ -4199,7 +4160,7 @@
             <div id="user-info" class="user-info-top-right" style="display: flex; opacity: 1;">
                 <!-- 预加载占位符，避免加载时的空白 -->
                 <span id="user-display" class="user-display clickable-login">
-                    <span class="user-avatar-circle">加</span>
+                    <span class="user-avatar">👤</span>
                     <span class="user-name">加载中...</span>
                 </span>
             </div>
@@ -4546,7 +4507,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.8"; // 可手动修改版本号
+                this.version = "v4.6.9"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -8085,15 +8046,6 @@
                     <div class="form-actions">
                         <button id="save-user-profile" class="btn btn-primary">保存设置</button>
                         <button id="cancel-user-profile" class="btn btn-secondary">取消</button>
-                        <button id="logout-user" class="btn btn-danger" style="background: #dc3545; border-color: #dc3545; margin-left: 10px;">登出</button>
-                    </div>
-                    
-                    <!-- 网络诊断区域 -->
-                    <div class="network-diagnostic" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                        <h4 style="color: var(--text-color); margin-bottom: 10px;">🔧 网络诊断</h4>
-                        <p style="color: var(--text-light); font-size: 14px; margin-bottom: 10px;">如果遇到登录问题，可以使用网络诊断功能</p>
-                        <button id="diagnose-network" class="btn btn-info" style="background: #17a2b8; border-color: #17a2b8;">🔍 诊断网络连接</button>
-                        <div id="diagnostic-results" style="margin-top: 10px; display: none;"></div>
                     </div>
                 </div>
             </div>

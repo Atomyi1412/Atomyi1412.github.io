@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -28,24 +28,5 @@ const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Firebase初始化验证
-try {
-  console.log('Firebase初始化成功');
-  console.log('项目ID:', firebaseConfig.projectId);
-  console.log('认证域:', firebaseConfig.authDomain);
-} catch (error) {
-  console.error('Firebase初始化失败:', error);
-}
-
-// 添加连接状态监听
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    console.log('Firebase Auth连接正常，用户已登录');
-  } else {
-    console.log('Firebase Auth连接正常，用户未登录');
-  }
-}, (error) => {
-  console.error('Firebase Auth连接错误:', error);
-});
 
 export { app, analytics, auth, db };

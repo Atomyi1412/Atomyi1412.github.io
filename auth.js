@@ -8,7 +8,7 @@ import {
   signInAnonymously,
   sendPasswordResetEmail,
   sendEmailVerification
-} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import {
   doc,
   getDoc,
@@ -19,25 +19,11 @@ import {
   deleteDoc,
   query,
   orderBy
-} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 
 // 当前用户状态
 let currentUser = null;
-
-// 网络状态监听
-let isOnline = navigator.onLine;
-window.addEventListener('online', () => {
-  if (!isOnline) {
-    isOnline = true;
-    showNotification('网络连接已恢复，您可以重新尝试登录', 'success');
-  }
-});
-
-window.addEventListener('offline', () => {
-  isOnline = false;
-  showNotification('网络连接已断开，请检查网络连接', 'warning');
-});
 
 // 监听用户认证状态变化
 onAuthStateChanged(auth, async (user) => {
@@ -83,22 +69,6 @@ function initializeAuthState() {
       userNameSpan.textContent = '未登录';
       userDisplay.className = 'user-display clickable-login';
       
-      // 检查是否已有圆形头像，如果没有则创建
-      let avatarCircle = userDisplay.querySelector('.user-avatar-circle');
-      if (!avatarCircle) {
-        // 移除旧的头像元素
-        const oldAvatar = userDisplay.querySelector('.user-avatar');
-        if (oldAvatar) oldAvatar.remove();
-        
-        // 创建圆形头像
-        avatarCircle = document.createElement('span');
-        avatarCircle.className = 'user-avatar-circle';
-        avatarCircle.textContent = '登';
-        userDisplay.insertBefore(avatarCircle, userNameSpan);
-      } else {
-        avatarCircle.textContent = '登';
-      }
-      
       // 添加点击事件（防止重复绑定）
       if (!userDisplay.hasAttribute('data-event-bound')) {
         userDisplay.setAttribute('data-event-bound', 'true');
@@ -125,42 +95,10 @@ if (document.readyState === 'loading') {
   initializeAuthState();
 }
 
-// 网络连接检测和重试机制
-async function checkNetworkAndRetry(operation, maxRetries = 3) {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      // 检查网络连接
-      if (!navigator.onLine) {
-        throw new Error('网络连接已断开，请检查网络设置');
-      }
-      
-      // 尝试执行操作
-      return await operation();
-    } catch (error) {
-      console.log(`尝试 ${attempt}/${maxRetries} 失败:`, error.message);
-      
-      // 如果是网络错误且还有重试次数
-      if ((error.code === 'auth/network-request-failed' || error.message.includes('网络')) && attempt < maxRetries) {
-        const delay = Math.min(attempt * 2000, 5000); // 递增延迟，最大5秒
-        console.log(`等待 ${delay/1000} 秒后重试...`);
-        showNotification(`网络连接失败，${delay/1000}秒后自动重试 (${attempt}/${maxRetries})`, 'warning');
-        await new Promise(resolve => setTimeout(resolve, delay));
-        continue;
-      }
-      
-      // 如果是最后一次尝试或非网络错误，抛出错误
-      throw error;
-    }
-  }
-}
-
 // 邮箱密码登录
 export async function signInWithEmail(email, password) {
   try {
-    // 使用重试机制进行登录
-    const userCredential = await checkNetworkAndRetry(async () => {
-      return await signInWithEmailAndPassword(auth, email, password);
-    });
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
     
     // 检查邮箱是否已验证
     if (!userCredential.user.emailVerified) {
@@ -207,11 +145,7 @@ export async function signInWithEmail(email, password) {
         errorMessage = '登录尝试次数过多，请稍后再试';
         break;
       case 'auth/network-request-failed':
-        errorMessage = '网络连接失败，请检查网络连接后重试。如果问题持续存在，请稍后再试';
-        // 检查网络连接状态
-        if (!navigator.onLine) {
-          errorMessage = '网络连接已断开，请检查网络连接后重试';
-        }
+        errorMessage = '网络连接失败，请检查网络连接后重试';
         break;
       default:
         errorMessage = `登录失败: ${error.message}`;
@@ -550,24 +484,12 @@ async function updateUIForAuthState(user) {
       // 先显示基本用户信息，避免长时间等待
       const basicDisplayName = user.isAnonymous ? '游客用户' : (user.displayName || user.email || '用户');
       
-      // 获取用户昵称的首字或首字母
-      const getInitial = (name) => {
-        if (!name) return '用';
-        // 如果是中文，取第一个字符
-        if (/[\u4e00-\u9fa5]/.test(name)) {
-          return name.charAt(0);
-        }
-        // 如果是英文，取第一个字母并转为大写
-        return name.charAt(0).toUpperCase();
-      };
-      
-      const initial = getInitial(basicDisplayName);
-      
       userInfo.innerHTML = `
-        <span id="user-display" class="user-display logged-in">
-          <span class="user-avatar-circle">${initial}</span>
-          <span class="user-name" style="display: none;">欢迎, ${basicDisplayName}</span>
+        <span id="user-display" class="user-display">
+          <span class="user-avatar">👤</span>
+          <span class="user-name">欢迎, ${basicDisplayName}</span>
         </span>
+        <button id="logout-btn" class="btn btn-secondary btn-sm">登出</button>
       `;
       
       // 添加用户信息点击事件（打开用户中心）
@@ -578,22 +500,27 @@ async function updateUIForAuthState(user) {
         });
       }
       
+      // 添加登出按钮事件
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          const result = await signOutUser();
+          if (result.success) {
+            showNotification('已成功登出', 'info');
+          }
+        });
+      }
+      
       // 异步加载用户详细信息，不阻塞UI显示
       getUserProfile().then(userProfile => {
         const displayName = userProfile.nickname || basicDisplayName;
-        const updatedInitial = getInitial(displayName);
+        const avatar = userProfile.avatar || '👤';
         
-        // 更新头像显示的首字
-        const avatarCircle = userDisplay?.querySelector('.user-avatar-circle');
-        if (avatarCircle) {
-          avatarCircle.textContent = updatedInitial;
-        }
-        
-        // 更新隐藏的用户名（用于用户中心等地方）
+        // 更新头像和昵称
+        const avatarSpan = userDisplay?.querySelector('.user-avatar');
         const nameSpan = userDisplay?.querySelector('.user-name');
-        if (nameSpan) {
-          nameSpan.textContent = `欢迎, ${displayName}`;
-        }
+        if (avatarSpan) avatarSpan.textContent = avatar;
+        if (nameSpan) nameSpan.textContent = `欢迎, ${displayName}`;
       }).catch(error => {
         console.log('加载用户详细信息失败:', error);
         // 保持基本显示，不影响用户体验
@@ -617,26 +544,11 @@ async function updateUIForAuthState(user) {
       const userNameSpan = userDisplay?.querySelector('.user-name');
       const userAvatarSpan = userDisplay?.querySelector('.user-avatar');
       
-      if (userDisplay && userNameSpan) {
-        // 更新现有元素为圆形头像样式
+      if (userDisplay && userNameSpan && userAvatarSpan) {
+        // 更新现有元素
         userNameSpan.textContent = '未登录';
+        userAvatarSpan.textContent = '👤';
         userDisplay.className = 'user-display clickable-login';
-        
-        // 检查是否已有圆形头像，如果没有则创建
-        let avatarCircle = userDisplay.querySelector('.user-avatar-circle');
-        if (!avatarCircle) {
-          // 移除旧的头像元素
-          const oldAvatar = userDisplay.querySelector('.user-avatar');
-          if (oldAvatar) oldAvatar.remove();
-          
-          // 创建圆形头像
-          avatarCircle = document.createElement('span');
-          avatarCircle.className = 'user-avatar-circle';
-          avatarCircle.textContent = '登';
-          userDisplay.insertBefore(avatarCircle, userNameSpan);
-        } else {
-          avatarCircle.textContent = '登';
-        }
         
         // 添加点击事件（防止重复绑定）
         if (!userDisplay.hasAttribute('data-event-bound')) {
@@ -652,7 +564,7 @@ async function updateUIForAuthState(user) {
         // 如果元素不存在，则创建（兜底方案）
         userInfo.innerHTML = `
           <span id="user-display" class="user-display clickable-login">
-            <span class="user-avatar-circle">登</span>
+            <span class="user-avatar">👤</span>
             <span class="user-name">未登录</span>
           </span>
         `;
@@ -751,7 +663,7 @@ function ensureUserInfoButtonVisible() {
       // 重新设置未登录状态的HTML内容
       userInfo.innerHTML = `
         <span id="user-display" class="user-display clickable-login">
-          <span class="user-avatar-circle">登</span>
+          <span class="user-avatar">👤</span>
           <span class="user-name">未登录</span>
         </span>
       `;
@@ -1535,65 +1447,6 @@ function initUserCenterEvents() {
     cancelBtn.addEventListener('click', hideUserCenterModal);
   }
   
-  // 登出按钮事件
-  const logoutBtn = document.getElementById('logout-user');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      const result = await signOutUser();
-      if (result.success) {
-        hideUserCenterModal();
-        showNotification('已成功登出', 'info');
-      } else {
-        showNotification('登出失败，请重试', 'error');
-      }
-    });
-  }
-  
-  // 网络诊断按钮事件
-  const diagnoseBtn = document.getElementById('diagnose-network');
-  if (diagnoseBtn) {
-    diagnoseBtn.addEventListener('click', async () => {
-      const resultsDiv = document.getElementById('diagnostic-results');
-      if (!resultsDiv) return;
-      
-      // 显示加载状态
-      resultsDiv.style.display = 'block';
-      resultsDiv.innerHTML = '<p style="color: var(--text-light);">🔄 正在诊断网络连接...</p>';
-      
-      try {
-        const diagnosis = await diagnoseConnectionIssues();
-        
-        let html = '<div style="background: var(--card-background); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">';
-        html += '<h5 style="color: var(--text-color); margin-bottom: 10px;">📊 诊断结果</h5>';
-        
-        // 网络状态
-        html += `<p style="margin: 5px 0;"><strong>网络连接:</strong> <span style="color: ${diagnosis.networkOnline ? '#28a745' : '#dc3545'};">` +
-                `${diagnosis.networkOnline ? '✅ 正常' : '❌ 断开'}</span></p>`;
-        
-        // Firebase连接状态
-        html += `<p style="margin: 5px 0;"><strong>Firebase连接:</strong> <span style="color: ${diagnosis.firebaseConnection ? '#28a745' : '#dc3545'};">` +
-                `${diagnosis.firebaseConnection ? '✅ 正常' : '❌ 失败'}</span></p>`;
-        
-        // 建议
-        if (diagnosis.suggestions.length > 0) {
-          html += '<h6 style="color: var(--text-color); margin: 15px 0 10px 0;">💡 解决建议:</h6>';
-          html += '<ul style="margin: 0; padding-left: 20px; color: var(--text-light);">';
-          diagnosis.suggestions.forEach(suggestion => {
-            html += `<li style="margin: 5px 0;">${suggestion}</li>`;
-          });
-          html += '</ul>';
-        }
-        
-        html += '</div>';
-        resultsDiv.innerHTML = html;
-        
-      } catch (error) {
-        resultsDiv.innerHTML = '<p style="color: #dc3545;">❌ 诊断过程中出现错误</p>';
-        console.error('网络诊断失败:', error);
-      }
-    });
-  }
-  
   // 点击模态框外部关闭
   const modal = document.getElementById('user-center-modal');
   if (modal) {
@@ -1605,89 +1458,6 @@ function initUserCenterEvents() {
   }
 }
 
-// Firebase连接测试
-async function testFirebaseConnection() {
-  try {
-    console.log('开始Firebase连接测试...');
-    
-    // 检查Firebase配置
-    if (!auth || !auth.app) {
-      throw new Error('Firebase Auth未正确初始化');
-    }
-    
-    // 检查项目配置
-    const config = auth.app.options;
-    console.log('Firebase项目配置:', {
-      projectId: config.projectId,
-      authDomain: config.authDomain,
-      apiKey: config.apiKey ? '已配置' : '未配置'
-    });
-    
-    // 测试网络连接到Firebase服务器
-    const testPromise = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Firebase连接超时（10秒）'));
-      }, 10000);
-      
-      // 监听认证状态变化来测试连接
-      const unsubscribe = auth.onAuthStateChanged(() => {
-        clearTimeout(timeout);
-        unsubscribe();
-        resolve(true);
-      }, (error) => {
-        clearTimeout(timeout);
-        unsubscribe();
-        reject(error);
-      });
-    });
-    
-    await testPromise;
-    
-    const currentUser = auth.currentUser;
-    console.log('Firebase连接测试成功，当前用户:', currentUser ? '已登录' : '未登录');
-    return {
-      success: true,
-      user: currentUser ? '已登录' : '未登录',
-      projectId: config.projectId,
-      authDomain: config.authDomain
-    };
-  } catch (error) {
-    console.error('Firebase连接测试失败:', error);
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
-
-// 诊断网络和Firebase连接问题
-export async function diagnoseConnectionIssues() {
-  const results = {
-    networkOnline: navigator.onLine,
-    firebaseConnection: false,
-    suggestions: []
-  };
-  
-  // 测试网络连接
-  if (!results.networkOnline) {
-    results.suggestions.push('请检查您的网络连接');
-  }
-  
-  // 测试Firebase连接
-  results.firebaseConnection = await testFirebaseConnection();
-  if (!results.firebaseConnection) {
-    results.suggestions.push('Firebase服务连接失败，请稍后重试');
-  }
-  
-  // 提供解决建议
-  if (results.networkOnline && !results.firebaseConnection) {
-    results.suggestions.push('可能是Firebase服务暂时不可用，请稍后重试');
-    results.suggestions.push('如果问题持续存在，请检查防火墙设置');
-  }
-  
-  return results;
-}
-
 // 导出函数到window对象，供其他模块使用
 window.authModule = {
   getUserProfile,
@@ -1695,6 +1465,5 @@ window.authModule = {
   isCurrentUserAdmin,
   saveUserProfile,
   signInAnonymouslyUser,
-  closeAuthModal,
-  diagnoseConnectionIssues
+  closeAuthModal
 };
