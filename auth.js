@@ -461,7 +461,11 @@ async function updateUIForAuthState(user) {
   const userNameSpan = userDisplay?.querySelector('.user-name');
   
   if (userNameSpan) {
-    userNameSpan.textContent = user ? '加载用户信息...' : '未登录';
+    if (user) {
+      userNameSpan.textContent = '加载用户信息...';
+    } else {
+      userNameSpan.style.display = 'none';
+    }
   }
   
   if (user) {
@@ -542,9 +546,11 @@ async function updateUIForAuthState(user) {
       const userNameSpan = userDisplay?.querySelector('.user-name');
       const userAvatarSpan = userDisplay?.querySelector('.user-avatar');
       
-      if (userDisplay && userNameSpan && userAvatarSpan) {
-        // 更新现有元素
-        userNameSpan.textContent = '未登录';
+      if (userDisplay && userAvatarSpan) {
+        // 更新现有元素 - 只显示图标，移除文字
+        if (userNameSpan) {
+          userNameSpan.style.display = 'none';
+        }
         userAvatarSpan.textContent = '👤';
         userDisplay.className = 'user-display clickable-login';
         
@@ -559,11 +565,10 @@ async function updateUIForAuthState(user) {
           });
         }
       } else {
-        // 如果元素不存在，则创建（兜底方案）
+        // 如果元素不存在，则创建（兜底方案）- 只显示图标
         userInfo.innerHTML = `
           <span id="user-display" class="user-display clickable-login">
             <span class="user-avatar">👤</span>
-            <span class="user-name">未登录</span>
           </span>
         `;
         
