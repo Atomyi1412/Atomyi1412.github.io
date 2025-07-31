@@ -382,7 +382,7 @@
         /* 用户信息右上角样式 */
         .user-info-top-right {
             position: absolute;
-            top: 50px;
+            top: 20px;
             right: 20px;
             display: flex;
             align-items: center;
@@ -2660,13 +2660,6 @@
                 flex-wrap: nowrap;
             }
             
-            /* 移动端用户信息位置调整 */
-            .user-info-top-right {
-                top: 45px;
-                right: 15px;
-                padding: 6px 10px;
-            }
-            
             .header h1 {
                 font-size: 20px;
                 margin: 0;
@@ -3086,7 +3079,6 @@
              border-radius: 8px;
              transition: all 0.3s ease;
              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-             margin-top: 15px;
          }
          
          .auth-section .btn:hover {
@@ -8124,8 +8116,29 @@
                 
                 // 动态定位主题菜单
                 const btnRect = themeBtn.getBoundingClientRect();
-                themeMenu.style.top = (btnRect.bottom + 10) + 'px';
-                themeMenu.style.right = (window.innerWidth - btnRect.right) + 'px';
+                const menuWidth = 200; // 菜单宽度
+                const padding = 10; // 边距
+                
+                // 计算菜单位置
+                let top = btnRect.bottom + 10;
+                let left = btnRect.right - menuWidth;
+                
+                // 移动端适配：确保菜单不超出屏幕边界
+                if (left < padding) {
+                    left = padding;
+                }
+                if (left + menuWidth > window.innerWidth - padding) {
+                    left = window.innerWidth - menuWidth - padding;
+                }
+                
+                // 如果菜单会超出底部，则显示在按钮上方
+                if (top + 300 > window.innerHeight) {
+                    top = btnRect.top - 310;
+                }
+                
+                themeMenu.style.top = top + 'px';
+                themeMenu.style.left = left + 'px';
+                themeMenu.style.right = 'auto';
                 
                 themeMenu.classList.toggle('hidden');
             });
