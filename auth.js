@@ -463,8 +463,10 @@ async function updateUIForAuthState(user) {
   if (userNameSpan) {
     if (user) {
       userNameSpan.textContent = '加载用户信息...';
+      userNameSpan.style.display = 'block';
     } else {
       userNameSpan.style.display = 'none';
+      userNameSpan.textContent = ''; // 清空文字内容
     }
   }
   
@@ -550,6 +552,7 @@ async function updateUIForAuthState(user) {
         // 更新现有元素 - 只显示图标，移除文字
         if (userNameSpan) {
           userNameSpan.style.display = 'none';
+          userNameSpan.textContent = ''; // 清空文字内容
         }
         userAvatarSpan.textContent = '👤';
         userDisplay.className = 'user-display clickable-login';

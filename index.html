@@ -3485,13 +3485,17 @@
          .user-display {
              display: flex;
              align-items: center;
+             justify-content: center;
              color: var(--text-color);
              font-weight: 500;
          }
          
          .user-avatar {
-             margin-right: 8px;
              font-size: 18px;
+         }
+         
+         .user-display.clickable-login .user-avatar {
+             margin-right: 0;
          }
          
          .user-name {
@@ -4510,7 +4514,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.6.3"; // 可手动修改版本号
+                this.version = "v4.6.4"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
