@@ -4247,42 +4247,6 @@
 </script>
     <div class="container">
         <div class="header">
-            <div class="theme-switcher">
-                <div id="themeMenu" class="theme-menu hidden">
-                    <div class="theme-option" data-theme="default">
-                        <div class="theme-preview">
-                            <div class="color-dot" style="background: #4CAF50;"></div>
-                            <div class="color-dot" style="background: #667eea;"></div>
-                            <div class="color-dot" style="background: #764ba2;"></div>
-                        </div>
-                        <span>默认绿色</span>
-                    </div>
-                    <div class="theme-option" data-theme="blue">
-                        <div class="theme-preview">
-                            <div class="color-dot" style="background: #2196F3;"></div>
-                            <div class="color-dot" style="background: #1976D2;"></div>
-                            <div class="color-dot" style="background: #0D47A1;"></div>
-                        </div>
-                        <span>海洋蓝色</span>
-                    </div>
-                    <div class="theme-option" data-theme="purple">
-                        <div class="theme-preview">
-                            <div class="color-dot" style="background: #9C27B0;"></div>
-                            <div class="color-dot" style="background: #7B1FA2;"></div>
-                            <div class="color-dot" style="background: #4A148C;"></div>
-                        </div>
-                        <span>优雅紫色</span>
-                    </div>
-                    <div class="theme-option" data-theme="orange">
-                        <div class="theme-preview">
-                            <div class="color-dot" style="background: #FF9800;"></div>
-                            <div class="color-dot" style="background: #F57C00;"></div>
-                            <div class="color-dot" style="background: #E65100;"></div>
-                        </div>
-                        <span>活力橙色</span>
-                    </div>
-                </div>
-            </div>
             <!-- 用户信息区域 - 移到右上角 -->
             <div id="user-info" class="user-info-top-right" style="display: flex; opacity: 1;">
                 <!-- 预加载占位符，避免加载时的空白 -->
@@ -4302,6 +4266,40 @@
                     <button id="themeSwitcherBtn" class="theme-btn" title="切换主题">
                         🎨
                     </button>
+                    <div id="themeMenu" class="theme-menu hidden">
+                        <div class="theme-option" data-theme="default">
+                            <div class="theme-preview">
+                                <div class="color-dot" style="background: #4CAF50;"></div>
+                                <div class="color-dot" style="background: #667eea;"></div>
+                                <div class="color-dot" style="background: #764ba2;"></div>
+                            </div>
+                            <span>默认绿色</span>
+                        </div>
+                        <div class="theme-option" data-theme="blue">
+                            <div class="theme-preview">
+                                <div class="color-dot" style="background: #2196F3;"></div>
+                                <div class="color-dot" style="background: #1976D2;"></div>
+                                <div class="color-dot" style="background: #0D47A1;"></div>
+                            </div>
+                            <span>海洋蓝色</span>
+                        </div>
+                        <div class="theme-option" data-theme="purple">
+                            <div class="theme-preview">
+                                <div class="color-dot" style="background: #9C27B0;"></div>
+                                <div class="color-dot" style="background: #7B1FA2;"></div>
+                                <div class="color-dot" style="background: #4A148C;"></div>
+                            </div>
+                            <span>优雅紫色</span>
+                        </div>
+                        <div class="theme-option" data-theme="orange">
+                            <div class="theme-preview">
+                                <div class="color-dot" style="background: #FF9800;"></div>
+                                <div class="color-dot" style="background: #F57C00;"></div>
+                                <div class="color-dot" style="background: #E65100;"></div>
+                            </div>
+                            <span>活力橙色</span>
+                        </div>
+                    </div>
                 </h1>
             </div>
         </div>
@@ -4625,7 +4623,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v4.8.5"; // 可手动修改版本号
+                this.version = "v4.8.6"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
