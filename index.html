@@ -4713,7 +4713,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v5.1.5"; // 可手动修改版本号
+                this.version = "v5.1.6"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5637,78 +5637,163 @@
 
             // 获取网络类型
             getNetworkType() {
-                if (navigator.connection) {
-                    const connection = navigator.connection;
-                    
-                    // 优先检查连接类型
-                    if (connection.type) {
-                        // 如果明确是wifi，直接返回
-                        if (connection.type === 'wifi') {
-                            return 'WiFi';
-                        }
-                        // 直接检查是否为5G类型
-                        if (connection.type === '5g') {
-                            return '5G';
-                        }
-                        // 如果是cellular，进行更详细的检测
-                        if (connection.type === 'cellular') {
-                            return this.detectCellularType(connection);
-                        }
-                        // 其他类型
-                        return connection.type;
-                    }
-                    
-                    // 如果没有type，使用effectiveType进行检测
-                    if (connection.effectiveType) {
-                        // 检查是否为5G
-                        if (connection.effectiveType === '5g') {
-                            return '5G';
-                        }
-                        // 对于4G，进一步检查是否可能是5G
-                        if (connection.effectiveType === '4g') {
-                            return this.detect5GFromSpeed(connection);
-                        }
-                        return connection.effectiveType;
-                    }
-                    
-                    return '未知';
+                if (!navigator.connection) {
+                    console.log('网络检测: navigator.connection 不支持');
+                    return '不支持检测';
                 }
-                return '不支持检测';
+                
+                const connection = navigator.connection;
+                
+                // 输出调试信息
+                console.log('网络检测调试信息:', {
+                    type: connection.type,
+                    effectiveType: connection.effectiveType,
+                    downlink: connection.downlink,
+                    rtt: connection.rtt,
+                    saveData: connection.saveData,
+                    downlinkMax: connection.downlinkMax
+                });
+                
+                // 检测是否为移动设备
+                const isMobile = this.isMobileDevice();
+                console.log('设备类型检测: isMobile =', isMobile);
+                
+                // 1. 优先检查明确的WiFi连接
+                if (connection.type === 'wifi') {
+                    console.log('网络检测: 明确检测到WiFi连接');
+                    return 'WiFi';
+                }
+                
+                // 2. 对于桌面设备，如果没有明确的cellular类型，很可能是WiFi
+                if (!isMobile && (!connection.type || connection.type === 'unknown')) {
+                    // 桌面设备通常通过WiFi或有线连接
+                    if (connection.effectiveType === '4g' || connection.effectiveType === '3g') {
+                        // 桌面设备显示4G/3G很可能是WiFi连接的误判
+                        console.log('网络检测: 桌面设备，effectiveType为移动网络，推断为WiFi');
+                        return 'WiFi';
+                    }
+                    console.log('网络检测: 桌面设备，默认推断为WiFi');
+                    return 'WiFi';
+                }
+                
+                // 3. 检查明确的5G连接
+                if (connection.type === '5g' || connection.effectiveType === '5g') {
+                    console.log('网络检测: 明确检测到5G连接');
+                    return '5G';
+                }
+                
+                // 4. 检查蜂窝网络
+                if (connection.type === 'cellular') {
+                    console.log('网络检测: 检测到蜂窝网络，进行详细分析');
+                    return this.detectCellularType(connection);
+                }
+                
+                // 5. 对于移动设备，基于effectiveType和网络特征判断
+                if (isMobile) {
+                    return this.detectMobileNetworkType(connection);
+                }
+                
+                // 6. 其他情况的处理
+                if (connection.effectiveType) {
+                    console.log('网络检测: 使用effectiveType:', connection.effectiveType);
+                    return connection.effectiveType.toUpperCase();
+                }
+                
+                if (connection.type) {
+                    console.log('网络检测: 使用type:', connection.type);
+                    return connection.type;
+                }
+                
+                console.log('网络检测: 无法确定网络类型');
+                return '未知';
             }
 
+            // 检测是否为移动设备
+            isMobileDevice() {
+                const userAgent = navigator.userAgent;
+                return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+            }
+            
+            // 检测移动设备的网络类型
+            detectMobileNetworkType(connection) {
+                console.log('移动设备网络检测开始');
+                
+                // 1. 明确的5G检测
+                if (connection.effectiveType === '5g') {
+                    console.log('移动网络: effectiveType明确为5G');
+                    return '5G';
+                }
+                
+                // 2. 通过网络特征推断5G
+                const downlink = connection.downlink || 0;
+                const rtt = connection.rtt || 999;
+                
+                console.log('移动网络特征:', { downlink, rtt });
+                
+                // 5G网络特征：高速度 + 低延迟
+                if (downlink > 50 && rtt < 30) {
+                    console.log('移动网络: 根据速度和延迟特征推断为5G');
+                    return '5G';
+                }
+                
+                // 3. 4G网络检测
+                if (connection.effectiveType === '4g' || 
+                    (downlink > 5 && downlink <= 50)) {
+                    console.log('移动网络: 检测为4G');
+                    return '4G';
+                }
+                
+                // 4. 3G网络检测
+                if (connection.effectiveType === '3g' || 
+                    (downlink > 0.5 && downlink <= 5)) {
+                    console.log('移动网络: 检测为3G');
+                    return '3G';
+                }
+                
+                // 5. 2G网络检测
+                if (connection.effectiveType === '2g' || 
+                    (downlink > 0 && downlink <= 0.5)) {
+                    console.log('移动网络: 检测为2G');
+                    return '2G';
+                }
+                
+                // 6. 慢速连接检测
+                if (connection.effectiveType === 'slow-2g') {
+                    console.log('移动网络: 检测为慢速2G');
+                    return '2G';
+                }
+                
+                // 7. 默认情况
+                const fallback = connection.effectiveType || '移动网络';
+                console.log('移动网络: 使用默认值:', fallback);
+                return fallback.toUpperCase();
+            }
+            
             // 检测蜂窝网络类型
             detectCellularType(connection) {
+                console.log('蜂窝网络检测开始');
+                
                 // 首先检查effectiveType是否明确为5G
                 if (connection.effectiveType === '5g') {
+                    console.log('蜂窝网络: effectiveType明确为5G');
                     return '5G';
                 }
                 
-                // 通过下载速度推断5G（5G通常>100Mbps）
-                if (connection.downlink && connection.downlink > 100) {
+                const downlink = connection.downlink || 0;
+                const rtt = connection.rtt || 999;
+                
+                console.log('蜂窝网络特征:', { downlink, rtt, effectiveType: connection.effectiveType });
+                
+                // 通过下载速度和延迟推断5G（调整阈值）
+                if (downlink > 30 && rtt < 50) {
+                    console.log('蜂窝网络: 根据速度和延迟特征推断为5G');
                     return '5G';
                 }
                 
-                // 通过RTT（往返时间）推断5G（5G通常<20ms）
-                if (connection.rtt && connection.rtt < 20 && connection.downlink && connection.downlink > 50) {
-                    return '5G';
-                }
-                
-                return connection.effectiveType || '移动网络';
-            }
-
-            // 从速度检测5G
-            detect5GFromSpeed(connection) {
-                // 如果下载速度超过100Mbps，很可能是5G
-                if (connection.downlink && connection.downlink > 100) {
-                    return '5G';
-                }
-                
-                // 如果RTT很低且速度较快，可能是5G
-                if (connection.rtt && connection.rtt < 20 && connection.downlink && connection.downlink > 50) {
-                    return '5G';
-                }
-                
-                return '4G';
+                // 返回effectiveType或默认值
+                const result = connection.effectiveType || '移动网络';
+                console.log('蜂窝网络: 最终结果:', result);
+                return result.toUpperCase();
             }
 
             // 使用WebRTC获取本地IP地址（备用方案）
