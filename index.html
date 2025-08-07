@@ -4650,11 +4650,70 @@
         </div>
     </div>
 
+    <!-- 上传进度条模态框 -->
+    <div id="uploadProgressModal" class="modal" style="display: none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px);">
+        <div class="modal-content" style="background-color: var(--card-background); margin: 20% auto; padding: 30px; border: none; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); text-align: center;">
+            <div class="upload-icon" style="margin-bottom: 20px;">
+                <div class="upload-spinner" style="width: 60px; height: 60px; margin: 0 auto; border: 4px solid #e3e3e3; border-top: 4px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            </div>
+            <h3 id="uploadTitle" style="margin: 0 0 15px 0; color: var(--text-color); font-size: 22px; font-weight: 600;">📤 正在上传数据</h3>
+            <p id="uploadMessage" style="margin: 0 0 25px 0; color: var(--text-light); font-size: 16px; line-height: 1.5;">正在将考试数据保存到飞书多维表，请稍候...</p>
+            
+            <!-- 进度条容器 -->
+            <div class="progress-container" style="width: 100%; height: 8px; background-color: #e9ecef; border-radius: 4px; margin-bottom: 20px; overflow: hidden;">
+                <div id="progressBar" class="progress-bar" style="height: 100%; background: linear-gradient(90deg, #007bff 0%, #28a745 100%); border-radius: 4px; width: 0%; transition: width 0.3s ease; animation: progressGlow 2s ease-in-out infinite alternate;"></div>
+            </div>
+            
+            <!-- 进度百分比 -->
+            <div id="progressPercent" style="color: var(--text-color); font-size: 14px; font-weight: 500; margin-bottom: 15px;">0%</div>
+            
+            <!-- 状态详情 -->
+            <div id="uploadDetails" style="color: var(--text-light); font-size: 13px; opacity: 0.8;">准备上传...</div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes progressGlow {
+            0% { box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(0, 123, 255, 0.6), 0 0 30px rgba(40, 167, 69, 0.4); }
+        }
+        
+        .upload-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        .progress-bar {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+    </style>
+
     <script>
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v5.1.4"; // 可手动修改版本号
+                this.version = "v5.1.5"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5308,6 +5367,122 @@
                     }
                 }
             }
+
+            // 显示上传进度条
+            showUploadProgress() {
+                const modal = document.getElementById('uploadProgressModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    this.resetUploadProgress();
+                }
+                
+                // 添加遮罩层阻止用户交互
+                const overlay = document.createElement('div');
+                overlay.id = 'uploadBlockingOverlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.01)';
+                overlay.style.zIndex = '9998'; // 低于进度条模态框
+                overlay.style.cursor = 'wait';
+                overlay.style.pointerEvents = 'all';
+                document.body.appendChild(overlay);
+            }
+
+            // 隐藏上传进度条
+            hideUploadProgress() {
+                const modal = document.getElementById('uploadProgressModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+                
+                // 移除遮罩层，恢复用户交互
+                const overlay = document.getElementById('uploadBlockingOverlay');
+                if (overlay) {
+                    document.body.removeChild(overlay);
+                }
+            }
+
+            // 重置进度条状态
+            resetUploadProgress() {
+                this.updateUploadProgress(0, '准备上传...', '正在初始化上传流程...');
+                const title = document.getElementById('uploadTitle');
+                const message = document.getElementById('uploadMessage');
+                if (title) title.textContent = '📤 正在上传数据';
+                if (message) message.textContent = '正在将考试数据保存到飞书多维表，请稍候...';
+            }
+
+            // 更新上传进度
+            updateUploadProgress(percent, details, message) {
+                const progressBar = document.getElementById('progressBar');
+                const progressPercent = document.getElementById('progressPercent');
+                const uploadDetails = document.getElementById('uploadDetails');
+                const uploadMessage = document.getElementById('uploadMessage');
+                
+                if (progressBar) {
+                    progressBar.style.width = `${percent}%`;
+                }
+                if (progressPercent) {
+                    progressPercent.textContent = `${percent}%`;
+                }
+                if (uploadDetails && details) {
+                    uploadDetails.textContent = details;
+                }
+                if (uploadMessage && message) {
+                    uploadMessage.textContent = message;
+                }
+            }
+
+            // 显示上传成功状态
+            showUploadSuccess(message = '数据上传成功！') {
+                const title = document.getElementById('uploadTitle');
+                const uploadMessage = document.getElementById('uploadMessage');
+                const spinner = document.querySelector('.upload-spinner');
+                
+                if (title) title.textContent = '✅ 上传完成';
+                if (uploadMessage) uploadMessage.textContent = message;
+                if (spinner) {
+                    spinner.style.display = 'none';
+                }
+                
+                this.updateUploadProgress(100, '上传完成', message);
+                
+                // 2秒后自动关闭
+                setTimeout(() => {
+                    this.hideUploadProgress();
+                    if (spinner) spinner.style.display = 'block'; // 恢复spinner显示
+                }, 2000);
+            }
+
+            // 显示上传失败状态
+            showUploadError(errorMessage = '上传失败，请重试') {
+                const title = document.getElementById('uploadTitle');
+                const uploadMessage = document.getElementById('uploadMessage');
+                const spinner = document.querySelector('.upload-spinner');
+                const progressBar = document.getElementById('progressBar');
+                
+                if (title) title.textContent = '❌ 上传失败';
+                if (uploadMessage) uploadMessage.textContent = errorMessage;
+                if (spinner) {
+                    spinner.style.display = 'none';
+                }
+                if (progressBar) {
+                    progressBar.style.background = 'linear-gradient(90deg, #dc3545 0%, #fd7e14 100%)';
+                }
+                
+                this.updateUploadProgress(0, '上传失败', errorMessage);
+                
+                // 3秒后自动关闭
+                setTimeout(() => {
+                    this.hideUploadProgress();
+                    if (spinner) spinner.style.display = 'block'; // 恢复spinner显示
+                    if (progressBar) {
+                        progressBar.style.background = 'linear-gradient(90deg, #007bff 0%, #28a745 100%)';
+                    }
+                }, 3000);
+            }
             
             // 获取设备和环境信息
             async getDeviceInfo() {
@@ -5596,8 +5771,16 @@
                     userNameInput.focus();
                     return;
                 }
+
+                // 隐藏保存模态框并显示进度条
+                this.hideSaveToTableModal();
+                this.showUploadProgress();
+                
+                // 模拟进度更新
+                this.updateUploadProgress(10, '验证用户信息...', '正在验证用户输入信息...');
                 
                 // 获取考试数据
+                this.updateUploadProgress(20, '收集考试数据...', '正在收集考试成绩和统计信息...');
                 const totalScore = document.getElementById('totalScore').textContent;
                 const correctCount = document.getElementById('correctCount').textContent;
                 const wrongCount = document.getElementById('wrongCount').textContent;
@@ -5607,9 +5790,11 @@
                 const pauseTime = document.getElementById('pauseTime').textContent;
                 
                 // 获取设备信息
+                this.updateUploadProgress(40, '获取设备信息...', '正在收集设备和环境信息...');
                 const deviceInfo = await this.getDeviceInfo();
                 
                 // 准备发送的数据
+                this.updateUploadProgress(60, '准备数据...', '正在整理和格式化上传数据...');
                 const avgTimePerQuestion = this.getAverageTimePerQuestion();
                 const data = {
                     // 考试基本信息
@@ -5636,11 +5821,8 @@
                 };
                 
                 try {
-                    // 显示加载状态
-                    const confirmBtn = document.getElementById('confirmSaveBtn');
-                    const originalText = confirmBtn.textContent;
-                    confirmBtn.textContent = '保存中...';
-                    confirmBtn.disabled = true;
+                    // 开始上传
+                    this.updateUploadProgress(80, '上传数据...', '正在将数据发送到飞书多维表...');
                     
                     // 安全检查和配置验证
                     if (!window.AppConfig) {
@@ -5675,9 +5857,14 @@
                         
                         // no-cors模式下无法获取响应状态，假设成功
                         console.log('数据发送完成（直接模式）');
-                        alert('✅ 数据已成功发送到飞书多维表！');
-                        this.resultSaved = true; // 标记已保存
-                        this.hideSaveToTableModal();
+                        this.updateUploadProgress(100, '上传完成', '数据已成功发送到飞书多维表');
+                        setTimeout(() => {
+                            this.showUploadSuccess();
+                            this.resultSaved = true; // 标记已保存
+                            setTimeout(() => {
+                                this.hideUploadProgress();
+                            }, 2000);
+                        }, 500);
                         
                     } catch (error) {
                         // 如果直接发送失败，尝试使用代理
@@ -5695,9 +5882,14 @@
                             
                             if (response.ok) {
                                 console.log('数据发送完成（代理模式）');
-                                alert('✅ 数据已成功保存到飞书多维表！');
-                                this.resultSaved = true; // 标记已保存
-                                this.hideSaveToTableModal();
+                                this.updateUploadProgress(100, '上传完成', '数据已成功保存到飞书多维表');
+                                setTimeout(() => {
+                                    this.showUploadSuccess();
+                                    this.resultSaved = true; // 标记已保存
+                                    setTimeout(() => {
+                                        this.hideUploadProgress();
+                                    }, 2000);
+                                }, 500);
                             } else {
                                 throw new Error(`代理发送失败: HTTP ${response.status}`);
                             }
@@ -5710,22 +5902,25 @@
                 } catch (error) {
                     console.error('保存数据到多维表失败:', error);
                     
+                    // 显示错误状态
+                    this.showUploadError('上传失败: ' + error.message);
+                    
                     // 提供备用方案：复制数据到剪贴板
                     const dataText = `用户名称: ${userName}\n总分: ${totalScore}\n正确题数: ${correctCount}\n错误题数: ${wrongCount}\n正确率: ${accuracy}\n考试用时: ${examTime}\n平均用时: ${avgTimePerQuestion}\n暂停次数: ${pauseCount}\n暂停用时: ${pauseTime}\n提交时间: ${new Date().toLocaleString('zh-CN')}\n设备IP: ${deviceInfo.设备IP}\n浏览器信息: ${deviceInfo.浏览器信息}\n操作系统: ${deviceInfo.操作系统}\n屏幕分辨率: ${deviceInfo.屏幕分辨率}\n时区: ${deviceInfo.时区}\n语言: ${deviceInfo.语言}\n网络类型: ${deviceInfo.网络类型}\n地理位置: ${deviceInfo.地理位置}`;
                     
                     try {
                         await navigator.clipboard.writeText(dataText);
-                        alert('由于网络限制，数据已复制到剪贴板，请手动粘贴到飞书多维表中。');
-                        this.resultSaved = true; // 标记已保存（即使是手动方式）
-                        this.hideSaveToTableModal();
+                        setTimeout(() => {
+                            alert('由于网络限制，数据已复制到剪贴板，请手动粘贴到飞书多维表中。');
+                            this.resultSaved = true; // 标记已保存（即使是手动方式）
+                            this.hideUploadProgress();
+                        }, 2000);
                     } catch (clipboardError) {
-                        alert(`保存失败: ${error.message}\n\n请手动记录以下数据：\n${dataText}`);
+                        setTimeout(() => {
+                            alert(`保存失败: ${error.message}\n\n请手动记录以下数据：\n${dataText}`);
+                            this.hideUploadProgress();
+                        }, 2000);
                     }
-                } finally {
-                    // 恢复按钮状态
-                    const confirmBtn = document.getElementById('confirmSaveBtn');
-                    confirmBtn.textContent = '✓ 确认保存';
-                    confirmBtn.disabled = false;
                 }
             }
 
