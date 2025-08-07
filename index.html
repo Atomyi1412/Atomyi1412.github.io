@@ -4654,7 +4654,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v5.1.3"; // 可手动修改版本号
+                this.version = "v5.1.4"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5471,22 +5471,69 @@
                         if (connection.type === 'wifi') {
                             return 'WiFi';
                         }
-                        // 如果是cellular，再检查effectiveType
+                        // 直接检查是否为5G类型
+                        if (connection.type === '5g') {
+                            return '5G';
+                        }
+                        // 如果是cellular，进行更详细的检测
                         if (connection.type === 'cellular') {
-                            return connection.effectiveType || '移动网络';
+                            return this.detectCellularType(connection);
                         }
                         // 其他类型
                         return connection.type;
                     }
                     
-                    // 如果没有type，使用effectiveType
+                    // 如果没有type，使用effectiveType进行检测
                     if (connection.effectiveType) {
+                        // 检查是否为5G
+                        if (connection.effectiveType === '5g') {
+                            return '5G';
+                        }
+                        // 对于4G，进一步检查是否可能是5G
+                        if (connection.effectiveType === '4g') {
+                            return this.detect5GFromSpeed(connection);
+                        }
                         return connection.effectiveType;
                     }
                     
                     return '未知';
                 }
                 return '不支持检测';
+            }
+
+            // 检测蜂窝网络类型
+            detectCellularType(connection) {
+                // 首先检查effectiveType是否明确为5G
+                if (connection.effectiveType === '5g') {
+                    return '5G';
+                }
+                
+                // 通过下载速度推断5G（5G通常>100Mbps）
+                if (connection.downlink && connection.downlink > 100) {
+                    return '5G';
+                }
+                
+                // 通过RTT（往返时间）推断5G（5G通常<20ms）
+                if (connection.rtt && connection.rtt < 20 && connection.downlink && connection.downlink > 50) {
+                    return '5G';
+                }
+                
+                return connection.effectiveType || '移动网络';
+            }
+
+            // 从速度检测5G
+            detect5GFromSpeed(connection) {
+                // 如果下载速度超过100Mbps，很可能是5G
+                if (connection.downlink && connection.downlink > 100) {
+                    return '5G';
+                }
+                
+                // 如果RTT很低且速度较快，可能是5G
+                if (connection.rtt && connection.rtt < 20 && connection.downlink && connection.downlink > 50) {
+                    return '5G';
+                }
+                
+                return '4G';
             }
 
             // 使用WebRTC获取本地IP地址（备用方案）
