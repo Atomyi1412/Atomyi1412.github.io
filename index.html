@@ -4654,7 +4654,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v5.0.0"; // 可手动修改版本号
+                this.version = "v5.1.0"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5309,6 +5309,69 @@
                 }
             }
             
+            // 获取设备和环境信息
+            async getDeviceInfo() {
+                const deviceInfo = {
+                    设备IP: '获取中...',
+                    浏览器信息: navigator.userAgent,
+                    操作系统: this.getOperatingSystem(),
+                    屏幕分辨率: `${screen.width}x${screen.height}`,
+                    时区: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    语言: navigator.language,
+                    网络类型: this.getNetworkType(),
+                    地理位置: '未获取'
+                };
+
+                // 获取IP地址
+                try {
+                    const ipResponse = await fetch('https://api.ipify.org?format=json');
+                    if (ipResponse.ok) {
+                        const ipData = await ipResponse.json();
+                        deviceInfo.设备IP = ipData.ip;
+                    }
+                } catch (error) {
+                    console.log('获取IP地址失败:', error);
+                    deviceInfo.设备IP = '获取失败';
+                }
+
+                // 获取地理位置（可选，需要用户授权）
+                try {
+                    if (navigator.geolocation) {
+                        const position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                                timeout: 5000,
+                                enableHighAccuracy: false
+                            });
+                        });
+                        deviceInfo.地理位置 = `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`;
+                    }
+                } catch (error) {
+                    console.log('获取地理位置失败:', error);
+                    deviceInfo.地理位置 = '未授权或获取失败';
+                }
+
+                return deviceInfo;
+            }
+
+            // 获取操作系统信息
+            getOperatingSystem() {
+                const userAgent = navigator.userAgent;
+                if (userAgent.indexOf('Windows') !== -1) return 'Windows';
+                if (userAgent.indexOf('Mac') !== -1) return 'macOS';
+                if (userAgent.indexOf('Linux') !== -1) return 'Linux';
+                if (userAgent.indexOf('Android') !== -1) return 'Android';
+                if (userAgent.indexOf('iOS') !== -1) return 'iOS';
+                return '未知';
+            }
+
+            // 获取网络类型
+            getNetworkType() {
+                if (navigator.connection) {
+                    return navigator.connection.effectiveType || navigator.connection.type || '未知';
+                }
+                return '不支持检测';
+            }
+
             async saveToFeishuTable() {
                 // 检查是否已经保存过结果
                 if (this.resultSaved) {
@@ -5334,9 +5397,13 @@
                 const pauseCount = document.getElementById('pauseCount').textContent;
                 const pauseTime = document.getElementById('pauseTime').textContent;
                 
+                // 获取设备信息
+                const deviceInfo = await this.getDeviceInfo();
+                
                 // 准备发送的数据
                 const avgTimePerQuestion = this.getAverageTimePerQuestion();
                 const data = {
+                    // 考试基本信息
                     用户名称: userName,
                     总分: totalScore,
                     正确题数: correctCount,
@@ -5346,7 +5413,17 @@
                     平均用时: avgTimePerQuestion,
                     暂停次数: pauseCount,
                     暂停用时: pauseTime,
-                    提交时间: new Date().toLocaleString('zh-CN')
+                    提交时间: new Date().toLocaleString('zh-CN'),
+                    
+                    // 设备和环境信息
+                    设备IP: deviceInfo.设备IP,
+                    浏览器信息: deviceInfo.浏览器信息,
+                    操作系统: deviceInfo.操作系统,
+                    屏幕分辨率: deviceInfo.屏幕分辨率,
+                    时区: deviceInfo.时区,
+                    语言: deviceInfo.语言,
+                    网络类型: deviceInfo.网络类型,
+                    地理位置: deviceInfo.地理位置
                 };
                 
                 try {
@@ -5425,7 +5502,7 @@
                     console.error('保存数据到多维表失败:', error);
                     
                     // 提供备用方案：复制数据到剪贴板
-                    const dataText = `用户名称: ${userName}\n总分: ${totalScore}\n正确题数: ${correctCount}\n错误题数: ${wrongCount}\n正确率: ${accuracy}\n考试用时: ${examTime}\n平均用时: ${avgTimePerQuestion}\n暂停次数: ${pauseCount}\n暂停用时: ${pauseTime}\n提交时间: ${new Date().toLocaleString('zh-CN')}`;
+                    const dataText = `用户名称: ${userName}\n总分: ${totalScore}\n正确题数: ${correctCount}\n错误题数: ${wrongCount}\n正确率: ${accuracy}\n考试用时: ${examTime}\n平均用时: ${avgTimePerQuestion}\n暂停次数: ${pauseCount}\n暂停用时: ${pauseTime}\n提交时间: ${new Date().toLocaleString('zh-CN')}\n设备IP: ${deviceInfo.设备IP}\n浏览器信息: ${deviceInfo.浏览器信息}\n操作系统: ${deviceInfo.操作系统}\n屏幕分辨率: ${deviceInfo.屏幕分辨率}\n时区: ${deviceInfo.时区}\n语言: ${deviceInfo.语言}\n网络类型: ${deviceInfo.网络类型}\n地理位置: ${deviceInfo.地理位置}`;
                     
                     try {
                         await navigator.clipboard.writeText(dataText);

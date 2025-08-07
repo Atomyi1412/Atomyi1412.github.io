@@ -35,6 +35,52 @@ PROXY_URL=https://cors-anywhere.herokuapp.com/
 4. 添加上述环境变量
 5. 重新部署项目
 
+### Netlify 部署配置
+
+在 Netlify 项目设置中添加以下环境变量：
+
+#### 必需的环境变量
+
+```bash
+# 飞书多维表查看链接
+FEISHU_TABLE_URL=https://more2.feishu.cn/wiki/your-table-url
+
+# 飞书 Webhook URL（敏感信息）
+FEISHU_WEBHOOK_URL=https://more2.feishu.cn/base/automation/webhook/event/your-webhook-id
+
+# CORS 代理服务器（可选）
+PROXY_URL=https://cors-anywhere.herokuapp.com/
+```
+
+#### 设置步骤
+
+1. 登录 [Netlify Dashboard](https://app.netlify.com)
+2. 选择您的项目（或创建新项目）
+3. 进入 Site settings → Environment variables
+4. 点击 "Add variable" 按钮
+5. 逐一添加上述环境变量：
+   - Key: `FEISHU_TABLE_URL`
+   - Value: 您的飞书多维表链接
+   - 点击 "Create variable"
+6. 重复步骤5添加其他环境变量
+7. 触发重新部署（Deploy → Trigger deploy → Deploy site）
+
+#### Netlify 部署方式
+
+**方式一：GitHub 连接部署（推荐）**
+1. 在 Netlify Dashboard 点击 "New site from Git"
+2. 选择 "GitHub" 并授权访问
+3. 选择 `Atomyi1412.github.io` 仓库
+4. 部署设置：
+   - Build command: 留空（静态网站）
+   - Publish directory: `/`
+5. 点击 "Deploy site"
+
+**方式二：拖拽部署**
+1. 将项目文件夹直接拖拽到 Netlify 部署页面
+2. 自动完成部署
+3. 在 Site settings 中手动添加环境变量
+
 ### 本地开发
 
 #### 方法一：使用 config.local.js（推荐）
