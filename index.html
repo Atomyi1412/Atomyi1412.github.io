@@ -4654,7 +4654,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v5.1.0"; // 可手动修改版本号
+                this.version = "v5.1.1"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5322,16 +5322,60 @@
                     地理位置: '未获取'
                 };
 
-                // 获取IP地址
-                try {
-                    const ipResponse = await fetch('https://api.ipify.org?format=json');
-                    if (ipResponse.ok) {
-                        const ipData = await ipResponse.json();
-                        deviceInfo.设备IP = ipData.ip;
+                // 获取IP地址 - 使用多个备用服务
+                const ipServices = [
+                    { url: 'https://api.ipify.org?format=json', key: 'ip' },
+                    { url: 'https://httpbin.org/ip', key: 'origin' },
+                    { url: 'https://api.my-ip.io/ip.json', key: 'ip' },
+                    { url: 'https://ipapi.co/json/', key: 'ip' },
+                    { url: 'https://api.seeip.org/jsonip?', key: 'ip' }
+                ];
+                
+                let ipObtained = false;
+                for (const service of ipServices) {
+                    if (ipObtained) break;
+                    
+                    try {
+                        console.log(`尝试从 ${service.url} 获取IP地址...`);
+                        const ipResponse = await fetch(service.url, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            timeout: 5000 // 5秒超时
+                        });
+                        
+                        if (ipResponse.ok) {
+                            const ipData = await ipResponse.json();
+                            const ip = ipData[service.key];
+                            if (ip && ip.trim()) {
+                                deviceInfo.设备IP = ip.trim();
+                                ipObtained = true;
+                                console.log(`成功从 ${service.url} 获取IP: ${ip}`);
+                                break;
+                            }
+                        }
+                    } catch (error) {
+                        console.log(`从 ${service.url} 获取IP失败:`, error.message);
+                        continue; // 尝试下一个服务
                     }
-                } catch (error) {
-                    console.log('获取IP地址失败:', error);
-                    deviceInfo.设备IP = '获取失败';
+                }
+                
+                // 如果所有服务都失败，尝试最后的备用方案
+                if (!ipObtained) {
+                    try {
+                        // 使用WebRTC获取本地IP（可能是内网IP）
+                        const localIP = await this.getLocalIP();
+                        if (localIP) {
+                            deviceInfo.设备IP = `${localIP} (本地)`;
+                            console.log('使用WebRTC获取到本地IP:', localIP);
+                        } else {
+                            deviceInfo.设备IP = '获取失败';
+                        }
+                    } catch (error) {
+                        console.log('所有IP获取方式都失败:', error);
+                        deviceInfo.设备IP = '获取失败';
+                    }
                 }
 
                 // 获取地理位置（可选，需要用户授权）
@@ -5370,6 +5414,51 @@
                     return navigator.connection.effectiveType || navigator.connection.type || '未知';
                 }
                 return '不支持检测';
+            }
+
+            // 使用WebRTC获取本地IP地址（备用方案）
+            async getLocalIP() {
+                return new Promise((resolve) => {
+                    try {
+                        const pc = new RTCPeerConnection({
+                            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+                        });
+                        
+                        pc.createDataChannel('');
+                        
+                        pc.onicecandidate = (event) => {
+                            if (event.candidate) {
+                                const candidate = event.candidate.candidate;
+                                const ipMatch = candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/);
+                                if (ipMatch) {
+                                    const ip = ipMatch[1];
+                                    // 过滤掉本地回环地址
+                                    if (!ip.startsWith('127.') && !ip.startsWith('169.254.')) {
+                                        pc.close();
+                                        resolve(ip);
+                                        return;
+                                    }
+                                }
+                            }
+                        };
+                        
+                        pc.createOffer().then(offer => {
+                            pc.setLocalDescription(offer);
+                        }).catch(() => {
+                            resolve(null);
+                        });
+                        
+                        // 5秒超时
+                        setTimeout(() => {
+                            pc.close();
+                            resolve(null);
+                        }, 5000);
+                        
+                    } catch (error) {
+                        console.log('WebRTC获取IP失败:', error);
+                        resolve(null);
+                    }
+                });
             }
 
             async saveToFeishuTable() {
