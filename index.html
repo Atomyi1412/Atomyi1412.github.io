@@ -4654,7 +4654,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v5.1.1"; // 可手动修改版本号
+                this.version = "v5.1.2"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5315,7 +5315,7 @@
                     设备IP: '获取中...',
                     浏览器信息: navigator.userAgent,
                     操作系统: this.getOperatingSystem(),
-                    屏幕分辨率: `${screen.width}x${screen.height}`,
+                    屏幕分辨率: this.getScreenResolution(),
                     时区: Intl.DateTimeFormat().resolvedOptions().timeZone,
                     语言: navigator.language,
                     网络类型: this.getNetworkType(),
@@ -5402,10 +5402,30 @@
                 const userAgent = navigator.userAgent;
                 if (userAgent.indexOf('Windows') !== -1) return 'Windows';
                 if (userAgent.indexOf('Mac') !== -1) return 'macOS';
-                if (userAgent.indexOf('Linux') !== -1) return 'Linux';
+                // Android检测必须在Linux之前，因为Android设备的User-Agent也包含Linux
                 if (userAgent.indexOf('Android') !== -1) return 'Android';
                 if (userAgent.indexOf('iOS') !== -1) return 'iOS';
+                if (userAgent.indexOf('Linux') !== -1) return 'Linux';
                 return '未知';
+            }
+
+            // 获取屏幕分辨率信息
+            getScreenResolution() {
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                const cssWidth = screen.width;
+                const cssHeight = screen.height;
+                
+                // 对于移动设备，计算物理分辨率
+                const userAgent = navigator.userAgent;
+                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+                
+                if (isMobile && devicePixelRatio > 1) {
+                    const physicalWidth = Math.round(cssWidth * devicePixelRatio);
+                    const physicalHeight = Math.round(cssHeight * devicePixelRatio);
+                    return `${physicalWidth}x${physicalHeight} (物理) / ${cssWidth}x${cssHeight} (CSS)`;
+                } else {
+                    return `${cssWidth}x${cssHeight}`;
+                }
             }
 
             // 获取网络类型
