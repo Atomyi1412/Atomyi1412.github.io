@@ -4713,7 +4713,7 @@
         class QuestionBank {
             constructor() {
                 // 版本信息
-                this.version = "v5.1.6"; // 可手动修改版本号
+                this.version = "v5.1.7"; // 可手动修改版本号
                 
                 this.questions = [];
                 this.allQuestions = []; // 保存完整的题目列表
@@ -5247,7 +5247,7 @@
                 const saveToTableBtn = document.getElementById('saveToTableBtn');
                 if (saveToTableBtn) {
                     saveToTableBtn.addEventListener('click', () => {
-                        this.showSaveToTableModal();
+                        this.showSaveToTableModal(true); // 传递true表示手动触发
                     });
                 }
                 
@@ -5298,7 +5298,11 @@
                 }
             }
             
-            async showSaveToTableModal() {
+            async showSaveToTableModal(isManual = false) {
+                // 如果是手动触发，立即设置resultSaved为true，防止自动弹出
+                if (isManual) {
+                    this.resultSaved = true;
+                }
                 const modal = document.getElementById('saveToTableModal');
                 const userNameInput = document.getElementById('userName');
                 const userNameLabel = document.querySelector('label[for="userName"]');
