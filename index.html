@@ -6927,10 +6927,15 @@
                 container.innerHTML = '';
 
                 if (question.type === '单选题' || question.type === '多选题') {
-                    // 先尝试用分号分割，如果没有分号则用管道符分割
+                    // 先尝试用分号分割（支持中文和英文分号），如果没有分号则用管道符分割
                     let options;
-                    if (question.options.includes(';')) {
-                        options = question.options.split(';').filter(opt => opt.trim());
+                    if (question.options.includes(';') || question.options.includes('；')) {
+                        // 优先使用中文分号，如果没有则使用英文分号
+                        if (question.options.includes('；')) {
+                            options = question.options.split('；').filter(opt => opt.trim());
+                        } else {
+                            options = question.options.split(';').filter(opt => opt.trim());
+                        }
                     } else {
                         options = question.options.split('|').filter(opt => opt.trim());
                     }
