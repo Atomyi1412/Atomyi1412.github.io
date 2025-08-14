@@ -7450,7 +7450,18 @@
                 const wrongCount = scoredQuestionsCount - correctCount;
                 const accuracy = scoredQuestionsCount > 0 ? Math.round((correctCount / scoredQuestionsCount) * 100) : 0;
 
-                document.getElementById('totalScore').textContent = totalScore.toFixed(2);
+                // 智能格式化总分：整数显示整数，一位小数显示一位小数，两位及以上小数显示两位小数
+                const formatScore = (score) => {
+                    if (Number.isInteger(score)) {
+                        return score.toString();
+                    }
+                    const decimal = score.toString().split('.')[1];
+                    if (decimal && decimal.length === 1) {
+                        return score.toFixed(1);
+                    }
+                    return score.toFixed(2);
+                };
+                document.getElementById('totalScore').textContent = formatScore(totalScore);
                 document.getElementById('correctCount').textContent = correctCount;
                 document.getElementById('wrongCount').textContent = wrongCount;
                 document.getElementById('accuracy').textContent = `${accuracy}%`;
