@@ -7309,12 +7309,103 @@
                     confirmMessage = `还有 ${unansweredQuestions.length} 道题目未作答（第 ${unansweredQuestions.join('、')} 题）。\n\n确定要交卷吗？交卷后将无法修改答案。`;
                 }
                 
-                if (confirm(confirmMessage)) {
+                this.showSubmitConfirmModal(confirmMessage, () => {
                     // 用户确认交卷，停止计时器并计算结果
                     this.stopTimer();
                     this.calculateResults();
-                }
+                });
                 // 如果用户取消交卷，计时器继续运行，不做任何操作
+            }
+
+            showSubmitConfirmModal(message, onConfirm) {
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                    backdrop-filter: blur(5px);
+                `;
+                
+                const content = document.createElement('div');
+                content.style.cssText = `
+                    background: var(--card-background);
+                    padding: 30px;
+                    border-radius: 16px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    max-width: 450px;
+                    width: 90%;
+                    text-align: center;
+                    animation: modalSlideIn 0.3s ease;
+                `;
+                
+                content.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: var(--text-color); margin-bottom: 15px; font-size: 18px;">📝 确认交卷</h3>
+                        <p style="color: var(--text-color); line-height: 1.6; white-space: pre-line;">${message}</p>
+                    </div>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button id="confirm-submit" style="
+                            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+                            color: white;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                        ">✓ 确认交卷</button>
+                        <button id="cancel-submit" style="
+                            background: var(--button-background);
+                            color: var(--text-color);
+                            border: 1px solid var(--border-color);
+                            padding: 12px 24px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                        ">✕ 取消</button>
+                    </div>
+                `;
+                
+                modal.appendChild(content);
+                document.body.appendChild(modal);
+                
+                const confirmBtn = content.querySelector('#confirm-submit');
+                const cancelBtn = content.querySelector('#cancel-submit');
+                
+                confirmBtn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                    onConfirm();
+                });
+                
+                cancelBtn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+                
+                // 点击模态框外部关闭
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        document.body.removeChild(modal);
+                    }
+                });
+                
+                // ESC键关闭
+                const escHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        document.body.removeChild(modal);
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
             }
 
             calculateResults() {
@@ -7999,10 +8090,16 @@
                 }
                 
                 // 确认是否要开始错题重考设置
-                if (!confirm(`确定要开始错题重考吗？\n将进入考试设置页面，您可以重新配置 ${this.wrongQuestionsData.length} 道错题的考试参数。`)) {
-                    return;
-                }
-                
+                this.showSubmitConfirmModal(
+                    `确定要开始错题重考吗？\n将进入考试设置页面，您可以重新配置 ${this.wrongQuestionsData.length} 道错题的考试参数。`,
+                    () => {
+                        this.startWrongQuestionReview();
+                    }
+                );
+                return;
+            }
+            
+            startWrongQuestionReview() {
                 // 标记当前为错题重考模式
                 this.isRetakeMode = true;
                 this.retakeQuestions = this.wrongQuestionsData.map(item => item.question);
