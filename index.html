@@ -8001,7 +8001,9 @@
                     ]);
                 });
 
-                await this.downloadFile(headers, data, `错题集_${new Date().toISOString().slice(0, 10)}`, format);
+                const now = new Date();
+                const timestamp = now.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
+                await this.downloadFile(headers, data, `错题集_${timestamp}`, format);
                 alert(`已导出 ${this.wrongQuestionsData.length} 道错题`);
             }
             
@@ -8031,7 +8033,9 @@
                     ]);
                 });
 
-                await this.downloadFile(headers, data, `正确题目_${new Date().toISOString().slice(0, 10)}`, format);
+                const now = new Date();
+                const timestamp = now.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
+                await this.downloadFile(headers, data, `正确题目_${timestamp}`, format);
                 alert(`已导出 ${this.correctQuestionsData.length} 道正确题目`);
             }
             
@@ -8079,7 +8083,9 @@
                     ]);
                 });
 
-                await this.downloadFile(headers, data, `全部题目_${new Date().toISOString().slice(0, 10)}`, format);
+                const now = new Date();
+                const timestamp = now.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
+                await this.downloadFile(headers, data, `全部题目_${timestamp}`, format);
                 alert(`已导出 ${this.questions.length} 道题目`);
             }
             
