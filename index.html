@@ -7450,7 +7450,7 @@
                 const wrongCount = scoredQuestionsCount - correctCount;
                 const accuracy = scoredQuestionsCount > 0 ? Math.round((correctCount / scoredQuestionsCount) * 100) : 0;
 
-                document.getElementById('totalScore').textContent = totalScore;
+                document.getElementById('totalScore').textContent = totalScore.toFixed(2);
                 document.getElementById('correctCount').textContent = correctCount;
                 document.getElementById('wrongCount').textContent = wrongCount;
                 document.getElementById('accuracy').textContent = `${accuracy}%`;
