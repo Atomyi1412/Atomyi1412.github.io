@@ -6959,8 +6959,8 @@
                             optionDiv.className = 'option-item';
                             optionDiv.dataset.value = letter;
                             
-                            // 去掉选项中原有的A.、B.等前缀
-                            let cleanOption = option.trim().replace(/^[A-Z]\. /, '');
+                            // 去掉选项中原有的A.、B.等前缀（兼容有空格和无空格的情况）
+                            let cleanOption = option.trim().replace(/^[A-Z]\.\s*/, '');
                             // 为B、C、D等选项前添加换行符（如果选项文本中包含分号分隔的多个选项）
                             if (cleanOption.includes('; ')) {
                                 cleanOption = cleanOption.replace(/; ([B-Z]\. )/g, '; \n $1');
