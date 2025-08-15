@@ -7317,7 +7317,11 @@
                 // 如果用户取消交卷，计时器继续运行，不做任何操作
             }
 
-            showSubmitConfirmModal(message, onConfirm) {
+            showSubmitConfirmModal(message, onConfirm, options = {}) {
+                const title = options.title || '📝 确认交卷';
+                const confirmText = options.confirmText || '✓ 确认交卷';
+                const cancelText = options.cancelText || '✕ 取消';
+                
                 const modal = document.createElement('div');
                 modal.style.cssText = `
                     position: fixed;
@@ -7347,7 +7351,7 @@
                 
                 content.innerHTML = `
                     <div style="margin-bottom: 20px;">
-                        <h3 style="color: var(--text-color); margin-bottom: 15px; font-size: 18px;">📝 确认交卷</h3>
+                        <h3 style="color: var(--text-color); margin-bottom: 15px; font-size: 18px;">${title}</h3>
                         <p style="color: var(--text-color); line-height: 1.6; white-space: pre-line;">${message}</p>
                     </div>
                     <div style="display: flex; gap: 15px; justify-content: center;">
@@ -7361,7 +7365,7 @@
                             font-size: 14px;
                             font-weight: 500;
                             transition: all 0.3s ease;
-                        ">✓ 确认交卷</button>
+                        ">${confirmText}</button>
                         <button id="cancel-submit" style="
                             background: var(--button-background);
                             color: var(--text-color);
@@ -7372,7 +7376,7 @@
                             font-size: 14px;
                             font-weight: 500;
                             transition: all 0.3s ease;
-                        ">✕ 取消</button>
+                        ">${cancelText}</button>
                     </div>
                 `;
                 
@@ -8100,6 +8104,11 @@
                     `确定要开始错题重考吗？\n将进入考试设置页面，您可以重新配置 ${this.wrongQuestionsData.length} 道错题的考试参数。`,
                     () => {
                         this.startWrongQuestionReview();
+                    },
+                    {
+                        title: '🔄 确认错题重考',
+                        confirmText: '✓ 开始重考',
+                        cancelText: '✕ 取消'
                     }
                 );
                 return;
