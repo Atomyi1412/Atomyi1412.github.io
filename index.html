@@ -8006,7 +8006,9 @@
                 });
 
                 const now = new Date();
-                const timestamp = now.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
+                // 转换为北京时间 (UTC+8)
+                const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+                const timestamp = beijingTime.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
                 await this.downloadFile(headers, data, `错题集_${timestamp}`, format);
                 alert(`已导出 ${this.wrongQuestionsData.length} 道错题`);
             }
@@ -8038,7 +8040,9 @@
                 });
 
                 const now = new Date();
-                const timestamp = now.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
+                // 转换为北京时间 (UTC+8)
+                const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+                const timestamp = beijingTime.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
                 await this.downloadFile(headers, data, `正确题目_${timestamp}`, format);
                 alert(`已导出 ${this.correctQuestionsData.length} 道正确题目`);
             }
@@ -8088,7 +8092,9 @@
                 });
 
                 const now = new Date();
-                const timestamp = now.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
+                // 转换为北京时间 (UTC+8)
+                const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+                const timestamp = beijingTime.toISOString().slice(0, 19).replace('T', '_').replace(/:/g, '-');
                 await this.downloadFile(headers, data, `全部题目_${timestamp}`, format);
                 alert(`已导出 ${this.questions.length} 道题目`);
             }
